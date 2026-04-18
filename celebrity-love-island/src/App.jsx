@@ -10,9 +10,17 @@ import BattleDemo from './pages/BattleDemo'
 function App() {
   const [page, setPage] = useState('intro')
   const [selectedSkin, setSelectedSkin] = useState(null)
+  const [battleExitSummary, setBattleExitSummary] = useState(null)
 
   if (page === 'battle_demo') {
-    return <BattleDemo onBackToIntro={() => setPage('intro')} />
+    return (
+      <BattleDemo
+        onBackToIntro={(summary) => {
+          setBattleExitSummary(summary ?? null)
+          setPage('intro')
+        }}
+      />
+    )
   }
 
   if (page === 'introduce_celebs') {
@@ -33,9 +41,20 @@ function App() {
 
   return (
     <Intro
-      onStart={() => setPage('introduce_celebs')}
-      onSkip={() => setPage('choose_your_skin')}
-      onDemo={() => setPage('battle_demo')}
+      onStart={() => {
+        setBattleExitSummary(null)
+        setPage('introduce_celebs')
+      }}
+      onSkip={() => {
+        setBattleExitSummary(null)
+        setPage('choose_your_skin')
+      }}
+      onDemo={() => {
+        setBattleExitSummary(null)
+        setPage('battle_demo')
+      }}
+      battleExitSummary={battleExitSummary}
+      onDismissBattleExitSummary={() => setBattleExitSummary(null)}
     />
   )
 }

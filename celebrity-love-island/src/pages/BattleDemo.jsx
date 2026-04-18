@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import TypingText from '../components/TypingText'
 import loveIslandBg from '../assets/backgrounds/love_island_bg.jpg'
 import kimSprite from '../assets/characters/celebs/kim_kardashian.png'
 import playerSprite from '../assets/characters/players/adjussi_clothed.png'
@@ -31,6 +32,12 @@ const TIER_ICK_DAMAGE_SCALE = 1
 const CONNECTION_MIN = -100
 const CONNECTION_MAX = 100
 const PLAYER_BATTLE_CONNECTION_DELTA = 50
+const HEART_BURST_DURATION_MS = 900
+const HEART_BREAK_DURATION_MS = 850
+const HEART_BURST_TRIGGER_DELAY_MS = 220
+const HEART_BREAK_TRIGGER_DELAY_MS = 220
+const ACTION_TEXT_TYPING_SPEED_MS = 14
+const ACTION_TEXT_LINGER_MS = 2200
 
 const STATE_ICONS = {
   neutral: neutralSymbol,
@@ -218,8 +225,12 @@ function createInitialDemoGraphState() {
         return
       }
 
+      if (fromId === PLAYER_ID) {
+        return
+      }
+
       graph[fromId][toId] =
-        fromId === PLAYER_ID || toId === PLAYER_ID
+        toId === PLAYER_ID
           ? 0
           : getRelationshipEdgeValue(fromId, toId)
     })
@@ -308,8 +319,7 @@ function randomConnectionDelta() {
 
 function buildPlayerBattlePrimaryDeltas(targetId, delta) {
   const primaryDeltas = createEdgeDeltaMap()
-  addEdgeDelta(primaryDeltas, PLAYER_ID, targetId, delta)
-  addEdgeDelta(primaryDeltas, targetId, PLAYER_ID, Math.round(delta / 2))
+  addEdgeDelta(primaryDeltas, targetId, PLAYER_ID, delta)
   return primaryDeltas
 }
 
@@ -346,16 +356,48 @@ function buildCelebritySideBattlePrimaryDeltas(activeContestantIds, excludedCele
   }
 }
 
-function buildRippleDeltas(graphSnapshot, activeContestantIds, primaryDeltas) {
+function formatRippleNumber(value) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(2)
+}
+
+function buildRippleDeltasWithDiagnostics(
+  graphSnapshot,
+  activeContestantIds,
+  primaryDeltas,
+  contestantsById,
+) {
   const rippleDeltas = createEdgeDeltaMap()
+  const diagnostics = []
+  let changedChecks = 0
+  let unchangedChecks = 0
+  let diagnosticIndex = 0
 
   forEachEdgeDelta(primaryDeltas, (sourceId, rootId, primaryDelta) => {
     const baseMagnitude = Math.abs(primaryDelta) * 0.2
+    const sourceName = getDisplayName(contestantsById, sourceId)
+    const rootName = getDisplayName(contestantsById, rootId)
+    const direction = primaryDelta > 0 ? -1 : 1
+    const directionLabel =
+      direction < 0
+        ? '-1 (primary increase -> jealousy pressure)'
+        : '+1 (primary decrease -> rebound pressure)'
+
+    diagnostics.push({
+      key: `ripple-primary-${sourceId}-${rootId}-${diagnosticIndex++}`,
+      line: `Primary ${sourceName} -> ${rootName} ${formatSigned(primaryDelta)} | baseMagnitude=${formatRippleNumber(baseMagnitude)} | direction=${directionLabel}`,
+      isHeader: true,
+    })
+
     if (baseMagnitude <= 0) {
+      diagnostics.push({
+        key: `ripple-primary-skip-${sourceId}-${rootId}-${diagnosticIndex++}`,
+        line: 'No ripple checks: baseMagnitude <= 0.',
+        isHeader: false,
+        changed: false,
+      })
+      unchangedChecks += 1
       return
     }
-
-    const direction = primaryDelta > 0 ? -1 : 1
 
     activeContestantIds.forEach((influencerId) => {
       if (influencerId === sourceId || influencerId === rootId) {
@@ -364,26 +406,68 @@ function buildRippleDeltas(graphSnapshot, activeContestantIds, primaryDeltas) {
 
       const influencerToSource = graphSnapshot[influencerId]?.[sourceId] ?? 0
       const influencerToRoot = graphSnapshot[influencerId]?.[rootId] ?? 0
+      const influencerName = getDisplayName(contestantsById, influencerId)
+      const sourceScale =
+        influencerToSource > 0 ? getRippleStrengthScale(influencerToSource) : 0
+      const sourceRawImpact = baseMagnitude * sourceScale
+      const sourceImpact = Math.round(sourceRawImpact)
+      const sourceDelta = sourceImpact * direction
+      const sourceChanged = influencerToSource > 0 && sourceImpact > 0
+      const sourceReason =
+        influencerToSource <= 0
+          ? 'no change: influencer->source <= 0'
+          : sourceImpact <= 0
+            ? 'no change: rounded source impact is 0'
+            : `changed: ${sourceName} -> ${influencerName} ${formatSigned(sourceDelta)}`
 
-      if (influencerToSource > 0) {
-        const sourceScale = getRippleStrengthScale(influencerToSource)
-        const sourceImpact = Math.round(baseMagnitude * sourceScale)
-        if (sourceImpact > 0) {
-          addEdgeDelta(rippleDeltas, sourceId, influencerId, sourceImpact * direction)
-        }
+      diagnostics.push({
+        key: `ripple-source-${sourceId}-${rootId}-${influencerId}-${diagnosticIndex++}`,
+        line: `[${influencerName} -> ${sourceName}] score=${formatRippleNumber(influencerToSource)} | scale=${formatRippleNumber(sourceScale)} | raw=${formatRippleNumber(sourceRawImpact)} | rounded=${sourceImpact} | ${sourceReason}`,
+        isHeader: false,
+        changed: sourceChanged,
+      })
+
+      if (sourceChanged) {
+        addEdgeDelta(rippleDeltas, sourceId, influencerId, sourceDelta)
+        changedChecks += 1
+      } else {
+        unchangedChecks += 1
       }
 
-      if (influencerToRoot > 0) {
-        const rootScale = getRippleStrengthScale(influencerToRoot)
-        const rootImpact = Math.round(baseMagnitude * rootScale)
-        if (rootImpact > 0) {
-          addEdgeDelta(rippleDeltas, influencerId, rootId, rootImpact * direction)
-        }
+      const rootScale = influencerToRoot > 0 ? getRippleStrengthScale(influencerToRoot) : 0
+      const rootRawImpact = baseMagnitude * rootScale
+      const rootImpact = Math.round(rootRawImpact)
+      const rootDelta = rootImpact * direction
+      const rootChanged = influencerToRoot > 0 && rootImpact > 0
+      const rootReason =
+        influencerToRoot <= 0
+          ? 'no change: influencer->root <= 0'
+          : rootImpact <= 0
+            ? 'no change: rounded root impact is 0'
+            : `changed: ${influencerName} -> ${rootName} ${formatSigned(rootDelta)}`
+
+      diagnostics.push({
+        key: `ripple-root-${sourceId}-${rootId}-${influencerId}-${diagnosticIndex++}`,
+        line: `[${influencerName} -> ${rootName}] score=${formatRippleNumber(influencerToRoot)} | scale=${formatRippleNumber(rootScale)} | raw=${formatRippleNumber(rootRawImpact)} | rounded=${rootImpact} | ${rootReason}`,
+        isHeader: false,
+        changed: rootChanged,
+      })
+
+      if (rootChanged) {
+        addEdgeDelta(rippleDeltas, influencerId, rootId, rootDelta)
+        changedChecks += 1
+      } else {
+        unchangedChecks += 1
       }
     })
   })
 
-  return rippleDeltas
+  return {
+    rippleDeltas,
+    diagnostics,
+    changedChecks,
+    unchangedChecks,
+  }
 }
 
 function getDisplayName(contestantsById, contestantId) {
@@ -407,6 +491,31 @@ function formatSigned(value) {
   return value > 0 ? `+${value}` : String(value)
 }
 
+function formatEdgeNames(contestantsById, fromId, toId) {
+  const fromName = getDisplayName(contestantsById, fromId)
+  const toName = getDisplayName(contestantsById, toId)
+  return `${fromName} -> ${toName}`
+}
+
+function buildEdgeDeltaLines(deltaRows, contestantsById) {
+  return deltaRows.map(({ fromId, toId, delta }) => ({
+    key: `${fromId}-${toId}`,
+    line: `${formatEdgeNames(contestantsById, fromId, toId)} ${formatSigned(delta)}`,
+  }))
+}
+
+function buildFinalEdgeLines(deltaRows, contestantsById, beforeGraph, afterGraph) {
+  return deltaRows.map(({ fromId, toId }) => {
+    const before = getEdgeValue(beforeGraph, fromId, toId)
+    const after = getEdgeValue(afterGraph, fromId, toId)
+    const delta = after - before
+    return {
+      key: `${fromId}-${toId}`,
+      line: `${formatEdgeNames(contestantsById, fromId, toId)}: ${before} -> ${after} (${formatSigned(delta)})`,
+    }
+  })
+}
+
 function applyDemoPostBattleGraphUpdates({
   graphSnapshot,
   contestantsById,
@@ -426,29 +535,37 @@ function applyDemoPostBattleGraphUpdates({
     playerPrimaryDeltas,
     sideBattleResult.primaryDeltas,
   )
-  const rippleDeltas = buildRippleDeltas(graphSnapshot, activeContestantIds, primaryDeltas)
+  const rippleResult = buildRippleDeltasWithDiagnostics(
+    graphSnapshot,
+    activeContestantIds,
+    primaryDeltas,
+    contestantsById,
+  )
+  const rippleDeltas = rippleResult.rippleDeltas
   const netDeltas = mergeEdgeDeltaMaps(primaryDeltas, rippleDeltas)
   const nextGraph = applyEdgeDeltaMap(graphSnapshot, netDeltas)
 
-  const playerToTargetBefore = getEdgeValue(graphSnapshot, PLAYER_ID, battleTargetId)
-  const playerToTargetAfter = getEdgeValue(nextGraph, PLAYER_ID, battleTargetId)
   const targetToPlayerBefore = getEdgeValue(graphSnapshot, battleTargetId, PLAYER_ID)
   const targetToPlayerAfter = getEdgeValue(nextGraph, battleTargetId, PLAYER_ID)
 
+  const playerPrimaryChanges = edgeDeltaMapToSortedList(playerPrimaryDeltas)
+  const sidePrimaryChanges = edgeDeltaMapToSortedList(sideBattleResult.primaryDeltas)
+  const primaryChanges = edgeDeltaMapToSortedList(primaryDeltas)
   const netChanges = edgeDeltaMapToSortedList(netDeltas)
   const rippleChanges = edgeDeltaMapToSortedList(rippleDeltas)
-  const topNetChanges = netChanges.slice(0, 8)
-  const topRippleChanges = rippleChanges.slice(0, 8)
-
-  const pairingLines = sideBattleResult.pairings.map(({ celebA, celebB, deltaAB, deltaBA }) => {
-    const celebAName = getDisplayName(contestantsById, celebA)
-    const celebBName = getDisplayName(contestantsById, celebB)
-    return `${celebAName}->${celebBName} ${formatSigned(deltaAB)} | ${celebBName}->${celebAName} ${formatSigned(deltaBA)}`
-  })
+  const playerPrimaryStepLines = buildEdgeDeltaLines(playerPrimaryChanges, contestantsById)
+  const sidePrimaryStepLines = buildEdgeDeltaLines(sidePrimaryChanges, contestantsById)
+  const primaryStepLines = buildEdgeDeltaLines(primaryChanges, contestantsById)
+  const rippleStepLines = buildEdgeDeltaLines(rippleChanges, contestantsById)
+  const finalNetStepLines = buildFinalEdgeLines(
+    netChanges,
+    contestantsById,
+    graphSnapshot,
+    nextGraph,
+  )
 
   const targetName = getDisplayName(contestantsById, battleTargetId)
   const logLines = [
-    `Graph update: Player->${targetName} ${formatSigned(playerToTargetAfter - playerToTargetBefore)} (${playerToTargetBefore} -> ${playerToTargetAfter}).`,
     `Graph update: ${targetName}->Player ${formatSigned(targetToPlayerAfter - targetToPlayerBefore)} (${targetToPlayerBefore} -> ${targetToPlayerAfter}).`,
     `Celebrity side battles resolved ${sideBattleResult.pairings.length} pairs; ripple changed ${rippleChanges.length} edges.`,
   ]
@@ -465,17 +582,24 @@ function applyDemoPostBattleGraphUpdates({
       battleWon,
       targetName,
       playerDelta,
-      playerToTargetBefore,
-      playerToTargetAfter,
       targetToPlayerBefore,
       targetToPlayerAfter,
       pairings: sideBattleResult.pairings,
-      pairingLines,
       leftOutId: sideBattleResult.leftOutId,
+      playerPrimaryEdgeCount: playerPrimaryChanges.length,
+      sidePrimaryEdgeCount: sidePrimaryChanges.length,
+      primaryEdgeCount: primaryChanges.length,
       rippleEdgeCount: rippleChanges.length,
       netEdgeCount: netChanges.length,
-      topRippleChanges,
-      topNetChanges,
+      playerPrimaryStepLines,
+      sidePrimaryStepLines,
+      primaryStepLines,
+      rippleStepLines,
+      rippleComputationLines: rippleResult.diagnostics,
+      rippleCheckCount: rippleResult.changedChecks + rippleResult.unchangedChecks,
+      rippleChangedCheckCount: rippleResult.changedChecks,
+      rippleUnchangedCheckCount: rippleResult.unchangedChecks,
+      finalNetStepLines,
       logLines,
     },
   }
@@ -506,12 +630,22 @@ export default function BattleDemo({ onBackToIntro }) {
   const [demoGraph, setDemoGraph] = useState(() => demoInitialGraphState.graph)
   const [graphUpdateSummary, setGraphUpdateSummary] = useState(null)
   const [rewardPopupMove, setRewardPopupMove] = useState(null)
+  const [heartBurstFxId, setHeartBurstFxId] = useState(null)
+  const [heartBreakFxId, setHeartBreakFxId] = useState(null)
   const [battleLog, setBattleLog] = useState([
     `${KIM_NAME} entered the battle. Pick your move and press attack.`,
   ])
+  const [actionMessageQueue, setActionMessageQueue] = useState([])
+  const [activeActionMessage, setActiveActionMessage] = useState(
+    `${KIM_NAME} entered the battle. Pick your move and press attack.`,
+  )
+  const [actionTextRenderKey, setActionTextRenderKey] = useState(0)
   const playerAttractionRef = useRef(playerAttraction)
   const usedIcksRef = useRef(usedIcks)
   const demoGraphRef = useRef(demoGraph)
+  const fxTimeoutsRef = useRef([])
+  const actionMessageTimeoutRef = useRef(null)
+  const previousBattleLogLengthRef = useRef(1)
   const slotGrid = useMemo(
     () => buildSlotGridFromColumns(slotColumnOrders, slotColumnSteps),
     [slotColumnOrders, slotColumnSteps],
@@ -538,6 +672,80 @@ export default function BattleDemo({ onBackToIntro }) {
   useEffect(() => {
     demoGraphRef.current = demoGraph
   }, [demoGraph])
+
+  useEffect(() => {
+    return () => {
+      fxTimeoutsRef.current.forEach((timeoutId) => {
+        window.clearTimeout(timeoutId)
+      })
+      fxTimeoutsRef.current = []
+      if (actionMessageTimeoutRef.current) {
+        window.clearTimeout(actionMessageTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (battleLog.length <= previousBattleLogLengthRef.current) {
+      return
+    }
+
+    const newMessages = battleLog.slice(previousBattleLogLengthRef.current)
+    previousBattleLogLengthRef.current = battleLog.length
+    setActionMessageQueue((current) => [...current, ...newMessages])
+  }, [battleLog])
+
+  useEffect(() => {
+    if (activeActionMessage || actionMessageQueue.length === 0) {
+      return
+    }
+
+    setActionMessageQueue((current) => {
+      if (current.length === 0) {
+        return current
+      }
+
+      const [nextMessage, ...rest] = current
+      setActiveActionMessage(nextMessage)
+      setActionTextRenderKey((key) => key + 1)
+      return rest
+    })
+  }, [activeActionMessage, actionMessageQueue])
+
+  const handleActionTypingDone = useCallback(() => {
+    if (actionMessageTimeoutRef.current) {
+      window.clearTimeout(actionMessageTimeoutRef.current)
+    }
+
+    actionMessageTimeoutRef.current = window.setTimeout(() => {
+      setActiveActionMessage('')
+      actionMessageTimeoutRef.current = null
+    }, ACTION_TEXT_LINGER_MS)
+  }, [])
+
+  const triggerHeartBurstFx = useCallback(() => {
+    const startTimeoutId = window.setTimeout(() => {
+      const fxId = `${Date.now()}-${Math.random()}`
+      setHeartBurstFxId(fxId)
+      const endTimeoutId = window.setTimeout(() => {
+        setHeartBurstFxId((current) => (current === fxId ? null : current))
+      }, HEART_BURST_DURATION_MS)
+      fxTimeoutsRef.current.push(endTimeoutId)
+    }, HEART_BURST_TRIGGER_DELAY_MS)
+    fxTimeoutsRef.current.push(startTimeoutId)
+  }, [])
+
+  const triggerHeartBreakFx = useCallback(() => {
+    const startTimeoutId = window.setTimeout(() => {
+      const fxId = `${Date.now()}-${Math.random()}`
+      setHeartBreakFxId(fxId)
+      const endTimeoutId = window.setTimeout(() => {
+        setHeartBreakFxId((current) => (current === fxId ? null : current))
+      }, HEART_BREAK_DURATION_MS)
+      fxTimeoutsRef.current.push(endTimeoutId)
+    }, HEART_BREAK_TRIGGER_DELAY_MS)
+    fxTimeoutsRef.current.push(startTimeoutId)
+  }, [])
 
   const beginSlotMachine = useCallback(() => {
     const nextColumnOrders = createRandomColumnOrders()
@@ -570,7 +778,12 @@ export default function BattleDemo({ onBackToIntro }) {
 
       setDemoGraph(nextGraph)
       setGraphUpdateSummary(summary)
-      setBattleLog((current) => [...current, ...summary.logLines])
+      setBattleLog((current) => [
+        ...current,
+        `${summary.targetName} connection score ${
+          summary.playerDelta >= 0 ? 'increased' : 'decreased'
+        } by ${Math.abs(summary.playerDelta)}.`,
+      ])
       beginSlotMachine()
     },
     [
@@ -606,8 +819,8 @@ export default function BattleDemo({ onBackToIntro }) {
             ? 'Quote minigame timeout: full ick -attraction applied.'
             : 'Quote minigame incorrect: full ick -attraction applied.'
       const ickMessage = ick
-        ? `${KIM_NAME} used "${ick.name}" (${ickPower} power${isRepeatedIck ? ', repeat x2' : ''}) and applied -${ickDamage} attraction.`
-        : `${KIM_NAME} attacked for -${ickDamage} attraction.`
+        ? `${KIM_NAME} gives you the ick they ${ick.name}.`
+        : `${KIM_NAME} gives you the ick.`
       const defeatMessage = didPlayerLose
         ? 'Your attraction hit zero. Battle lost.'
         : null
@@ -616,6 +829,7 @@ export default function BattleDemo({ onBackToIntro }) {
       if (didCycleReset) {
         setIckCycleCount((count) => count + 1)
       }
+      triggerHeartBreakFx()
       setPlayerAttraction(nextPlayerAttraction)
       setBattleStatus(didPlayerLose ? 'lost' : 'active')
       setTurnCount((count) => count + 1)
@@ -633,7 +847,7 @@ export default function BattleDemo({ onBackToIntro }) {
         finalizeBattleGraphAndAdvance(false)
       }
     },
-    [finalizeBattleGraphAndAdvance, ickCycleCount, pendingEnemyTurn],
+    [finalizeBattleGraphAndAdvance, ickCycleCount, pendingEnemyTurn, triggerHeartBreakFx],
   )
 
   const handleQuoteChoice = useCallback(
@@ -769,6 +983,7 @@ export default function BattleDemo({ onBackToIntro }) {
     const attractionGain = selectedMove.power * (hasDoubleStateBonus ? 2 : 1)
     const nextCelebAttraction = clampAttraction(celebAttraction + attractionGain)
     const nextState = pickWeightedState(selectedMove.stateChange, celebrityState)
+    triggerHeartBurstFx()
 
     const logEntries = [
       `Turn ${turnCount}: You used ${selectedMove.name} (+${attractionGain} attraction${hasDoubleStateBonus ? ', state match x2' : ''}).`,
@@ -823,11 +1038,15 @@ export default function BattleDemo({ onBackToIntro }) {
     ])
   }
 
+  const handleExitBattleDemo = useCallback(() => {
+    onBackToIntro?.(graphUpdateSummary)
+  }, [graphUpdateSummary, onBackToIntro])
+
   return (
     <div className="battle-demo" style={{ backgroundImage: `url(${loveIslandBg})` }}>
       <div className="battle-overlay" />
 
-      <button className="battle-back-btn" onClick={onBackToIntro}>
+      <button className="battle-back-btn" onClick={handleExitBattleDemo}>
         Back
       </button>
 
@@ -847,7 +1066,36 @@ export default function BattleDemo({ onBackToIntro }) {
       </div>
 
       <img className="celebrity-sprite" src={kimSprite} alt="Kim Kardashian sprite" />
+      {heartBurstFxId && (
+        <div key={heartBurstFxId} className="heart-burst-fx" aria-hidden="true">
+          <span className="heart-burst-particle heart-burst-particle-1">&#9829;</span>
+          <span className="heart-burst-particle heart-burst-particle-2">&#9829;</span>
+          <span className="heart-burst-particle heart-burst-particle-3">&#9829;</span>
+          <span className="heart-burst-particle heart-burst-particle-4">&#9829;</span>
+          <span className="heart-burst-particle heart-burst-particle-5">&#9829;</span>
+          <span className="heart-burst-particle heart-burst-particle-6">&#9829;</span>
+          <span className="heart-burst-particle heart-burst-particle-7">&#9829;</span>
+        </div>
+      )}
       <img className="player-sprite" src={playerSprite} alt="Player sprite" />
+      {heartBreakFxId && (
+        <div key={heartBreakFxId} className="heart-break-fx" aria-hidden="true">
+          <span className="heart-break-half heart-break-left">&#9829;</span>
+          <span className="heart-break-half heart-break-right">&#9829;</span>
+          <span className="heart-break-crack" />
+        </div>
+      )}
+      {activeActionMessage && (
+        <div className="battle-action-banner" aria-live="polite">
+          <TypingText
+            key={actionTextRenderKey}
+            className="battle-action-text"
+            text={activeActionMessage}
+            speed={ACTION_TEXT_TYPING_SPEED_MS}
+            onDone={handleActionTypingDone}
+          />
+        </div>
+      )}
 
       <div className="battle-controls">
         <div className="player-meter-row">
@@ -1024,54 +1272,6 @@ export default function BattleDemo({ onBackToIntro }) {
             <p className="slot-machine-instructions">
               Press <strong>Space</strong> to stop the leftmost spinning column.
             </p>
-            {graphUpdateSummary && (
-              <div className="graph-update-summary">
-                <h4>Post-Battle Graph Updates</h4>
-                <p>
-                  Outcome: {graphUpdateSummary.battleWon ? 'Win' : 'Loss'} | Player primary delta:{' '}
-                  {formatSigned(graphUpdateSummary.playerDelta)}
-                </p>
-                <p>
-                  Player {'->'} {graphUpdateSummary.targetName}:{' '}
-                  {graphUpdateSummary.playerToTargetBefore} to {graphUpdateSummary.playerToTargetAfter} |{' '}
-                  {graphUpdateSummary.targetName} {'->'} Player:{' '}
-                  {graphUpdateSummary.targetToPlayerBefore} to {graphUpdateSummary.targetToPlayerAfter}
-                </p>
-                <p>
-                  Side pairings: {graphUpdateSummary.pairings.length}
-                  {graphUpdateSummary.leftOutId
-                    ? ` | Left out: ${getDisplayName(demoInitialGraphState.contestants, graphUpdateSummary.leftOutId)}`
-                    : ''}
-                </p>
-                <ul className="graph-update-list">
-                  {graphUpdateSummary.pairingLines.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-                <p>
-                  Ripple edges changed: {graphUpdateSummary.rippleEdgeCount} | Net edges changed:{' '}
-                  {graphUpdateSummary.netEdgeCount}
-                </p>
-                <p>Top net changes:</p>
-                <ul className="graph-update-list">
-                  {graphUpdateSummary.topNetChanges.map((change, index) => {
-                    const fromName = getDisplayName(
-                      demoInitialGraphState.contestants,
-                      change.fromId,
-                    )
-                    const toName = getDisplayName(
-                      demoInitialGraphState.contestants,
-                      change.toId,
-                    )
-                      return (
-                        <li key={`${change.fromId}-${change.toId}-${index}`}>
-                          {fromName} {'->'} {toName} {formatSigned(change.delta)}
-                        </li>
-                      )
-                    })}
-                </ul>
-              </div>
-            )}
             <div className="slot-machine-grid">
               {slotGrid.map((row, rowIndex) =>
                 row.map((state, columnIndex) => (
@@ -1103,15 +1303,6 @@ export default function BattleDemo({ onBackToIntro }) {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="battle-log">
-        <h3>Battle Log</h3>
-        <ul>
-          {battleLog.slice(-5).map((line, index) => (
-            <li key={`${line}-${index}`}>{line}</li>
-          ))}
-        </ul>
       </div>
     </div>
   )

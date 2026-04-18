@@ -127,8 +127,12 @@ function createInitialGraph(contestantIds) {
         return
       }
 
+      if (fromId === PLAYER_ID) {
+        return
+      }
+
       graph[fromId][toId] =
-        fromId === PLAYER_ID || toId === PLAYER_ID
+        toId === PLAYER_ID
           ? 0
           : getRelationshipEdgeValue(fromId, toId)
     })
@@ -148,8 +152,9 @@ function extendGraphWithContestant(graph, existingIds, newcomerId) {
     nextGraph[contestantId] = nextGraph[contestantId] ?? {}
     nextGraph[newcomerId][contestantId] =
       contestantId === PLAYER_ID ? 0 : getRelationshipEdgeValue(newcomerId, contestantId)
-    nextGraph[contestantId][newcomerId] =
-      contestantId === PLAYER_ID ? 0 : getRelationshipEdgeValue(contestantId, newcomerId)
+    if (contestantId !== PLAYER_ID) {
+      nextGraph[contestantId][newcomerId] = getRelationshipEdgeValue(contestantId, newcomerId)
+    }
   })
 
   return nextGraph
@@ -165,8 +170,7 @@ function randomConnectionDelta() {
 
 function buildPlayerBattlePrimaryDeltas(targetId, delta) {
   const primaryDeltas = createEdgeDeltaMap()
-  addEdgeDelta(primaryDeltas, PLAYER_ID, targetId, delta)
-  addEdgeDelta(primaryDeltas, targetId, PLAYER_ID, Math.round(delta / 2))
+  addEdgeDelta(primaryDeltas, targetId, PLAYER_ID, delta)
   return primaryDeltas
 }
 

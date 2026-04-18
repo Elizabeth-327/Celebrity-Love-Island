@@ -23,6 +23,18 @@ function playSingleRound(engine, state) {
 }
 
 describe('engine round behavior', () => {
+  it('initializes only celebrity->player edges at 0 (no player->celebrity edges)', () => {
+    const engine = createGameEngine()
+    const state = engine.createInitialState()
+    const celebrityIds = state.activeContestantIds.filter((id) => id !== PLAYER_ID)
+
+    expect(state.graph[PLAYER_ID]).toEqual({})
+    celebrityIds.forEach((celebrityId) => {
+      expect(state.graph[celebrityId][PLAYER_ID]).toBe(0)
+      expect(state.graph[PLAYER_ID][celebrityId]).toBeUndefined()
+    })
+  })
+
   it('applies elimination only on elimination rounds', () => {
     const scoreFn = (id) => (id === 'kanye_west' ? -999 : 100)
     const engine = createGameEngine({ computeTotalConnectionScore: scoreFn })
@@ -44,6 +56,7 @@ describe('engine round behavior', () => {
   it('adds bombshell contestants only on bombshell rounds', () => {
     const engine = createGameEngine()
     let state = createStartedState(engine)
+    const roundOneIds = [...state.activeContestantIds]
 
     state = engine.startRound(state)
     expect(state.activeContestantIds).toHaveLength(10)
@@ -66,6 +79,10 @@ describe('engine round behavior', () => {
     state = engine.startRound(state)
     expect(state.round).toBe(2)
     expect(state.activeContestantIds).toHaveLength(11)
+    const bombshellId = state.activeContestantIds.find((id) => !roundOneIds.includes(id))
+    expect(bombshellId).toBeTruthy()
+    expect(state.graph[bombshellId][PLAYER_ID]).toBe(0)
+    expect(state.graph[PLAYER_ID][bombshellId]).toBeUndefined()
   })
 
   it('ends the game immediately when the player is eliminated', () => {
