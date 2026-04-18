@@ -142,6 +142,71 @@ describe('engine round behavior', () => {
     expect(state.history.some((line) => line.includes('sat out due to odd pairing'))).toBe(true)
   })
 
+  it('blocks chatting the same celebrity twice in one round without consuming an attempt', () => {
+    const engine = createGameEngine()
+    let state = createStartedState(engine)
+
+    state = engine.startRound(state)
+    const [targetA, targetB] = state.activeContestantIds.filter((id) => id !== PLAYER_ID)
+
+    state = engine.resolveMingle(state, targetA)
+    const afterFirstChat = state
+    expect(afterFirstChat.interactionState.chatsUsedThisRound).toBe(1)
+    expect(afterFirstChat.interactionState.chattedCelebrityIdsThisRound).toEqual([targetA])
+
+    state = engine.resolveMingle(state, targetA)
+    expect(state.graph).toBe(afterFirstChat.graph)
+    expect(state.interactionState.chatsUsedThisRound).toBe(1)
+    expect(state.interactionState.chattedCelebrityIdsThisRound).toEqual([targetA])
+    expect(state.history.at(-1)).toContain('Already chatted with')
+
+    state = engine.resolveMingle(state, targetB)
+    expect(state.interactionState.chatsUsedThisRound).toBe(2)
+    expect(state.interactionState.chattedCelebrityIdsThisRound).toEqual([targetA, targetB])
+  })
+
+  it('allows two unique chats per round and blocks a third chat attempt', () => {
+    const engine = createGameEngine()
+    let state = createStartedState(engine)
+
+    state = engine.startRound(state)
+    const [targetA, targetB, targetC] = state.activeContestantIds.filter((id) => id !== PLAYER_ID)
+
+    state = engine.resolveMingle(state, targetA)
+    state = engine.resolveMingle(state, targetB)
+
+    expect(state.interactionState.chatsUsedThisRound).toBe(2)
+    expect(state.interactionState.chattedCelebrityIdsThisRound).toEqual([targetA, targetB])
+
+    const afterTwoChats = state
+    state = engine.resolveMingle(state, targetC)
+    expect(state).toBe(afterTwoChats)
+    expect(state.interactionState.chatsUsedThisRound).toBe(2)
+    expect(state.interactionState.chattedCelebrityIdsThisRound).toEqual([targetA, targetB])
+  })
+
+  it('resets round chat history so a previously chatted celebrity is eligible next round', () => {
+    const engine = createGameEngine()
+    let state = createStartedState(engine)
+
+    state = engine.startRound(state)
+    const targetA = state.activeContestantIds.find((id) => id !== PLAYER_ID)
+    state = engine.resolveMingle(state, targetA)
+    state = engine.resolveBattle(state, targetA, 1)
+    state = engine.stopSlotMachineColumn(state)
+    state = engine.stopSlotMachineColumn(state)
+    state = engine.stopSlotMachineColumn(state)
+    state = engine.endRound(state)
+
+    state = engine.startRound(state)
+    expect(state.interactionState.chatsUsedThisRound).toBe(0)
+    expect(state.interactionState.chattedCelebrityIdsThisRound).toEqual([])
+
+    state = engine.resolveMingle(state, targetA)
+    expect(state.interactionState.chatsUsedThisRound).toBe(1)
+    expect(state.interactionState.chattedCelebrityIdsThisRound).toEqual([targetA])
+  })
+
   it('requires resolving the slot machine before ending the round', () => {
     const engine = createGameEngine()
     let state = createStartedState(engine)

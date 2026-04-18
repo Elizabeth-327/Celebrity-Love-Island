@@ -26,6 +26,7 @@ import { SEASON_LENGTH, createDefaultRoundPolicy } from './roundPolicy'
 const EDGE_MIN = -100
 const EDGE_MAX = 100
 const DEFAULT_PHASE = 'intro'
+const MAX_CHATS_PER_ROUND = 2
 
 function normalizeSlotMachineSpeed(speed) {
   return Number(speed.toFixed(4))
@@ -285,6 +286,9 @@ export function createGameEngine(options = {}) {
         mingled: false,
         battled: false,
         resolvedSlotMachine: false,
+        chatsUsedThisRound: 0,
+        maxChatsPerRound: MAX_CHATS_PER_ROUND,
+        chattedCelebrityIdsThisRound: [],
       },
       battle: createInitialBattleState(),
       slotMachine: createInitialSlotMachineState(BASE_SLOT_MACHINE_SPEED),
@@ -333,6 +337,9 @@ export function createGameEngine(options = {}) {
         mingled: false,
         battled: false,
         resolvedSlotMachine: false,
+        chatsUsedThisRound: 0,
+        maxChatsPerRound: MAX_CHATS_PER_ROUND,
+        chattedCelebrityIdsThisRound: [],
       },
       slotMachine: createInitialSlotMachineState(currentState.slotMachineSpeed),
       history: appendHistory(currentState, 'Season starts.'),
@@ -388,6 +395,13 @@ export function createGameEngine(options = {}) {
       interactionState: {
         ...withBombshell.interactionState,
         startedRound: true,
+        mingled: false,
+        battled: false,
+        resolvedSlotMachine: false,
+        chatsUsedThisRound: 0,
+        maxChatsPerRound:
+          withBombshell.interactionState.maxChatsPerRound ?? MAX_CHATS_PER_ROUND,
+        chattedCelebrityIdsThisRound: [],
       },
       slotMachine: createInitialSlotMachineState(withBombshell.slotMachineSpeed),
       history: appendHistory(withBombshell, 'Round started.'),
@@ -404,12 +418,32 @@ export function createGameEngine(options = {}) {
   }
 
   function resolveMingle(currentState, targetId) {
-    if (!currentState.interactionState.startedRound || currentState.interactionState.mingled) {
+    const chatsUsedThisRound = currentState.interactionState.chatsUsedThisRound ?? 0
+    const maxChatsPerRound =
+      currentState.interactionState.maxChatsPerRound ?? MAX_CHATS_PER_ROUND
+    const chattedCelebrityIdsThisRound =
+      currentState.interactionState.chattedCelebrityIdsThisRound ?? []
+
+    if (
+      !currentState.interactionState.startedRound ||
+      currentState.interactionState.battled ||
+      chatsUsedThisRound >= maxChatsPerRound
+    ) {
       return currentState
     }
 
     if (!currentState.activeContestantIds.includes(targetId) || targetId === PLAYER_ID) {
       return currentState
+    }
+
+    if (chattedCelebrityIdsThisRound.includes(targetId)) {
+      return {
+        ...currentState,
+        history: appendHistory(
+          currentState,
+          `Already chatted with ${currentState.contestants[targetId].name} this round.`,
+        ),
+      }
     }
 
     const connectionScore = scoringHooks.computeConnectionScore(
@@ -425,6 +459,9 @@ export function createGameEngine(options = {}) {
       interactionState: {
         ...nextState.interactionState,
         mingled: true,
+        chatsUsedThisRound: chatsUsedThisRound + 1,
+        maxChatsPerRound,
+        chattedCelebrityIdsThisRound: [...chattedCelebrityIdsThisRound, targetId],
       },
       history: appendHistory(nextState, `Mingled with ${nextState.contestants[targetId].name}.`),
     }
@@ -644,6 +681,10 @@ export function createGameEngine(options = {}) {
         mingled: false,
         battled: false,
         resolvedSlotMachine: false,
+        chatsUsedThisRound: 0,
+        maxChatsPerRound:
+          nextState.interactionState.maxChatsPerRound ?? MAX_CHATS_PER_ROUND,
+        chattedCelebrityIdsThisRound: [],
       },
       battle: createInitialBattleState(),
       slotMachine: createInitialSlotMachineState(nextState.slotMachineSpeed),

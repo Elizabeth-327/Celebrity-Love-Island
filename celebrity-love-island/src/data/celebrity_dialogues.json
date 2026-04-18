@@ -1,0 +1,2173 @@
+{
+  "kim_kardashian": {
+    "normalChats": [
+      {
+        "chatId": "kim_chat_1",
+        "title": "First Impression by the Fire Pit",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "You are new here. Are you here for love, clout, or chaos?",
+            "options": [
+              {
+                "label": "Keep it romantic",
+                "playerLine": "Love first, drama second, and clout never.",
+                "connectionDelta": 3,
+                "celebrityReply": "Bold answer. I respect someone who commits to a story."
+              },
+              {
+                "label": "Play it cool",
+                "playerLine": "I am just feeling the vibes and seeing what happens.",
+                "connectionDelta": 0,
+                "celebrityReply": "Safe answer, but safe is not always memorable."
+              },
+              {
+                "label": "Lean into chaos",
+                "playerLine": "I am here to flip this villa upside down.",
+                "connectionDelta": -3,
+                "celebrityReply": "If you bring chaos to me, I will end it quickly."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "People think I am hard to impress. What makes you different?",
+            "options": [
+              {
+                "label": "Confident charm",
+                "playerLine": "I am consistent. I do not switch up when things get messy.",
+                "connectionDelta": 3,
+                "celebrityReply": "Consistency is rare in here. That gets points from me."
+              },
+              {
+                "label": "Tease lightly",
+                "playerLine": "I am not trying to impress you. I am letting you discover me.",
+                "connectionDelta": 0,
+                "celebrityReply": "Interesting. You are either confident or reckless."
+              },
+              {
+                "label": "Neg her",
+                "playerLine": "I do not think you are that hard to impress.",
+                "connectionDelta": -3,
+                "celebrityReply": "Try disrespect again and we are done talking."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Last question. Are you loyal, or do your eyes wander?",
+            "options": [
+              {
+                "label": "Promise loyalty",
+                "playerLine": "If I choose you, I stand on it.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. I like a person who can back their words."
+              },
+              {
+                "label": "Be honest",
+                "playerLine": "I stay open until someone gives me a real reason not to.",
+                "connectionDelta": 0,
+                "celebrityReply": "At least you are honest. I can work with honest."
+              },
+              {
+                "label": "Stay noncommittal",
+                "playerLine": "I go wherever the best energy is that day.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then do not expect me to wait around."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "kim_chat_2",
+        "title": "Late-Night Terrace Check-In",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Tonight feels tense. Are you going to calm things down or stir the pot?",
+            "options": [
+              {
+                "label": "Protect her peace",
+                "playerLine": "I would rather protect your peace than chase cheap drama.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is a grown answer. I like grown energy."
+              },
+              {
+                "label": "Neutral stance",
+                "playerLine": "Depends who starts it. I can do both.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. Adaptability matters in this villa."
+              },
+              {
+                "label": "Start trouble",
+                "playerLine": "I stir the pot first and ask questions later.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then keep my name out of your mess."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If someone tried to pull me from you, what would you do?",
+            "options": [
+              {
+                "label": "Fight for it",
+                "playerLine": "I would pull you for a private chat and remind you why I am your best option.",
+                "connectionDelta": 3,
+                "celebrityReply": "Strategic and confident. You are learning quickly."
+              },
+              {
+                "label": "Let it play out",
+                "playerLine": "I would trust you to decide and then move based on your choice.",
+                "connectionDelta": 0,
+                "celebrityReply": "Independent. Not my favorite, but not weak either."
+              },
+              {
+                "label": "Act jealous",
+                "playerLine": "I would crash out and call them out in front of everyone.",
+                "connectionDelta": -3,
+                "celebrityReply": "Public meltdowns are not attractive on you."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Give me one reason to keep choosing you in this villa.",
+            "options": [
+              {
+                "label": "Future-focused",
+                "playerLine": "Because with me, you get chemistry and stability.",
+                "connectionDelta": 3,
+                "celebrityReply": "Chemistry and stability? That is a dangerous combo."
+              },
+              {
+                "label": "Funny answer",
+                "playerLine": "Because I am hot, helpful, and emotionally available enough.",
+                "connectionDelta": 0,
+                "celebrityReply": "You are funny. I will give you that."
+              },
+              {
+                "label": "Cocky answer",
+                "playerLine": "Because everyone else here is a downgrade.",
+                "connectionDelta": -3,
+                "celebrityReply": "Arrogance is not confidence. Know the difference."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Kim pulls you close and kisses you hard. \"Do not make me regret this,\" she says.",
+      "failureLine": "Kim steps back and folds her arms. \"I said enough. Leave me alone for now.\""
+    }
+  },
+  "ariana_grande": {
+    "normalChats": [
+      {
+        "chatId": "ariana_chat_1",
+        "title": "Soft Voice, Sharp Questions",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "I fall hard, fast, and sometimes messy. Can you handle that?",
+            "options": [
+              {
+                "label": "Reassure her",
+                "playerLine": "I can handle real feelings, not just pretty moments.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is the first answer tonight that felt honest."
+              },
+              {
+                "label": "Stay cautious",
+                "playerLine": "Maybe, but I move slower than that.",
+                "connectionDelta": 0,
+                "celebrityReply": "Slow can be safe. It can also be boring."
+              },
+              {
+                "label": "Judge her",
+                "playerLine": "That sounds like chaos with a glitter filter.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then do not stand close if you cannot take the heat."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Some days I reinvent myself before lunch. Is that a red flag to you?",
+            "options": [
+              {
+                "label": "Support her growth",
+                "playerLine": "No, it means you are still discovering yourself out loud.",
+                "connectionDelta": 3,
+                "celebrityReply": "You get me more than most people do."
+              },
+              {
+                "label": "Neutral take",
+                "playerLine": "Depends if it is growth or just mood swings.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. I can admit it is both sometimes."
+              },
+              {
+                "label": "Call her fake",
+                "playerLine": "It means nobody knows who you really are.",
+                "connectionDelta": -3,
+                "celebrityReply": "Cruel is not the same as clever."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Are you picking me because I am sparkly, or because you can hold me when things crash?",
+            "options": [
+              {
+                "label": "Choose depth",
+                "playerLine": "I want the real version, even the messy one.",
+                "connectionDelta": 3,
+                "celebrityReply": "Okay. That answer felt like a hug."
+              },
+              {
+                "label": "Keep it light",
+                "playerLine": "Both. Sparkle first, depth later.",
+                "connectionDelta": 0,
+                "celebrityReply": "At least you are honest about your priorities."
+              },
+              {
+                "label": "Deflect",
+                "playerLine": "I just like winning hard rounds.",
+                "connectionDelta": -3,
+                "celebrityReply": "I am not a trophy for your scoreboard."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "ariana_chat_2",
+        "title": "Moonlight Mood Shift",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "If your head turns tomorrow, do you tell me first or ghost me in public?",
+            "options": [
+              {
+                "label": "Promise clarity",
+                "playerLine": "You hear it from me first. Always.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. I can survive pain, not disrespect."
+              },
+              {
+                "label": "Half-commit",
+                "playerLine": "I would tell you if I was sure.",
+                "connectionDelta": 0,
+                "celebrityReply": "Noted. You hedge when it gets hard."
+              },
+              {
+                "label": "Keep options open",
+                "playerLine": "I move with the villa energy, not promises.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then move away from me with that."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "People think I am all glitter and romance. What do you see?",
+            "options": [
+              {
+                "label": "See her complexity",
+                "playerLine": "I see someone soft, strategic, and stronger than she looks.",
+                "connectionDelta": 3,
+                "celebrityReply": "Okay... that one hit me in the chest."
+              },
+              {
+                "label": "Playful answer",
+                "playerLine": "I see trouble in expensive boots.",
+                "connectionDelta": 0,
+                "celebrityReply": "Trouble can be fun when it is aimed correctly."
+              },
+              {
+                "label": "Dismissive answer",
+                "playerLine": "I see another person addicted to attention.",
+                "connectionDelta": -3,
+                "celebrityReply": "Projection is loud on you right now."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Final check. Are you someone I can trust when the villa starts screaming?",
+            "options": [
+              {
+                "label": "Anchor her",
+                "playerLine": "Yes. I hold steady when everyone else spirals.",
+                "connectionDelta": 3,
+                "celebrityReply": "Then stay close. I mean it."
+              },
+              {
+                "label": "Honest uncertainty",
+                "playerLine": "I will try, but I am still figuring myself out too.",
+                "connectionDelta": 0,
+                "celebrityReply": "At least that is real."
+              },
+              {
+                "label": "Choose drama",
+                "playerLine": "I am here for plot, not peace.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then you are not here for me."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Ariana smiles, pulls you in, and kisses you. \"Do not switch up on me,\" she whispers.",
+      "failureLine": "Ariana shakes her head. \"I am not doing this with you. Leave me alone.\""
+    }
+  },
+  "drake": {
+    "normalChats": [
+      {
+        "chatId": "drake_chat_1",
+        "title": "Corny Rizz on the Daybeds",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Be honest, did my opening line make you blush or cringe?",
+            "options": [
+              {
+                "label": "Lean into it",
+                "playerLine": "It was cheesy, but the confidence sold it.",
+                "connectionDelta": 3,
+                "celebrityReply": "Cheese with confidence is a premium product."
+              },
+              {
+                "label": "Middle ground",
+                "playerLine": "A little of both, if I am being real.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. Mixed reviews still count as reviews."
+              },
+              {
+                "label": "Reject it",
+                "playerLine": "It was painfully corny.",
+                "connectionDelta": -3,
+                "celebrityReply": "Painfully? You are dramatic and I kind of hate that."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "I like attention. Can you give that without acting possessive?",
+            "options": [
+              {
+                "label": "Balanced answer",
+                "playerLine": "I can hype you up without trying to own you.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is grown. I respect grown."
+              },
+              {
+                "label": "Unclear answer",
+                "playerLine": "Depends on how you move with me.",
+                "connectionDelta": 0,
+                "celebrityReply": "So... maybe. Noted."
+              },
+              {
+                "label": "Controlling answer",
+                "playerLine": "If we are locked in, your attention should be on me only.",
+                "connectionDelta": -3,
+                "celebrityReply": "You sound like a contract I did not sign."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Do you want romance or are you just collecting moments?",
+            "options": [
+              {
+                "label": "Pick romance",
+                "playerLine": "Romance, but with intention and consistency.",
+                "connectionDelta": 3,
+                "celebrityReply": "Consistency is sexy. Rare too."
+              },
+              {
+                "label": "Pick moments",
+                "playerLine": "Moments first, commitment later.",
+                "connectionDelta": 0,
+                "celebrityReply": "Not my favorite, but at least you are direct."
+              },
+              {
+                "label": "Pick clout",
+                "playerLine": "Whichever one keeps me center-screen.",
+                "connectionDelta": -3,
+                "celebrityReply": "Yikes. Keep that producer mindset away from me."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "drake_chat_2",
+        "title": "Late-Night Pep Talk",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "People call me corny like it is an insult. What do you think?",
+            "options": [
+              {
+                "label": "Defend him",
+                "playerLine": "Corny can be charming when it is genuine.",
+                "connectionDelta": 3,
+                "celebrityReply": "Exactly. Let me live my soft life."
+              },
+              {
+                "label": "Neutral tease",
+                "playerLine": "It is corny, but sometimes that works.",
+                "connectionDelta": 0,
+                "celebrityReply": "I will take \"sometimes\" for now."
+              },
+              {
+                "label": "Clown him",
+                "playerLine": "It sounds like you practiced in a mirror.",
+                "connectionDelta": -3,
+                "celebrityReply": "You came here to roast or connect?"
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If I got insecure and overthought everything, what would you do?",
+            "options": [
+              {
+                "label": "Ground him",
+                "playerLine": "I would pull you aside and calm the noise.",
+                "connectionDelta": 3,
+                "celebrityReply": "That sounds dangerously comforting."
+              },
+              {
+                "label": "Wait it out",
+                "playerLine": "I would give you space and let you reset.",
+                "connectionDelta": 0,
+                "celebrityReply": "Space is okay, but do not vanish."
+              },
+              {
+                "label": "Use it against him",
+                "playerLine": "I would keep my options open while you spiral.",
+                "connectionDelta": -3,
+                "celebrityReply": "Cold. I hear you."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Last one: am I your pick, or just your safest option?",
+            "options": [
+              {
+                "label": "Choose him directly",
+                "playerLine": "You are my pick because I like your heart and your chaos.",
+                "connectionDelta": 3,
+                "celebrityReply": "Heart and chaos is my brand, honestly."
+              },
+              {
+                "label": "Keep it open",
+                "playerLine": "You are high on my list, not locked yet.",
+                "connectionDelta": 0,
+                "celebrityReply": "List language is brutal, but fair."
+              },
+              {
+                "label": "Admit strategy",
+                "playerLine": "You are safe and predictable for this round.",
+                "connectionDelta": -3,
+                "celebrityReply": "Predictable? That one stung."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Drake grins and kisses you. \"Do not make me write a sad song about this,\" he says.",
+      "failureLine": "Drake steps back. \"I am good. Leave me alone for a minute.\""
+    }
+  },
+  "selena_gomez": {
+    "normalChats": [
+      {
+        "chatId": "selena_chat_1",
+        "title": "Quiet Bench, Loud Truths",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "I try to keep promises, but I do not always follow through. Does that scare you?",
+            "options": [
+              {
+                "label": "Encourage honesty",
+                "playerLine": "Not if you stay honest when things change.",
+                "connectionDelta": 3,
+                "celebrityReply": "I can do honest. I am trying to do better."
+              },
+              {
+                "label": "Stay cautious",
+                "playerLine": "It worries me, but I appreciate you saying it.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. Caution is earned, not granted."
+              },
+              {
+                "label": "Call her flaky",
+                "playerLine": "So your word does not really mean much?",
+                "connectionDelta": -3,
+                "celebrityReply": "That is harsher than it needed to be."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "When pressure hits, do you get calmer or louder?",
+            "options": [
+              {
+                "label": "Calm answer",
+                "playerLine": "Calmer. I would rather solve than perform.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is exactly what I need around me."
+              },
+              {
+                "label": "Depends answer",
+                "playerLine": "Depends on who I am protecting.",
+                "connectionDelta": 0,
+                "celebrityReply": "Protective can be good if it is not reckless."
+              },
+              {
+                "label": "Loud answer",
+                "playerLine": "Louder. If I feel disrespected, everyone hears it.",
+                "connectionDelta": -3,
+                "celebrityReply": "Yeah... that sounds exhausting."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Do you want peace with me, or do you want storyline with me?",
+            "options": [
+              {
+                "label": "Choose peace",
+                "playerLine": "Peace with chemistry. Both are possible.",
+                "connectionDelta": 3,
+                "celebrityReply": "That answer feels safe in a good way."
+              },
+              {
+                "label": "Choose excitement",
+                "playerLine": "I want excitement, but not destruction.",
+                "connectionDelta": 0,
+                "celebrityReply": "Okay, I can work with that."
+              },
+              {
+                "label": "Choose chaos",
+                "playerLine": "Storyline first. Peace is optional.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are not aligned at all."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "selena_chat_2",
+        "title": "Terrace Accountability Talk",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "If I tell you one thing and do another, are you out immediately?",
+            "options": [
+              {
+                "label": "Hold boundaries kindly",
+                "playerLine": "I would call it out, but I would hear you first.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is fair and not cruel. I respect that."
+              },
+              {
+                "label": "Wait and see",
+                "playerLine": "I would watch patterns before deciding.",
+                "connectionDelta": 0,
+                "celebrityReply": "Patterns are real. Good answer."
+              },
+              {
+                "label": "Punish instantly",
+                "playerLine": "One slip and I move on publicly.",
+                "connectionDelta": -3,
+                "celebrityReply": "Public punishment says more about you than me."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Do you actually listen, or do you wait for your turn to talk?",
+            "options": [
+              {
+                "label": "Active listener",
+                "playerLine": "I listen first. Then I speak with intention.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is attractive, honestly."
+              },
+              {
+                "label": "Playful dodge",
+                "playerLine": "Both. I am talented like that.",
+                "connectionDelta": 0,
+                "celebrityReply": "At least you are self-aware."
+              },
+              {
+                "label": "Self-centered",
+                "playerLine": "I do not need context. I trust my instincts.",
+                "connectionDelta": -3,
+                "celebrityReply": "That sounds like ego, not instincts."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Final check: if we try this, are you patient enough for a real person?",
+            "options": [
+              {
+                "label": "Yes, with effort",
+                "playerLine": "Yes. I want something real, not perfect.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is exactly what I needed to hear."
+              },
+              {
+                "label": "Unsure",
+                "playerLine": "Maybe. I am still deciding what I can hold.",
+                "connectionDelta": 0,
+                "celebrityReply": "Thank you for being real instead of fake-sweet."
+              },
+              {
+                "label": "No patience",
+                "playerLine": "No, I need clean and easy.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then I am not your person here."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Selena takes your hand, then kisses you softly. \"Keep showing up like this,\" she says.",
+      "failureLine": "Selena exhales and steps away. \"No. Leave me alone.\""
+    }
+  },
+  "kylie_jenner": {
+    "normalChats": [
+      {
+        "chatId": "kylie_chat_1",
+        "title": "Mirror Talk Before Sunset",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "I act unbothered, but pressure gets in my head fast. What do you do with that?",
+            "options": [
+              {
+                "label": "Steady reassurance",
+                "playerLine": "I keep you grounded, not pressured.",
+                "connectionDelta": 3,
+                "celebrityReply": "Grounded sounds amazing in this place."
+              },
+              {
+                "label": "Neutral response",
+                "playerLine": "I would give advice if you asked for it.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. I hate unsolicited advice anyway."
+              },
+              {
+                "label": "Apply pressure",
+                "playerLine": "I push harder until you toughen up.",
+                "connectionDelta": -3,
+                "celebrityReply": "Yeah, no. I do not need a coach."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If the villa says we are a bad match, do you fold?",
+            "options": [
+              {
+                "label": "Protect the connection",
+                "playerLine": "No. I listen to you, not the crowd.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is rare in here. I like that."
+              },
+              {
+                "label": "Hear both sides",
+                "playerLine": "I would hear the noise, then decide with you.",
+                "connectionDelta": 0,
+                "celebrityReply": "Okay. That is at least reasonable."
+              },
+              {
+                "label": "Follow public opinion",
+                "playerLine": "If the room says no, I am out.",
+                "connectionDelta": -3,
+                "celebrityReply": "So your backbone is rented. Good to know."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "What do you like more: my image or my actual energy?",
+            "options": [
+              {
+                "label": "Choose her energy",
+                "playerLine": "Your energy. The image is extra.",
+                "connectionDelta": 3,
+                "celebrityReply": "That answer calms me down instantly."
+              },
+              {
+                "label": "Choose both",
+                "playerLine": "Both matter. You are a full package.",
+                "connectionDelta": 0,
+                "celebrityReply": "Smooth answer. I see you."
+              },
+              {
+                "label": "Choose image only",
+                "playerLine": "The image is what I came for.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then you came for the wrong person."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "kylie_chat_2",
+        "title": "Poolside Pressure Test",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Sometimes I cave when people push me. Would you push or protect?",
+            "options": [
+              {
+                "label": "Protect",
+                "playerLine": "Protect. I do not force people I care about.",
+                "connectionDelta": 3,
+                "celebrityReply": "That makes me feel safe. I like it."
+              },
+              {
+                "label": "Balance",
+                "playerLine": "I would challenge you gently when needed.",
+                "connectionDelta": 0,
+                "celebrityReply": "Gently is the key word there."
+              },
+              {
+                "label": "Push hard",
+                "playerLine": "I push until you break through.",
+                "connectionDelta": -3,
+                "celebrityReply": "That sounds like control, not support."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Are you loyal when things get embarrassing?",
+            "options": [
+              {
+                "label": "Loyal answer",
+                "playerLine": "Yes. I do not abandon people under pressure.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is exactly what I needed to hear."
+              },
+              {
+                "label": "Conditional answer",
+                "playerLine": "Depends on how bad it gets.",
+                "connectionDelta": 0,
+                "celebrityReply": "At least you are not pretending."
+              },
+              {
+                "label": "Self-protective answer",
+                "playerLine": "I protect my own image first.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are not compatible."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Last one. Are we building something or just curating a vibe?",
+            "options": [
+              {
+                "label": "Build something",
+                "playerLine": "Build something real, even if it is messy.",
+                "connectionDelta": 3,
+                "celebrityReply": "Okay. I can do real."
+              },
+              {
+                "label": "Keep it casual",
+                "playerLine": "A vibe for now. We can see later.",
+                "connectionDelta": 0,
+                "celebrityReply": "Not ideal, but it is honest."
+              },
+              {
+                "label": "Just optics",
+                "playerLine": "A vibe. Real is too expensive.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then spend that somewhere else."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Kylie smiles and kisses you. \"Stay solid and I stay soft,\" she says.",
+      "failureLine": "Kylie turns away. \"Nope. Leave me alone.\""
+    }
+  },
+  "erika_kirk": {
+    "normalChats": [
+      {
+        "chatId": "erika_chat_1",
+        "title": "Performance vs Reality",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Everyone in this villa performs. I perform too. Can you tell when I am real?",
+            "options": [
+              {
+                "label": "See through the act",
+                "playerLine": "Yeah. Your eyes change when you stop performing.",
+                "connectionDelta": 3,
+                "celebrityReply": "Okay, that was observant. I like that."
+              },
+              {
+                "label": "Unsure",
+                "playerLine": "Sometimes. You are hard to read on purpose.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. I am protective with my real self."
+              },
+              {
+                "label": "Accuse her",
+                "playerLine": "No. You are fake all the time.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then do not waste my time."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Do you want the polished version of me, or the chaotic one?",
+            "options": [
+              {
+                "label": "Choose real",
+                "playerLine": "The real one. Polished can wait.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is risky. I respect risky."
+              },
+              {
+                "label": "Choose both",
+                "playerLine": "Give me both. I can handle range.",
+                "connectionDelta": 0,
+                "celebrityReply": "Range is expensive. Hope you can afford it."
+              },
+              {
+                "label": "Choose polished only",
+                "playerLine": "Polished only. Chaos is unattractive.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then you want a brand, not a person."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "If we coupled up, would you back me when I get loud?",
+            "options": [
+              {
+                "label": "Back her smartly",
+                "playerLine": "I back you and pull you private before it explodes.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is loyal and strategic. Dangerous combo."
+              },
+              {
+                "label": "Stay neutral",
+                "playerLine": "I would stay out unless you asked me in.",
+                "connectionDelta": 0,
+                "celebrityReply": "Neutral can feel like absence, just saying."
+              },
+              {
+                "label": "Embarrass her",
+                "playerLine": "I would distance myself from your drama publicly.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then you are not my person."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "erika_chat_2",
+        "title": "Under the Spotlight",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Would you rather have a calm partner or a memorable one?",
+            "options": [
+              {
+                "label": "Memorable with depth",
+                "playerLine": "Memorable, as long as it is real.",
+                "connectionDelta": 3,
+                "celebrityReply": "You speak my language."
+              },
+              {
+                "label": "Calm preference",
+                "playerLine": "Calm, but not boring.",
+                "connectionDelta": 0,
+                "celebrityReply": "Reasonable. Maybe too reasonable."
+              },
+              {
+                "label": "Boring is best",
+                "playerLine": "Calm and invisible. I hate attention.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then why are you even here?"
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "What do you do when someone calls your relationship performative?",
+            "options": [
+              {
+                "label": "Defend together",
+                "playerLine": "We stay aligned and let consistency shut them up.",
+                "connectionDelta": 3,
+                "celebrityReply": "Consistency is louder than rumors. Nice."
+              },
+              {
+                "label": "Ignore it",
+                "playerLine": "Ignore them and move on.",
+                "connectionDelta": 0,
+                "celebrityReply": "Not bad. Silence can be power."
+              },
+              {
+                "label": "Blame her",
+                "playerLine": "I would tell them you probably are performative.",
+                "connectionDelta": -3,
+                "celebrityReply": "Wow. You are not loyal at all."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Final question: are you here to be chosen, or to choose me?",
+            "options": [
+              {
+                "label": "Choose her",
+                "playerLine": "To choose you, clearly and loudly.",
+                "connectionDelta": 3,
+                "celebrityReply": "Say less. I heard you."
+              },
+              {
+                "label": "Keep options open",
+                "playerLine": "Both. I want options and connection.",
+                "connectionDelta": 0,
+                "celebrityReply": "At least you are transparent."
+              },
+              {
+                "label": "Use her for game",
+                "playerLine": "To survive rounds. Nothing deeper.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then survive without me."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Erika laughs, grabs your collar, and kisses you. \"Now that is chemistry,\" she says.",
+      "failureLine": "Erika rolls her eyes. \"You are done. Leave me alone.\""
+    }
+  },
+  "jay_z": {
+    "normalChats": [
+      {
+        "chatId": "jayz_chat_1",
+        "title": "Business Talk, Flirty Edition",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "You seem serious. I can be serious too... unless I decide to be unserious on purpose.",
+            "options": [
+              {
+                "label": "Match the wit",
+                "playerLine": "Unserious with intention is still strategy.",
+                "connectionDelta": 3,
+                "celebrityReply": "Exactly. You are catching the rhythm."
+              },
+              {
+                "label": "Play safe",
+                "playerLine": "I prefer clear signals over games.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. Clarity has value."
+              },
+              {
+                "label": "Dismiss him",
+                "playerLine": "Sounds like you dodge accountability with jokes.",
+                "connectionDelta": -3,
+                "celebrityReply": "Careful. You are talking too loud for turn one."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "What is your relationship strategy: heart, power, or optics?",
+            "options": [
+              {
+                "label": "Heart and discipline",
+                "playerLine": "Heart first, discipline second. Optics last.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is a strong framework."
+              },
+              {
+                "label": "Balanced approach",
+                "playerLine": "All three, depending on the round.",
+                "connectionDelta": 0,
+                "celebrityReply": "Adaptive. Not bad."
+              },
+              {
+                "label": "Pure optics",
+                "playerLine": "Optics only. Feelings are inefficient.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then you are running the wrong business."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Can you be loyal without being naive?",
+            "options": [
+              {
+                "label": "Mature loyalty",
+                "playerLine": "Yes. Loyalty with awareness, not blindness.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is exactly the answer I wanted."
+              },
+              {
+                "label": "Conditional loyalty",
+                "playerLine": "Only while it benefits both of us.",
+                "connectionDelta": 0,
+                "celebrityReply": "Transactional, but honest."
+              },
+              {
+                "label": "No loyalty",
+                "playerLine": "No. I pivot the moment it gets hard.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then you are a liability."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "jayz_chat_2",
+        "title": "Penthouse Energy by the Pool",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "If I joke through tension, are you laughing with me or panicking?",
+            "options": [
+              {
+                "label": "Laugh and lead",
+                "playerLine": "Laugh first, then lead us through it.",
+                "connectionDelta": 3,
+                "celebrityReply": "Composed. I like composed."
+              },
+              {
+                "label": "Watch first",
+                "playerLine": "I read the room before reacting.",
+                "connectionDelta": 0,
+                "celebrityReply": "Measured. That can work."
+              },
+              {
+                "label": "Call him unserious",
+                "playerLine": "I would assume you are not taking us seriously.",
+                "connectionDelta": -3,
+                "celebrityReply": "You mistake style for lack of substance."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Could you handle being with someone bigger than the room?",
+            "options": [
+              {
+                "label": "Yes with confidence",
+                "playerLine": "Yes. I do not shrink around big energy.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. Shrinking is expensive."
+              },
+              {
+                "label": "Maybe answer",
+                "playerLine": "Maybe. Depends how we share that spotlight.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair negotiation."
+              },
+              {
+                "label": "Insecure answer",
+                "playerLine": "No. I need to be the center always.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we have no deal."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Last offer: are we building legacy or just surviving tonight?",
+            "options": [
+              {
+                "label": "Build legacy",
+                "playerLine": "Legacy. Starting tonight.",
+                "connectionDelta": 3,
+                "celebrityReply": "Now you are talking my language."
+              },
+              {
+                "label": "Survive tonight",
+                "playerLine": "Tonight first, legacy later.",
+                "connectionDelta": 0,
+                "celebrityReply": "Short-term play. Noted."
+              },
+              {
+                "label": "Pure survival",
+                "playerLine": "Just surviving. No attachment.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are not aligned."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Jay-Z smirks, pulls you in, and kisses you. \"Now that is a smart move,\" he says.",
+      "failureLine": "Jay-Z steps back. \"Conversation over. Leave me alone.\""
+    }
+  },
+  "kanye_west": {
+    "normalChats": [
+      {
+        "chatId": "kanye_chat_1",
+        "title": "Vision Test by the Fire Pit",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "I do not do small ideas. Can you think bigger than this villa?",
+            "options": [
+              {
+                "label": "Match his ambition",
+                "playerLine": "Yes. I am here to build something unforgettable, not just survive episodes.",
+                "connectionDelta": 3,
+                "celebrityReply": "Now that is language I respect."
+              },
+              {
+                "label": "Keep it practical",
+                "playerLine": "I think big, but I build step by step.",
+                "connectionDelta": 0,
+                "celebrityReply": "Safe, but at least it is honest."
+              },
+              {
+                "label": "Dismiss him",
+                "playerLine": "Big talk is easy. Most people never deliver.",
+                "connectionDelta": -3,
+                "celebrityReply": "You came in negative. That is not my vibe."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If people turn on me in this villa, do you stand with me or go silent?",
+            "options": [
+              {
+                "label": "Stand with him",
+                "playerLine": "I stand with you publicly and correct things privately.",
+                "connectionDelta": 3,
+                "celebrityReply": "Loyal and smart. That matters."
+              },
+              {
+                "label": "Stay neutral",
+                "playerLine": "I would hear both sides before I move.",
+                "connectionDelta": 0,
+                "celebrityReply": "Neutral can be fair. It can also be weak."
+              },
+              {
+                "label": "Protect yourself first",
+                "playerLine": "I would distance myself if heat gets too high.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then do not ask for loyalty from me."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Last check: do you want peace, or do you want greatness?",
+            "options": [
+              {
+                "label": "Choose greatness",
+                "playerLine": "Greatness, but with discipline and intention.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good answer. Chaos without discipline is useless."
+              },
+              {
+                "label": "Choose balance",
+                "playerLine": "Both. Peace keeps greatness alive.",
+                "connectionDelta": 0,
+                "celebrityReply": "Balanced. Not flashy, but valid."
+              },
+              {
+                "label": "Choose comfort",
+                "playerLine": "I choose comfort over all of that.",
+                "connectionDelta": -3,
+                "celebrityReply": "Comfort never built anything iconic."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "kanye_chat_2",
+        "title": "Late-Night Loyalty Check",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Do you trust vision before results, or do you need proof first?",
+            "options": [
+              {
+                "label": "Trust with standards",
+                "playerLine": "I trust vision when the work matches the words.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is fair. I respect standards."
+              },
+              {
+                "label": "Need some proof",
+                "playerLine": "I need enough proof to believe, then I go all in.",
+                "connectionDelta": 0,
+                "celebrityReply": "Reasonable, even if it is cautious."
+              },
+              {
+                "label": "No trust",
+                "playerLine": "I do not trust big vision at all.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are wasting each other's time."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If I challenge you hard, do you crumble or respond?",
+            "options": [
+              {
+                "label": "Respond with calm",
+                "playerLine": "I respond. Pressure makes me sharper.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is the energy I need next to me."
+              },
+              {
+                "label": "Take space first",
+                "playerLine": "I reset first, then respond clearly.",
+                "connectionDelta": 0,
+                "celebrityReply": "Not bad. Better than crashing out."
+              },
+              {
+                "label": "Crash out",
+                "playerLine": "I go loud and make it everyone's problem.",
+                "connectionDelta": -3,
+                "celebrityReply": "That is not strength. That is noise."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Are you choosing me, or are you choosing safety?",
+            "options": [
+              {
+                "label": "Choose him directly",
+                "playerLine": "I choose you. No hedge.",
+                "connectionDelta": 3,
+                "celebrityReply": "Say less. I hear conviction."
+              },
+              {
+                "label": "Stay open",
+                "playerLine": "I am still deciding where I fit best.",
+                "connectionDelta": 0,
+                "celebrityReply": "Honest, but not exciting."
+              },
+              {
+                "label": "Choose safety",
+                "playerLine": "I choose whoever gives me the easiest round.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then go be easy somewhere else."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Kanye pulls you in and kisses you. \"Do not fold when it gets loud,\" he says.",
+      "failureLine": "Kanye steps back. \"No. Leave me alone.\""
+    }
+  },
+  "nicki_minaj": {
+    "normalChats": [
+      {
+        "chatId": "nicki_chat_1",
+        "title": "Queen Energy Check",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Can you handle a woman with main-character energy, or do you panic?",
+            "options": [
+              {
+                "label": "Match her confidence",
+                "playerLine": "I do not panic around power. I rise with it.",
+                "connectionDelta": 3,
+                "celebrityReply": "Okayyy. That is cute and confident."
+              },
+              {
+                "label": "Play it neutral",
+                "playerLine": "I can handle it if we communicate clearly.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair answer. A little safe, but fair."
+              },
+              {
+                "label": "Undermine her",
+                "playerLine": "Main-character energy is usually ego in disguise.",
+                "connectionDelta": -3,
+                "celebrityReply": "You tried it. Wrong target."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Do you flirt with wit, or just volume?",
+            "options": [
+              {
+                "label": "Use wit",
+                "playerLine": "Wit. Loud without substance is boring.",
+                "connectionDelta": 3,
+                "celebrityReply": "Exactly. Keep it sharp."
+              },
+              {
+                "label": "Use both",
+                "playerLine": "Both, depending on the room.",
+                "connectionDelta": 0,
+                "celebrityReply": "Adaptive. I can work with adaptive."
+              },
+              {
+                "label": "Use volume only",
+                "playerLine": "Volume wins. Detail is overrated.",
+                "connectionDelta": -3,
+                "celebrityReply": "That is amateur behavior."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "If someone disrespects me in front of you, what happens?",
+            "options": [
+              {
+                "label": "Back her smartly",
+                "playerLine": "I back you, then we close it with strategy.",
+                "connectionDelta": 3,
+                "celebrityReply": "Loyal and tactical? Period."
+              },
+              {
+                "label": "Stay out",
+                "playerLine": "I stay out unless you ask me in.",
+                "connectionDelta": 0,
+                "celebrityReply": "Neutral is fine once. Not always."
+              },
+              {
+                "label": "Blame her",
+                "playerLine": "I would tell you to calm down publicly.",
+                "connectionDelta": -3,
+                "celebrityReply": "Public embarrassment is an immediate no."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "nicki_chat_2",
+        "title": "Penthouse Banter Duel",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Do you want a soft love story, or one with sparks and teeth?",
+            "options": [
+              {
+                "label": "Choose sparks",
+                "playerLine": "Sparks and teeth, but with respect.",
+                "connectionDelta": 3,
+                "celebrityReply": "Yes. Respect keeps the fire clean."
+              },
+              {
+                "label": "Choose softness",
+                "playerLine": "Softness first, intensity later.",
+                "connectionDelta": 0,
+                "celebrityReply": "Not my default, but I hear it."
+              },
+              {
+                "label": "Choose easy game",
+                "playerLine": "I choose whatever keeps my stress low.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then this is above your pay grade."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Can you take teasing without getting insecure?",
+            "options": [
+              {
+                "label": "Confident answer",
+                "playerLine": "Yes. I can laugh and still stand tall.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. Fragile energy is exhausting."
+              },
+              {
+                "label": "Mixed answer",
+                "playerLine": "Usually, if it stays playful.",
+                "connectionDelta": 0,
+                "celebrityReply": "Reasonable boundary."
+              },
+              {
+                "label": "Defensive answer",
+                "playerLine": "No. I would clap back immediately.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we would fight every hour."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Final question: are you bold enough to choose me out loud?",
+            "options": [
+              {
+                "label": "Choose loudly",
+                "playerLine": "Yes. I choose you, clearly.",
+                "connectionDelta": 3,
+                "celebrityReply": "Now that is what I wanted."
+              },
+              {
+                "label": "Keep it private",
+                "playerLine": "I choose you, but I move quiet.",
+                "connectionDelta": 0,
+                "celebrityReply": "Quiet can be cute... sometimes."
+              },
+              {
+                "label": "Keep options",
+                "playerLine": "I am still collecting options this round.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then collect yourself away from me."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Nicki grins, pulls you close, and kisses you. \"Keep that same energy,\" she says.",
+      "failureLine": "Nicki looks you over and shrugs. \"Nope. Leave me alone.\""
+    }
+  },
+  "kendrick_lamar": {
+    "normalChats": [
+      {
+        "chatId": "kendrick_chat_1",
+        "title": "Depth Over Hype",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Do you listen to understand, or listen to reply?",
+            "options": [
+              {
+                "label": "Understand first",
+                "playerLine": "Understand first. Replies can wait.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is rare in this environment."
+              },
+              {
+                "label": "Both",
+                "playerLine": "Both. I absorb and respond in real time.",
+                "connectionDelta": 0,
+                "celebrityReply": "Balanced. Nothing wrong with balanced."
+              },
+              {
+                "label": "Reply first",
+                "playerLine": "Reply first. Silence is wasted time.",
+                "connectionDelta": -3,
+                "celebrityReply": "That mindset misses too much."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If the villa rewards fake energy, do you adapt or stay real?",
+            "options": [
+              {
+                "label": "Stay real",
+                "playerLine": "Stay real. I would rather lose than perform fake.",
+                "connectionDelta": 3,
+                "celebrityReply": "Integrity matters. I respect that."
+              },
+              {
+                "label": "Strategic blend",
+                "playerLine": "I stay real, but I package it smartly.",
+                "connectionDelta": 0,
+                "celebrityReply": "That is thoughtful. I can respect thoughtful."
+              },
+              {
+                "label": "Perform fake",
+                "playerLine": "I perform whatever wins the room.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are built different."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "What do you value more here: attention or alignment?",
+            "options": [
+              {
+                "label": "Alignment",
+                "playerLine": "Alignment. Attention fades fast.",
+                "connectionDelta": 3,
+                "celebrityReply": "Exactly. You are speaking with intention."
+              },
+              {
+                "label": "Both equally",
+                "playerLine": "Both matter if you use them right.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. Depends how clean your motives are."
+              },
+              {
+                "label": "Attention only",
+                "playerLine": "Attention. That is the game.",
+                "connectionDelta": -3,
+                "celebrityReply": "Not my game."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "kendrick_chat_2",
+        "title": "Late-Night Accountability",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Can you take accountability without collapsing into ego?",
+            "options": [
+              {
+                "label": "Own it calmly",
+                "playerLine": "Yes. I own mistakes and adjust quickly.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is growth, not performance."
+              },
+              {
+                "label": "Depends answer",
+                "playerLine": "Depends how I am approached.",
+                "connectionDelta": 0,
+                "celebrityReply": "Context matters. True."
+              },
+              {
+                "label": "Deflect always",
+                "playerLine": "No. I defend myself no matter what.",
+                "connectionDelta": -3,
+                "celebrityReply": "Deflection is loud weakness."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If I need space to think, do you respect it?",
+            "options": [
+              {
+                "label": "Respect space",
+                "playerLine": "Yes. Space can be care when done right.",
+                "connectionDelta": 3,
+                "celebrityReply": "That answer is mature."
+              },
+              {
+                "label": "Give short leash",
+                "playerLine": "I give space, but not silence forever.",
+                "connectionDelta": 0,
+                "celebrityReply": "Reasonable boundary."
+              },
+              {
+                "label": "Pressure immediately",
+                "playerLine": "No. We resolve it now or never.",
+                "connectionDelta": -3,
+                "celebrityReply": "That is force, not connection."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Are you picking me for substance, or for safety?",
+            "options": [
+              {
+                "label": "Choose substance",
+                "playerLine": "Substance. I like depth over noise.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. Depth is expensive. Worth it though."
+              },
+              {
+                "label": "Mixed motives",
+                "playerLine": "Both, if I am honest.",
+                "connectionDelta": 0,
+                "celebrityReply": "Honesty counts."
+              },
+              {
+                "label": "Choose safety only",
+                "playerLine": "Safety. I just need easy rounds.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then I am not your lane."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Kendrick smiles, leans in, and kisses you. \"Keep it real with me,\" he says.",
+      "failureLine": "Kendrick steps back. \"Nah. Leave me alone.\""
+    }
+  },
+  "justin_bieber": {
+    "normalChats": [
+      {
+        "chatId": "justin_chat_1",
+        "title": "Fun Chaos Check",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "I am fun, weird, and impulsive. Is that exciting or exhausting to you?",
+            "options": [
+              {
+                "label": "Exciting answer",
+                "playerLine": "Exciting. I can handle spontaneity.",
+                "connectionDelta": 3,
+                "celebrityReply": "Yesss. Finally someone who gets it."
+              },
+              {
+                "label": "Measured answer",
+                "playerLine": "Exciting in moderation.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. Moderation is not my favorite word though."
+              },
+              {
+                "label": "Exhausted answer",
+                "playerLine": "Exhausting. I need predictable energy.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then I am probably not your vibe."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If I say something dumb under pressure, do you roast me or help me reset?",
+            "options": [
+              {
+                "label": "Help him reset",
+                "playerLine": "Reset first, jokes later.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is actually really kind."
+              },
+              {
+                "label": "Light roast",
+                "playerLine": "One joke, then reset.",
+                "connectionDelta": 0,
+                "celebrityReply": "I can live with that."
+              },
+              {
+                "label": "Public roast",
+                "playerLine": "I roast you in front of everybody.",
+                "connectionDelta": -3,
+                "celebrityReply": "Yeah, hard pass."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Do you want playful love or serious love?",
+            "options": [
+              {
+                "label": "Playful and loyal",
+                "playerLine": "Playful and loyal. Both.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is the best combo."
+              },
+              {
+                "label": "Still deciding",
+                "playerLine": "I am still figuring that out.",
+                "connectionDelta": 0,
+                "celebrityReply": "Real answer. Respect."
+              },
+              {
+                "label": "No love, just game",
+                "playerLine": "Neither. I am just here to win rounds.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then do not use me for that."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "justin_chat_2",
+        "title": "Poolside Energy Test",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Do you judge people for being messy, or do you let them grow?",
+            "options": [
+              {
+                "label": "Let them grow",
+                "playerLine": "Grow. Messy is part of being human.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is a very green-flag answer."
+              },
+              {
+                "label": "Case by case",
+                "playerLine": "Depends on the pattern, not one moment.",
+                "connectionDelta": 0,
+                "celebrityReply": "That is fair and thoughtful."
+              },
+              {
+                "label": "Judge hard",
+                "playerLine": "I judge fast and move on.",
+                "connectionDelta": -3,
+                "celebrityReply": "Cold. Not for me."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If someone tries to steal me, do you fight, fold, or trust me?",
+            "options": [
+              {
+                "label": "Trust plus effort",
+                "playerLine": "Trust you and still show up for you.",
+                "connectionDelta": 3,
+                "celebrityReply": "Perfect answer honestly."
+              },
+              {
+                "label": "Trust only",
+                "playerLine": "I trust you and stay chill.",
+                "connectionDelta": 0,
+                "celebrityReply": "Chill can be good."
+              },
+              {
+                "label": "Fold fast",
+                "playerLine": "I fold and move to someone else.",
+                "connectionDelta": -3,
+                "celebrityReply": "That is weak commitment."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Final one: are you into me or into the idea of me?",
+            "options": [
+              {
+                "label": "Into him",
+                "playerLine": "Into you. Not the headlines.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. I needed that."
+              },
+              {
+                "label": "Unsure answer",
+                "playerLine": "Still learning the difference.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair enough."
+              },
+              {
+                "label": "Into headlines",
+                "playerLine": "The headlines help, not gonna lie.",
+                "connectionDelta": -3,
+                "celebrityReply": "Yeah, no thanks."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Justin laughs, pulls you in, and kisses you. \"Never say never,\" he says.",
+      "failureLine": "Justin shakes his head. \"Not feeling this. Leave me alone.\""
+    }
+  },
+  "rihanna": {
+    "normalChats": [
+      {
+        "chatId": "rihanna_chat_1",
+        "title": "Cool Under Pressure",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Can you handle someone independent, or do you need constant reassurance?",
+            "options": [
+              {
+                "label": "Respect independence",
+                "playerLine": "I respect independence. Closeness does not mean control.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good answer. Possessive energy is boring."
+              },
+              {
+                "label": "Need some reassurance",
+                "playerLine": "I can handle independence, but I still need clarity.",
+                "connectionDelta": 0,
+                "celebrityReply": "Clarity is fair. Neediness is not."
+              },
+              {
+                "label": "Need constant attention",
+                "playerLine": "I need constant reassurance to feel secure.",
+                "connectionDelta": -3,
+                "celebrityReply": "That is too much for me."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If the villa starts rumors, do you react or stay unbothered?",
+            "options": [
+              {
+                "label": "Stay unbothered",
+                "playerLine": "Unbothered outside, strategic inside.",
+                "connectionDelta": 3,
+                "celebrityReply": "Exactly. Let them talk."
+              },
+              {
+                "label": "Address once",
+                "playerLine": "Address it once, then move on.",
+                "connectionDelta": 0,
+                "celebrityReply": "Reasonable."
+              },
+              {
+                "label": "Crash out",
+                "playerLine": "I crash out and expose everybody.",
+                "connectionDelta": -3,
+                "celebrityReply": "Messy is not cute."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Are you confident enough to stand next to me without shrinking?",
+            "options": [
+              {
+                "label": "Confident yes",
+                "playerLine": "Yes. I do not shrink around strong people.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. I can work with that."
+              },
+              {
+                "label": "Working on it",
+                "playerLine": "I am still building that confidence.",
+                "connectionDelta": 0,
+                "celebrityReply": "At least you know yourself."
+              },
+              {
+                "label": "Insecure answer",
+                "playerLine": "No, I would probably get jealous fast.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are not a fit."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "rihanna_chat_2",
+        "title": "Sunset Standards",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "Do you flirt with everyone, or do you move with intention?",
+            "options": [
+              {
+                "label": "Move with intention",
+                "playerLine": "Intention. I do not waste signals.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is attractive."
+              },
+              {
+                "label": "Playful with boundaries",
+                "playerLine": "Playful, but with clear boundaries.",
+                "connectionDelta": 0,
+                "celebrityReply": "Boundaries are important."
+              },
+              {
+                "label": "Flirt everywhere",
+                "playerLine": "I flirt everywhere and sort it later.",
+                "connectionDelta": -3,
+                "celebrityReply": "That is chaos. Not for me."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Can you be soft without becoming weak?",
+            "options": [
+              {
+                "label": "Soft and strong",
+                "playerLine": "Yes. Softness can be strength.",
+                "connectionDelta": 3,
+                "celebrityReply": "Exactly. You understand nuance."
+              },
+              {
+                "label": "Sometimes",
+                "playerLine": "Sometimes. I am still learning that.",
+                "connectionDelta": 0,
+                "celebrityReply": "Learning is valid."
+              },
+              {
+                "label": "No softness",
+                "playerLine": "No. Softness gets people hurt.",
+                "connectionDelta": -3,
+                "celebrityReply": "That is fear talking."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Final question: are you choosing me, or trying to survive my aura?",
+            "options": [
+              {
+                "label": "Choose her",
+                "playerLine": "Choosing you. Fully.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. Keep that energy."
+              },
+              {
+                "label": "Unsure choice",
+                "playerLine": "I am still deciding what I can hold.",
+                "connectionDelta": 0,
+                "celebrityReply": "Honesty is better than fake certainty."
+              },
+              {
+                "label": "Survival mode",
+                "playerLine": "Surviving. You are intense.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then survive elsewhere."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Rihanna smirks, pulls you close, and kisses you. \"Do not waste this,\" she says.",
+      "failureLine": "Rihanna raises a brow. \"No. Leave me alone.\""
+    }
+  },
+  "beyonce": {
+    "normalChats": [
+      {
+        "chatId": "beyonce_chat_1",
+        "title": "Standards and Intentions",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "I value discipline. Do you show up consistently, or only when it is easy?",
+            "options": [
+              {
+                "label": "Consistent answer",
+                "playerLine": "Consistently. Especially when it is hard.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. Consistency is rare and valuable."
+              },
+              {
+                "label": "Honest middle",
+                "playerLine": "I try, but I am still building that muscle.",
+                "connectionDelta": 0,
+                "celebrityReply": "Growth is acceptable when it is real."
+              },
+              {
+                "label": "Easy-mode answer",
+                "playerLine": "Only when it is easy. Life is short.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are not aligned."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "If we couple up, can you handle high standards without resentment?",
+            "options": [
+              {
+                "label": "Embrace standards",
+                "playerLine": "Yes. Standards sharpen people.",
+                "connectionDelta": 3,
+                "celebrityReply": "Strong answer."
+              },
+              {
+                "label": "Negotiate standards",
+                "playerLine": "Yes, if we hold each other equally accountable.",
+                "connectionDelta": 0,
+                "celebrityReply": "Fair. Accountability should be mutual."
+              },
+              {
+                "label": "Reject standards",
+                "playerLine": "No. Standards kill spontaneity.",
+                "connectionDelta": -3,
+                "celebrityReply": "Not true. They protect what matters."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Do you want partnership, or just proximity to status?",
+            "options": [
+              {
+                "label": "Choose partnership",
+                "playerLine": "Partnership. Status is a side effect.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is the right priority."
+              },
+              {
+                "label": "Mixed motives",
+                "playerLine": "Both, if I am honest.",
+                "connectionDelta": 0,
+                "celebrityReply": "Honesty helps. Now prove depth."
+              },
+              {
+                "label": "Choose status",
+                "playerLine": "Status first. Partnership later.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then this conversation is over soon."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "chatId": "beyonce_chat_2",
+        "title": "Composure Under Heat",
+        "turns": [
+          {
+            "turn": 1,
+            "celebrityLine": "When conflict hits, do you get precise or performative?",
+            "options": [
+              {
+                "label": "Get precise",
+                "playerLine": "Precise. I solve, I do not perform.",
+                "connectionDelta": 3,
+                "celebrityReply": "Excellent. Precision is power."
+              },
+              {
+                "label": "Blend both",
+                "playerLine": "A little of both depending on stakes.",
+                "connectionDelta": 0,
+                "celebrityReply": "Context matters."
+              },
+              {
+                "label": "Get performative",
+                "playerLine": "Performative. I like spectacle.",
+                "connectionDelta": -3,
+                "celebrityReply": "Spectacle is not substance."
+              }
+            ]
+          },
+          {
+            "turn": 2,
+            "celebrityLine": "Can you celebrate me without making it about yourself?",
+            "options": [
+              {
+                "label": "Celebrate her fully",
+                "playerLine": "Yes. I can celebrate you with no insecurity.",
+                "connectionDelta": 3,
+                "celebrityReply": "That is secure energy."
+              },
+              {
+                "label": "Sometimes insecure",
+                "playerLine": "I can, but I would need to manage my ego.",
+                "connectionDelta": 0,
+                "celebrityReply": "Self-awareness is a start."
+              },
+              {
+                "label": "Make it about yourself",
+                "playerLine": "No. I need equal spotlight at all times.",
+                "connectionDelta": -3,
+                "celebrityReply": "Then we are not a match."
+              }
+            ]
+          },
+          {
+            "turn": 3,
+            "celebrityLine": "Final question: are you ready for excellence, or just flirting with it?",
+            "options": [
+              {
+                "label": "Ready for excellence",
+                "playerLine": "Ready. Fully.",
+                "connectionDelta": 3,
+                "celebrityReply": "Good. Then act like it."
+              },
+              {
+                "label": "Learning path",
+                "playerLine": "Learning, but committed to growth.",
+                "connectionDelta": 0,
+                "celebrityReply": "Commitment matters."
+              },
+              {
+                "label": "Not ready",
+                "playerLine": "Not ready. I just want easy chemistry.",
+                "connectionDelta": -3,
+                "celebrityReply": "Easy is not what I do."
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "postTwoChats": {
+      "threshold": 50,
+      "successDelta": 10,
+      "failureDelta": -10,
+      "successLine": "Beyonce smiles and kisses you with calm confidence. \"Maintain this standard,\" she says.",
+      "failureLine": "Beyonce steps back. \"No. Leave me alone.\""
+    }
+  }
+}

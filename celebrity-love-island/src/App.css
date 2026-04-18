@@ -1035,6 +1035,36 @@
   opacity: 0.95;
 }
 
+.graph-update-summary {
+  margin: 0 0 12px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 209, 235, 0.45);
+  background: rgba(53, 25, 44, 0.65);
+}
+
+.graph-update-summary h4 {
+  margin: 0 0 6px;
+  color: #ffd1eb;
+  font-size: 0.92rem;
+}
+
+.graph-update-summary p {
+  margin: 4px 0;
+  font-size: 0.8rem;
+}
+
+.graph-update-list {
+  margin: 4px 0 6px;
+  padding-left: 16px;
+  max-height: 96px;
+  overflow-y: auto;
+  font-size: 0.76rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .slot-machine-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

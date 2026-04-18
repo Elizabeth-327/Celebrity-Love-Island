@@ -11,6 +11,11 @@ import neutralSymbol from '../assets/states/neutral symbol.png'
 import sadSymbol from '../assets/states/sad symbol.png'
 import celebrityIcks from '../data/icks.json'
 import celebrityQuotes from '../data/celebrity_quotes.json'
+import {
+  PLAYER_ID,
+  createInitialContestants,
+  getRelationshipEdgeValue,
+} from '../game/data/contestants'
 import { getGenericMovesByState, getMovesForCareer } from '../game/data/moves'
 
 const MAX_ATTRACTION = 100
@@ -23,6 +28,9 @@ const SLOT_SPIN_TICK_MS = 150
 const QUOTE_TIMER_SECONDS = 30
 const DEFAULT_ICK_DAMAGE = 8
 const TIER_ICK_DAMAGE_SCALE = 1
+const CONNECTION_MIN = -100
+const CONNECTION_MAX = 100
+const PLAYER_BATTLE_CONNECTION_DELTA = 50
 
 const STATE_ICONS = {
   neutral: neutralSymbol,
@@ -194,8 +202,288 @@ function createQuoteChallengeForCelebrity(celebrityId, celebrityName) {
   }
 }
 
+function clampConnection(value) {
+  return Math.max(CONNECTION_MIN, Math.min(CONNECTION_MAX, Math.round(value)))
+}
+
+function createInitialDemoGraphState() {
+  const contestants = createInitialContestants()
+  const activeContestantIds = Object.keys(contestants)
+  const graph = {}
+
+  activeContestantIds.forEach((fromId) => {
+    graph[fromId] = {}
+    activeContestantIds.forEach((toId) => {
+      if (fromId === toId) {
+        return
+      }
+
+      graph[fromId][toId] =
+        fromId === PLAYER_ID || toId === PLAYER_ID
+          ? 0
+          : getRelationshipEdgeValue(fromId, toId)
+    })
+  })
+
+  return {
+    contestants,
+    activeContestantIds,
+    graph,
+  }
+}
+
+function deepCloneGraph(graph) {
+  return Object.fromEntries(
+    Object.entries(graph).map(([fromId, outgoing]) => [fromId, { ...outgoing }]),
+  )
+}
+
+function createEdgeDeltaMap() {
+  return {}
+}
+
+function addEdgeDelta(deltaMap, fromId, toId, delta) {
+  if (!delta) {
+    return
+  }
+
+  deltaMap[fromId] = deltaMap[fromId] ?? {}
+  deltaMap[fromId][toId] = (deltaMap[fromId][toId] ?? 0) + delta
+}
+
+function forEachEdgeDelta(deltaMap, callback) {
+  Object.entries(deltaMap).forEach(([fromId, outgoing]) => {
+    Object.entries(outgoing).forEach(([toId, delta]) => {
+      if (delta !== 0) {
+        callback(fromId, toId, delta)
+      }
+    })
+  })
+}
+
+function mergeEdgeDeltaMaps(...maps) {
+  const merged = createEdgeDeltaMap()
+  maps.forEach((deltaMap) => {
+    if (!deltaMap) {
+      return
+    }
+
+    forEachEdgeDelta(deltaMap, (fromId, toId, delta) => {
+      addEdgeDelta(merged, fromId, toId, delta)
+    })
+  })
+  return merged
+}
+
+function applyEdgeDeltaMap(graph, deltaMap) {
+  const nextGraph = deepCloneGraph(graph)
+  forEachEdgeDelta(deltaMap, (fromId, toId, delta) => {
+    nextGraph[fromId] = nextGraph[fromId] ?? {}
+    const current = nextGraph[fromId][toId] ?? 0
+    nextGraph[fromId][toId] = clampConnection(current + delta)
+  })
+  return nextGraph
+}
+
+function getRippleStrengthScale(connectionScore) {
+  const absoluteScore = Math.abs(connectionScore)
+  if (absoluteScore <= 0) {
+    return 0
+  }
+  if (absoluteScore <= 25) {
+    return 0.25
+  }
+  if (absoluteScore <= 50) {
+    return 0.5
+  }
+  if (absoluteScore <= 75) {
+    return 0.75
+  }
+  return 1
+}
+
+function randomConnectionDelta() {
+  return Math.floor(Math.random() * 41) - 20
+}
+
+function buildPlayerBattlePrimaryDeltas(targetId, delta) {
+  const primaryDeltas = createEdgeDeltaMap()
+  addEdgeDelta(primaryDeltas, PLAYER_ID, targetId, delta)
+  addEdgeDelta(primaryDeltas, targetId, PLAYER_ID, Math.round(delta / 2))
+  return primaryDeltas
+}
+
+function buildCelebritySideBattlePrimaryDeltas(activeContestantIds, excludedCelebrityId = null) {
+  const celebrityIds = activeContestantIds.filter(
+    (id) => id !== PLAYER_ID && id !== excludedCelebrityId,
+  )
+  const primaryDeltas = createEdgeDeltaMap()
+  const pairings = []
+
+  for (let index = 0; index + 1 < celebrityIds.length; index += 2) {
+    const celebA = celebrityIds[index]
+    const celebB = celebrityIds[index + 1]
+    const deltaAB = randomConnectionDelta()
+    const deltaBA = randomConnectionDelta()
+
+    addEdgeDelta(primaryDeltas, celebA, celebB, deltaAB)
+    addEdgeDelta(primaryDeltas, celebB, celebA, deltaBA)
+    pairings.push({
+      celebA,
+      celebB,
+      deltaAB,
+      deltaBA,
+    })
+  }
+
+  const leftOutId =
+    celebrityIds.length % 2 === 1 ? celebrityIds[celebrityIds.length - 1] : null
+
+  return {
+    primaryDeltas,
+    pairings,
+    leftOutId,
+  }
+}
+
+function buildRippleDeltas(graphSnapshot, activeContestantIds, primaryDeltas) {
+  const rippleDeltas = createEdgeDeltaMap()
+
+  forEachEdgeDelta(primaryDeltas, (sourceId, rootId, primaryDelta) => {
+    const baseMagnitude = Math.abs(primaryDelta) * 0.2
+    if (baseMagnitude <= 0) {
+      return
+    }
+
+    const direction = primaryDelta > 0 ? -1 : 1
+
+    activeContestantIds.forEach((influencerId) => {
+      if (influencerId === sourceId || influencerId === rootId) {
+        return
+      }
+
+      const influencerToSource = graphSnapshot[influencerId]?.[sourceId] ?? 0
+      const influencerToRoot = graphSnapshot[influencerId]?.[rootId] ?? 0
+
+      if (influencerToSource > 0) {
+        const sourceScale = getRippleStrengthScale(influencerToSource)
+        const sourceImpact = Math.round(baseMagnitude * sourceScale)
+        if (sourceImpact > 0) {
+          addEdgeDelta(rippleDeltas, sourceId, influencerId, sourceImpact * direction)
+        }
+      }
+
+      if (influencerToRoot > 0) {
+        const rootScale = getRippleStrengthScale(influencerToRoot)
+        const rootImpact = Math.round(baseMagnitude * rootScale)
+        if (rootImpact > 0) {
+          addEdgeDelta(rippleDeltas, influencerId, rootId, rootImpact * direction)
+        }
+      }
+    })
+  })
+
+  return rippleDeltas
+}
+
+function getDisplayName(contestantsById, contestantId) {
+  return contestantsById[contestantId]?.name ?? contestantId
+}
+
+function getEdgeValue(graph, fromId, toId) {
+  return graph[fromId]?.[toId] ?? 0
+}
+
+function edgeDeltaMapToSortedList(deltaMap) {
+  const rows = []
+  forEachEdgeDelta(deltaMap, (fromId, toId, delta) => {
+    rows.push({ fromId, toId, delta })
+  })
+  rows.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+  return rows
+}
+
+function formatSigned(value) {
+  return value > 0 ? `+${value}` : String(value)
+}
+
+function applyDemoPostBattleGraphUpdates({
+  graphSnapshot,
+  contestantsById,
+  activeContestantIds,
+  battleTargetId,
+  battleWon,
+}) {
+  const playerDelta = battleWon
+    ? PLAYER_BATTLE_CONNECTION_DELTA
+    : -PLAYER_BATTLE_CONNECTION_DELTA
+  const playerPrimaryDeltas = buildPlayerBattlePrimaryDeltas(battleTargetId, playerDelta)
+  const sideBattleResult = buildCelebritySideBattlePrimaryDeltas(
+    activeContestantIds,
+    battleTargetId,
+  )
+  const primaryDeltas = mergeEdgeDeltaMaps(
+    playerPrimaryDeltas,
+    sideBattleResult.primaryDeltas,
+  )
+  const rippleDeltas = buildRippleDeltas(graphSnapshot, activeContestantIds, primaryDeltas)
+  const netDeltas = mergeEdgeDeltaMaps(primaryDeltas, rippleDeltas)
+  const nextGraph = applyEdgeDeltaMap(graphSnapshot, netDeltas)
+
+  const playerToTargetBefore = getEdgeValue(graphSnapshot, PLAYER_ID, battleTargetId)
+  const playerToTargetAfter = getEdgeValue(nextGraph, PLAYER_ID, battleTargetId)
+  const targetToPlayerBefore = getEdgeValue(graphSnapshot, battleTargetId, PLAYER_ID)
+  const targetToPlayerAfter = getEdgeValue(nextGraph, battleTargetId, PLAYER_ID)
+
+  const netChanges = edgeDeltaMapToSortedList(netDeltas)
+  const rippleChanges = edgeDeltaMapToSortedList(rippleDeltas)
+  const topNetChanges = netChanges.slice(0, 8)
+  const topRippleChanges = rippleChanges.slice(0, 8)
+
+  const pairingLines = sideBattleResult.pairings.map(({ celebA, celebB, deltaAB, deltaBA }) => {
+    const celebAName = getDisplayName(contestantsById, celebA)
+    const celebBName = getDisplayName(contestantsById, celebB)
+    return `${celebAName}->${celebBName} ${formatSigned(deltaAB)} | ${celebBName}->${celebAName} ${formatSigned(deltaBA)}`
+  })
+
+  const targetName = getDisplayName(contestantsById, battleTargetId)
+  const logLines = [
+    `Graph update: Player->${targetName} ${formatSigned(playerToTargetAfter - playerToTargetBefore)} (${playerToTargetBefore} -> ${playerToTargetAfter}).`,
+    `Graph update: ${targetName}->Player ${formatSigned(targetToPlayerAfter - targetToPlayerBefore)} (${targetToPlayerBefore} -> ${targetToPlayerAfter}).`,
+    `Celebrity side battles resolved ${sideBattleResult.pairings.length} pairs; ripple changed ${rippleChanges.length} edges.`,
+  ]
+
+  if (sideBattleResult.leftOutId) {
+    logLines.push(
+      `Side battle left out: ${getDisplayName(contestantsById, sideBattleResult.leftOutId)}.`,
+    )
+  }
+
+  return {
+    nextGraph,
+    summary: {
+      battleWon,
+      targetName,
+      playerDelta,
+      playerToTargetBefore,
+      playerToTargetAfter,
+      targetToPlayerBefore,
+      targetToPlayerAfter,
+      pairings: sideBattleResult.pairings,
+      pairingLines,
+      leftOutId: sideBattleResult.leftOutId,
+      rippleEdgeCount: rippleChanges.length,
+      netEdgeCount: netChanges.length,
+      topRippleChanges,
+      topNetChanges,
+      logLines,
+    },
+  }
+}
+
 export default function BattleDemo({ onBackToIntro }) {
   const moves = useMemo(() => getMovesForCareer('actor'), [])
+  const demoInitialGraphState = useMemo(() => createInitialDemoGraphState(), [])
   const [selectedMoveId, setSelectedMoveId] = useState(moves[0]?.id ?? '')
   const [playerAttraction, setPlayerAttraction] = useState(MAX_ATTRACTION)
   const [celebAttraction, setCelebAttraction] = useState(0)
@@ -215,12 +503,15 @@ export default function BattleDemo({ onBackToIntro }) {
   const [slotSpinningColumns, setSlotSpinningColumns] = useState([false, false, false])
   const [slotStatus, setSlotStatus] = useState('idle')
   const [slotOutcome, setSlotOutcome] = useState(null)
+  const [demoGraph, setDemoGraph] = useState(() => demoInitialGraphState.graph)
+  const [graphUpdateSummary, setGraphUpdateSummary] = useState(null)
   const [rewardPopupMove, setRewardPopupMove] = useState(null)
   const [battleLog, setBattleLog] = useState([
     `${KIM_NAME} entered the battle. Pick your move and press attack.`,
   ])
   const playerAttractionRef = useRef(playerAttraction)
   const usedIcksRef = useRef(usedIcks)
+  const demoGraphRef = useRef(demoGraph)
   const slotGrid = useMemo(
     () => buildSlotGridFromColumns(slotColumnOrders, slotColumnSteps),
     [slotColumnOrders, slotColumnSteps],
@@ -244,6 +535,10 @@ export default function BattleDemo({ onBackToIntro }) {
     usedIcksRef.current = usedIcks
   }, [usedIcks])
 
+  useEffect(() => {
+    demoGraphRef.current = demoGraph
+  }, [demoGraph])
+
   const beginSlotMachine = useCallback(() => {
     const nextColumnOrders = createRandomColumnOrders()
     const nextColumnSteps = createRandomColumnSteps()
@@ -262,6 +557,28 @@ export default function BattleDemo({ onBackToIntro }) {
       'Slot machine started. Press Space to stop each column from left to right.',
     ])
   }, [])
+
+  const finalizeBattleGraphAndAdvance = useCallback(
+    (battleWon) => {
+      const { nextGraph, summary } = applyDemoPostBattleGraphUpdates({
+        graphSnapshot: demoGraphRef.current,
+        contestantsById: demoInitialGraphState.contestants,
+        activeContestantIds: demoInitialGraphState.activeContestantIds,
+        battleTargetId: KIM_ID,
+        battleWon,
+      })
+
+      setDemoGraph(nextGraph)
+      setGraphUpdateSummary(summary)
+      setBattleLog((current) => [...current, ...summary.logLines])
+      beginSlotMachine()
+    },
+    [
+      beginSlotMachine,
+      demoInitialGraphState.activeContestantIds,
+      demoInitialGraphState.contestants,
+    ],
+  )
 
   const resolveEnemyAttackAfterQuote = useCallback(
     (quoteResult) => {
@@ -313,10 +630,10 @@ export default function BattleDemo({ onBackToIntro }) {
       ])
 
       if (didPlayerLose) {
-        beginSlotMachine()
+        finalizeBattleGraphAndAdvance(false)
       }
     },
-    [beginSlotMachine, ickCycleCount, pendingEnemyTurn],
+    [finalizeBattleGraphAndAdvance, ickCycleCount, pendingEnemyTurn],
   )
 
   const handleQuoteChoice = useCallback(
@@ -448,12 +765,13 @@ export default function BattleDemo({ onBackToIntro }) {
     }
 
     const isStateMatch = selectedMove.state === celebrityState
-    const attractionGain = selectedMove.power * (isStateMatch ? 2 : 1)
+    const hasDoubleStateBonus = isStateMatch && selectedMove.state !== 'neutral'
+    const attractionGain = selectedMove.power * (hasDoubleStateBonus ? 2 : 1)
     const nextCelebAttraction = clampAttraction(celebAttraction + attractionGain)
     const nextState = pickWeightedState(selectedMove.stateChange, celebrityState)
 
     const logEntries = [
-      `Turn ${turnCount}: You used ${selectedMove.name} (+${attractionGain} attraction${isStateMatch ? ', state match x2' : ''}).`,
+      `Turn ${turnCount}: You used ${selectedMove.name} (+${attractionGain} attraction${hasDoubleStateBonus ? ', state match x2' : ''}).`,
     ]
 
     if (nextCelebAttraction >= MAX_ATTRACTION) {
@@ -471,7 +789,7 @@ export default function BattleDemo({ onBackToIntro }) {
         ...logEntries,
         `${KIM_NAME} is fully attracted. Battle won.`,
       ])
-      beginSlotMachine()
+      finalizeBattleGraphAndAdvance(true)
       return
     }
 
@@ -706,6 +1024,54 @@ export default function BattleDemo({ onBackToIntro }) {
             <p className="slot-machine-instructions">
               Press <strong>Space</strong> to stop the leftmost spinning column.
             </p>
+            {graphUpdateSummary && (
+              <div className="graph-update-summary">
+                <h4>Post-Battle Graph Updates</h4>
+                <p>
+                  Outcome: {graphUpdateSummary.battleWon ? 'Win' : 'Loss'} | Player primary delta:{' '}
+                  {formatSigned(graphUpdateSummary.playerDelta)}
+                </p>
+                <p>
+                  Player {'->'} {graphUpdateSummary.targetName}:{' '}
+                  {graphUpdateSummary.playerToTargetBefore} to {graphUpdateSummary.playerToTargetAfter} |{' '}
+                  {graphUpdateSummary.targetName} {'->'} Player:{' '}
+                  {graphUpdateSummary.targetToPlayerBefore} to {graphUpdateSummary.targetToPlayerAfter}
+                </p>
+                <p>
+                  Side pairings: {graphUpdateSummary.pairings.length}
+                  {graphUpdateSummary.leftOutId
+                    ? ` | Left out: ${getDisplayName(demoInitialGraphState.contestants, graphUpdateSummary.leftOutId)}`
+                    : ''}
+                </p>
+                <ul className="graph-update-list">
+                  {graphUpdateSummary.pairingLines.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+                <p>
+                  Ripple edges changed: {graphUpdateSummary.rippleEdgeCount} | Net edges changed:{' '}
+                  {graphUpdateSummary.netEdgeCount}
+                </p>
+                <p>Top net changes:</p>
+                <ul className="graph-update-list">
+                  {graphUpdateSummary.topNetChanges.map((change, index) => {
+                    const fromName = getDisplayName(
+                      demoInitialGraphState.contestants,
+                      change.fromId,
+                    )
+                    const toName = getDisplayName(
+                      demoInitialGraphState.contestants,
+                      change.toId,
+                    )
+                      return (
+                        <li key={`${change.fromId}-${change.toId}-${index}`}>
+                          {fromName} {'->'} {toName} {formatSigned(change.delta)}
+                        </li>
+                      )
+                    })}
+                </ul>
+              </div>
+            )}
             <div className="slot-machine-grid">
               {slotGrid.map((row, rowIndex) =>
                 row.map((state, columnIndex) => (
