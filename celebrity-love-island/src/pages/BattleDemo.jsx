@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import loveIslandBg from '../assets/backgrounds/love_island_bg.jpg'
 import kimSprite from '../assets/characters/celebs/kim_kardashian.png'
 import playerSprite from '../assets/characters/players/adjussi_clothed.png'
@@ -10,6 +10,7 @@ import nervousSymbol from '../assets/states/nervous symbol.png'
 import neutralSymbol from '../assets/states/neutral symbol.png'
 import sadSymbol from '../assets/states/sad symbol.png'
 import celebrityIcks from '../data/icks.json'
+import celebrityQuotes from '../data/celebrity_quotes.json'
 import { getGenericMovesByState, getMovesForCareer } from '../game/data/moves'
 
 const MAX_ATTRACTION = 100
@@ -19,6 +20,9 @@ const SLOT_ROWS = 3
 const SLOT_COLUMNS = 3
 const SLOT_CENTER_ROW_INDEX = 1
 const SLOT_SPIN_TICK_MS = 150
+const QUOTE_TIMER_SECONDS = 30
+const DEFAULT_ICK_DAMAGE = 8
+const TIER_ICK_DAMAGE_SCALE = 1
 
 const STATE_ICONS = {
   neutral: neutralSymbol,
@@ -57,21 +61,24 @@ function pickWeightedState(stateChange, fallbackState) {
 function pickNextIck(currentUsedIcks) {
   const ickPool = celebrityIcks[KIM_ID] ?? []
   if (ickPool.length === 0) {
-    return { ick: null, nextUsedIcks: [] }
+    return { ick: null, nextUsedIcks: [], didCycleReset: false }
   }
 
   let usedIcks = [...currentUsedIcks]
   let availableIcks = ickPool.filter((ick) => !usedIcks.includes(ick.name))
+  let didCycleReset = false
 
   if (availableIcks.length === 0) {
     usedIcks = []
     availableIcks = [...ickPool]
+    didCycleReset = true
   }
 
   const nextIck = availableIcks[Math.floor(Math.random() * availableIcks.length)]
   return {
     ick: nextIck,
     nextUsedIcks: [...usedIcks, nextIck.name],
+    didCycleReset,
   }
 }
 
@@ -94,8 +101,8 @@ function decrementMoveCooldowns(cooldowns) {
   )
 }
 
-function shuffleStates(states) {
-  const shuffled = [...states]
+function shuffleArray(values) {
+  const shuffled = [...values]
   for (let index = shuffled.length - 1; index > 0; index -= 1) {
     const swapIndex = Math.floor(Math.random() * (index + 1))
     ;[shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]]
@@ -104,7 +111,7 @@ function shuffleStates(states) {
 }
 
 function createRandomColumnOrders() {
-  return Array.from({ length: SLOT_COLUMNS }, () => shuffleStates(SLOT_STATES))
+  return Array.from({ length: SLOT_COLUMNS }, () => shuffleArray(SLOT_STATES))
 }
 
 function createRandomColumnSteps() {
@@ -157,6 +164,36 @@ function resolveSlotOutcome(grid, ownedMoveIds) {
   }
 }
 
+function createQuoteChallengeForCelebrity(celebrityId, celebrityName) {
+  const correctPool = Array.isArray(celebrityQuotes[celebrityId])
+    ? celebrityQuotes[celebrityId]
+    : []
+
+  if (correctPool.length === 0) {
+    return null
+  }
+
+  const correctQuote = correctPool[Math.floor(Math.random() * correctPool.length)]
+  const decoyPool = Object.entries(celebrityQuotes).flatMap(([id, quotes]) => {
+    if (id === celebrityId || !Array.isArray(quotes)) {
+      return []
+    }
+
+    return quotes
+  })
+  const decoys = shuffleArray(decoyPool.filter((quote) => quote !== correctQuote)).slice(0, 2)
+  if (decoys.length < 2) {
+    return null
+  }
+
+  const options = shuffleArray([correctQuote, ...decoys])
+  return {
+    prompt: `Which quote did ${celebrityName} say?`,
+    options,
+    correctOptionIndex: options.indexOf(correctQuote),
+  }
+}
+
 export default function BattleDemo({ onBackToIntro }) {
   const moves = useMemo(() => getMovesForCareer('actor'), [])
   const [selectedMoveId, setSelectedMoveId] = useState(moves[0]?.id ?? '')
@@ -164,11 +201,15 @@ export default function BattleDemo({ onBackToIntro }) {
   const [celebAttraction, setCelebAttraction] = useState(0)
   const [celebrityState, setCelebrityState] = useState('neutral')
   const [usedIcks, setUsedIcks] = useState([])
+  const [ickCycleCount, setIckCycleCount] = useState(0)
   const [turnCount, setTurnCount] = useState(1)
   const [battleStatus, setBattleStatus] = useState('active')
   const [phase, setPhase] = useState('battle')
   const [ownedMoveIds, setOwnedMoveIds] = useState(() => moves.map((move) => move.id))
   const [moveCooldowns, setMoveCooldowns] = useState(() => createInitialMoveCooldowns(moves))
+  const [activeQuoteChallenge, setActiveQuoteChallenge] = useState(null)
+  const [quoteTimeLeft, setQuoteTimeLeft] = useState(QUOTE_TIMER_SECONDS)
+  const [pendingEnemyTurn, setPendingEnemyTurn] = useState(null)
   const [slotColumnOrders, setSlotColumnOrders] = useState(() => createRandomColumnOrders())
   const [slotColumnSteps, setSlotColumnSteps] = useState(() => createRandomColumnSteps())
   const [slotSpinningColumns, setSlotSpinningColumns] = useState([false, false, false])
@@ -178,6 +219,8 @@ export default function BattleDemo({ onBackToIntro }) {
   const [battleLog, setBattleLog] = useState([
     `${KIM_NAME} entered the battle. Pick your move and press attack.`,
   ])
+  const playerAttractionRef = useRef(playerAttraction)
+  const usedIcksRef = useRef(usedIcks)
   const slotGrid = useMemo(
     () => buildSlotGridFromColumns(slotColumnOrders, slotColumnSteps),
     [slotColumnOrders, slotColumnSteps],
@@ -190,7 +233,16 @@ export default function BattleDemo({ onBackToIntro }) {
     phase === 'battle' &&
     battleStatus === 'active' &&
     Boolean(selectedMove) &&
-    selectedMoveCooldown === 0
+    selectedMoveCooldown === 0 &&
+    !activeQuoteChallenge
+
+  useEffect(() => {
+    playerAttractionRef.current = playerAttraction
+  }, [playerAttraction])
+
+  useEffect(() => {
+    usedIcksRef.current = usedIcks
+  }, [usedIcks])
 
   const beginSlotMachine = useCallback(() => {
     const nextColumnOrders = createRandomColumnOrders()
@@ -202,11 +254,105 @@ export default function BattleDemo({ onBackToIntro }) {
     setSlotStatus('spinning')
     setSlotOutcome(null)
     setRewardPopupMove(null)
+    setActiveQuoteChallenge(null)
+    setPendingEnemyTurn(null)
+    setQuoteTimeLeft(QUOTE_TIMER_SECONDS)
     setBattleLog((current) => [
       ...current,
       'Slot machine started. Press Space to stop each column from left to right.',
     ])
   }, [])
+
+  const resolveEnemyAttackAfterQuote = useCallback(
+    (quoteResult) => {
+      if (!pendingEnemyTurn) {
+        return
+      }
+
+      const { ick, nextUsedIcks, didCycleReset } = pickNextIck(usedIcksRef.current)
+      const ickPower = ick?.power ?? DEFAULT_ICK_DAMAGE
+      const isRepeatedIck = didCycleReset || ickCycleCount > 0
+      const repeatedIckMultiplier = isRepeatedIck ? 2 : 1
+      const preQuoteDamage = Math.max(
+        1,
+        Math.round(ickPower * repeatedIckMultiplier * TIER_ICK_DAMAGE_SCALE),
+      )
+      const ickDamage =
+        quoteResult === 'win' ? Math.max(1, Math.round(preQuoteDamage / 2)) : preQuoteDamage
+      const nextPlayerAttraction = clampAttraction(playerAttractionRef.current - ickDamage)
+      const didPlayerLose = nextPlayerAttraction <= 0
+
+      const quoteResultMessage =
+        quoteResult === 'win'
+          ? 'Quote minigame win: incoming ick -attraction was halved.'
+          : quoteResult === 'timeout'
+            ? 'Quote minigame timeout: full ick -attraction applied.'
+            : 'Quote minigame incorrect: full ick -attraction applied.'
+      const ickMessage = ick
+        ? `${KIM_NAME} used "${ick.name}" (${ickPower} power${isRepeatedIck ? ', repeat x2' : ''}) and applied -${ickDamage} attraction.`
+        : `${KIM_NAME} attacked for -${ickDamage} attraction.`
+      const defeatMessage = didPlayerLose
+        ? 'Your attraction hit zero. Battle lost.'
+        : null
+
+      setUsedIcks(nextUsedIcks)
+      if (didCycleReset) {
+        setIckCycleCount((count) => count + 1)
+      }
+      setPlayerAttraction(nextPlayerAttraction)
+      setBattleStatus(didPlayerLose ? 'lost' : 'active')
+      setTurnCount((count) => count + 1)
+      setActiveQuoteChallenge(null)
+      setPendingEnemyTurn(null)
+      setQuoteTimeLeft(QUOTE_TIMER_SECONDS)
+      setBattleLog((current) => [
+        ...current,
+        quoteResultMessage,
+        ickMessage,
+        ...(defeatMessage ? [defeatMessage] : []),
+      ])
+
+      if (didPlayerLose) {
+        beginSlotMachine()
+      }
+    },
+    [beginSlotMachine, ickCycleCount, pendingEnemyTurn],
+  )
+
+  const handleQuoteChoice = useCallback(
+    (optionIndex) => {
+      if (!activeQuoteChallenge || !pendingEnemyTurn) {
+        return
+      }
+
+      const didWin = optionIndex === activeQuoteChallenge.correctOptionIndex && quoteTimeLeft > 0
+      resolveEnemyAttackAfterQuote(didWin ? 'win' : 'wrong')
+    },
+    [activeQuoteChallenge, pendingEnemyTurn, quoteTimeLeft, resolveEnemyAttackAfterQuote],
+  )
+
+  useEffect(() => {
+    if (!activeQuoteChallenge || !pendingEnemyTurn || battleStatus !== 'active') {
+      return undefined
+    }
+
+    if (quoteTimeLeft <= 0) {
+      resolveEnemyAttackAfterQuote('timeout')
+      return undefined
+    }
+
+    const timeout = window.setTimeout(() => {
+      setQuoteTimeLeft((current) => Math.max(0, current - 1))
+    }, 1000)
+
+    return () => window.clearTimeout(timeout)
+  }, [
+    activeQuoteChallenge,
+    battleStatus,
+    pendingEnemyTurn,
+    quoteTimeLeft,
+    resolveEnemyAttackAfterQuote,
+  ])
 
   useEffect(() => {
     if (phase !== 'slot' || slotStatus !== 'spinning') {
@@ -329,36 +475,34 @@ export default function BattleDemo({ onBackToIntro }) {
       return
     }
 
-    const { ick, nextUsedIcks } = pickNextIck(usedIcks)
-    const ickDamage = ick ? Math.max(4, Math.round(ick.power * 0.35)) : 8
-    const nextPlayerAttraction = clampAttraction(playerAttraction - ickDamage)
-    const didPlayerLose = nextPlayerAttraction <= 0
-
-    if (ick) {
-      logEntries.push(`${KIM_NAME} used "${ick.name}" and dealt ${ickDamage} damage.`)
-    } else {
-      logEntries.push(`${KIM_NAME} attacked for ${ickDamage} damage.`)
-    }
-
-    if (didPlayerLose) {
-      logEntries.push('Your attraction hit zero. Battle lost.')
+    const quoteChallenge = createQuoteChallengeForCelebrity(KIM_ID, KIM_NAME)
+    if (!quoteChallenge) {
+      setBattleLog((current) => [
+        ...current,
+        ...logEntries,
+        'Quote minigame setup failed. Enemy turn skipped in demo.',
+      ])
+      return
     }
 
     setCelebAttraction(nextCelebAttraction)
     setCelebrityState(nextState)
-    setUsedIcks(nextUsedIcks)
-    setPlayerAttraction(nextPlayerAttraction)
-    setBattleStatus(didPlayerLose ? 'lost' : 'active')
-    setTurnCount((count) => count + 1)
     setMoveCooldowns((current) => {
       const next = decrementMoveCooldowns(current)
       next[selectedMove.id] = selectedMove.cooldown
       return next
     })
-    setBattleLog((current) => [...current, ...logEntries])
-    if (didPlayerLose) {
-      beginSlotMachine()
-    }
+    setPendingEnemyTurn({
+      turnNumber: turnCount,
+      moveId: selectedMove.id,
+    })
+    setActiveQuoteChallenge(quoteChallenge)
+    setQuoteTimeLeft(QUOTE_TIMER_SECONDS)
+    setBattleLog((current) => [
+      ...current,
+      ...logEntries,
+      `Quote minigame started. Choose ${KIM_NAME}'s quote within ${QUOTE_TIMER_SECONDS} seconds.`,
+    ])
   }
 
   return (
@@ -403,62 +547,143 @@ export default function BattleDemo({ onBackToIntro }) {
 
         {phase === 'battle' ? (
           <>
-            <div className="move-panels">
-              <div className="move-list-panel">
-                <h3>Moves</h3>
-                <div className="move-list">
-                  {moves.map((move) => (
-                    <button
-                      key={move.id}
-                      className={`move-item ${selectedMoveId === move.id ? 'selected' : ''} ${(moveCooldowns[move.id] ?? 0) > 0 ? 'on-cooldown' : ''}`}
-                      onClick={() => setSelectedMoveId(move.id)}
-                    >
-                      <span>{move.name}</span>
-                      <small>
-                        Power {move.power} | State {formatStateLabel(move.state)} | CD {moveCooldowns[move.id] ?? 0}
-                      </small>
-                    </button>
-                  ))}
+            {activeQuoteChallenge ? (
+              <div className="move-panels quote-replacement-panels">
+                <div className="move-list-panel quote-list-panel">
+                  <h3>Quote Choices</h3>
+                  <div className="quote-options">
+                    {activeQuoteChallenge.options.map((quote, optionIndex) => (
+                      <button
+                        key={`${quote}-${optionIndex}`}
+                        className="quote-option-btn"
+                        onClick={() => handleQuoteChoice(optionIndex)}
+                      >
+                        {quote}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="move-details-panel quote-details-panel">
+                  <div className="quote-minigame-header">
+                    <h3>Quote Minigame</h3>
+                    <span className="quote-timer">{quoteTimeLeft}s</span>
+                  </div>
+                  <p className="quote-prompt">{activeQuoteChallenge.prompt}</p>
+                  <p className="quote-minigame-helper">
+                    Correct answer halves the incoming ick -attraction.
+                  </p>
                 </div>
               </div>
-
-              <div className="move-details-panel">
-                <h3>Selected Move</h3>
-                {selectedMove ? (
-                  <>
-                    <p className="move-title">{selectedMove.name}</p>
-                    <p>{selectedMove.description}</p>
-                    <p>Power: {selectedMove.power}</p>
-                    <p>State: {formatStateLabel(selectedMove.state)}</p>
-                    <p>Cooldown: {selectedMove.cooldown}</p>
-                    <p>Cooldown Remaining: {moveCooldowns[selectedMove.id] ?? 0}</p>
-                    <div className="state-change-list">
-                      <span>State Change:</span>
-                      <ul>
-                        {Object.entries(selectedMove.stateChange).map(([state, chance]) => (
-                          <li key={state}>
-                            {formatStateLabel(state)} {chance}%
-                          </li>
-                        ))}
-                      </ul>
+            ) : (
+              <>
+                <div className="move-panels">
+                  <div className="move-list-panel">
+                    <h3>Moves</h3>
+                    <div className="move-list">
+                      {moves.map((move) => (
+                        <button
+                          key={move.id}
+                          className={`move-item ${selectedMoveId === move.id ? 'selected' : ''} ${(moveCooldowns[move.id] ?? 0) > 0 ? 'on-cooldown' : ''}`}
+                          onClick={() => setSelectedMoveId(move.id)}
+                        >
+                          <div className="move-item-title-row">
+                            <span className="move-item-name">{move.name}</span>
+                            <span
+                              className="move-item-state-chip"
+                              title={`Move state: ${formatStateLabel(move.state)}`}
+                            >
+                              <img
+                                src={STATE_ICONS[move.state] ?? neutralSymbol}
+                                alt={`${formatStateLabel(move.state)} state`}
+                              />
+                            </span>
+                          </div>
+                          <div className="move-item-meta">
+                            <small>Power {move.power}</small>
+                            <small>CD {moveCooldowns[move.id] ?? 0}</small>
+                          </div>
+                          <div className="move-item-state-changes">
+                            {Object.entries(move.stateChange).map(([state, chance]) => (
+                              <span
+                                key={`${move.id}-${state}`}
+                                className="move-state-change-chip"
+                                title={`${formatStateLabel(state)} ${chance}%`}
+                              >
+                                <img
+                                  src={STATE_ICONS[state] ?? neutralSymbol}
+                                  alt={`${formatStateLabel(state)} state`}
+                                />
+                                <small>{chance}%</small>
+                              </span>
+                            ))}
+                          </div>
+                        </button>
+                      ))}
                     </div>
-                  </>
-                ) : (
-                  <p>No move selected.</p>
-                )}
-              </div>
-            </div>
+                  </div>
 
-            <div className="battle-footer">
-              <button className="attack-btn" onClick={handleAttack} disabled={!selectedMove || !canAttack}>
-                Attack
-              </button>
-              <p className="battle-status">
-                {battleStatus === 'active' && 'Battle in progress'}
-                {battleStatus === 'won' && 'You won this battle'}
-                {battleStatus === 'lost' && 'You lost this battle'}
-              </p>
-            </div>
+                  <div className="move-details-panel">
+                    <h3>Selected Move</h3>
+                    {selectedMove ? (
+                      <>
+                        <p className="move-title">{selectedMove.name}</p>
+                        <p>{selectedMove.description}</p>
+                        <p>Power: {selectedMove.power}</p>
+                        <div className="selected-move-state">
+                          <span>State:</span>
+                          <span className="selected-state-chip">
+                            <img
+                              src={STATE_ICONS[selectedMove.state] ?? neutralSymbol}
+                              alt={`${formatStateLabel(selectedMove.state)} state`}
+                            />
+                            <span>{formatStateLabel(selectedMove.state)}</span>
+                          </span>
+                        </div>
+                        <p>Cooldown: {selectedMove.cooldown}</p>
+                        <p>Cooldown Remaining: {moveCooldowns[selectedMove.id] ?? 0}</p>
+                        <div className="state-change-list">
+                          <span>State Change:</span>
+                          <ul>
+                            {Object.entries(selectedMove.stateChange).map(([state, chance]) => (
+                              <li key={state} className="state-change-item">
+                                <img
+                                  src={STATE_ICONS[state] ?? neutralSymbol}
+                                  alt={`${formatStateLabel(state)} state`}
+                                />
+                                <span className="state-change-label">
+                                  {formatStateLabel(state)} {chance}%
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </>
+                    ) : (
+                      <p>No move selected.</p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="battle-footer">
+                  <button className="attack-btn" onClick={handleAttack} disabled={!selectedMove || !canAttack}>
+                    Attack
+                  </button>
+                  <p className="battle-status">
+                    {battleStatus === 'active' && 'Battle in progress'}
+                    {battleStatus === 'won' && 'You won this battle'}
+                    {battleStatus === 'lost' && 'You lost this battle'}
+                  </p>
+                </div>
+              </>
+            )}
+
+            {activeQuoteChallenge && (
+              <div className="battle-footer">
+                <p className="battle-status">Quote minigame in progress</p>
+                <p className="battle-status">Choose before timer hits 0</p>
+              </div>
+            )}
           </>
         ) : (
           <div className="slot-machine-panel">
