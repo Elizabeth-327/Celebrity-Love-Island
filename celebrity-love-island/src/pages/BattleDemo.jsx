@@ -606,6 +606,7 @@ function applyDemoPostBattleGraphUpdates({
 }
 
 export default function BattleDemo({ onBackToIntro }) {
+  // Demo is currently fixed to Actor defaults; real battle flow will use chosen career later.
   const moves = useMemo(() => getMovesForCareer('actor'), [])
   const demoInitialGraphState = useMemo(() => createInitialDemoGraphState(), [])
   const [selectedMoveId, setSelectedMoveId] = useState(moves[0]?.id ?? '')
