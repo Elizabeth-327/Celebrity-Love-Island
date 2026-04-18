@@ -407,7 +407,7 @@ export function createGameEngine(options = {}) {
     }
   }
 
-  function resolveBattle(currentState, targetId, requestedTier = 1) {
+  function resolveBattle(currentState, targetId, requestedTier = 1, quoteAttempts = []) {
     if (!currentState.interactionState.startedRound || currentState.interactionState.battled) {
       return currentState
     }
@@ -428,6 +428,7 @@ export function createGameEngine(options = {}) {
       targetId,
       tier: battleTier,
       previousBattle: currentState.battle,
+      quoteAttempts,
     })
     const playerBattlePrimaryDeltas = buildPlayerBattlePrimaryDeltas(
       targetId,

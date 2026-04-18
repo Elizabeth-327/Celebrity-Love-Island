@@ -1,5 +1,6 @@
 export { ACTIONS, createGameReducer } from './reducer'
 export { createGameEngine, selectEliminatedContestant } from './engine'
+export { QUOTE_MINIGAME_TIMER_SECONDS } from './battle'
 export { CAREER_OPTIONS, PLAYER_ID } from './data/contestants'
 export {
   BATTLE_STATES,

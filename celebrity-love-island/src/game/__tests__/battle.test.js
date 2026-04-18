@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import celebrityQuotes from '../../data/celebrity_quotes.json'
 import {
   BATTLE_TIER_CONFIG,
+  QUOTE_MINIGAME_TIMER_SECONDS,
   createInitialBattleState,
   resolveBattleEncounter,
 } from '../battle'
@@ -107,5 +109,111 @@ describe('battle ick usage', () => {
     expect(tier3FirstDamage).toBeGreaterThan(tier1FirstDamage)
     expect(tier1.battleState.lastIcksUsed[0].doubled).toBe(false)
     expect(tier3.battleState.lastIcksUsed[0].doubled).toBe(false)
+  })
+
+  it('creates a quote challenge before each opponent ick with 1 correct and 2 decoys', () => {
+    const targetId = 'kim_kardashian'
+    const targetQuotePool = celebrityQuotes[targetId]
+    const result = resolveBattleEncounter({
+      connectionScore: 0,
+      roundNumber: 2,
+      targetId,
+      tier: 1,
+      previousBattle: createInitialBattleState(),
+    })
+
+    expect(result.battleState.lastQuoteChallenges).toHaveLength(3)
+
+    result.battleState.lastQuoteChallenges.forEach((challenge) => {
+      expect(challenge.targetId).toBe(targetId)
+      expect(challenge.options).toHaveLength(3)
+      expect(new Set(challenge.options).size).toBe(3)
+      expect(challenge.correctOptionIndex).toBeGreaterThanOrEqual(0)
+      expect(challenge.correctOptionIndex).toBeLessThan(3)
+      expect(challenge.timerSeconds).toBe(QUOTE_MINIGAME_TIMER_SECONDS)
+      expect(challenge.outcome).toBe('timeout')
+      expect(challenge.won).toBe(false)
+
+      const correctQuote = challenge.options[challenge.correctOptionIndex]
+      expect(targetQuotePool).toContain(correctQuote)
+
+      const decoys = challenge.options.filter(
+        (_, optionIndex) => optionIndex !== challenge.correctOptionIndex,
+      )
+      decoys.forEach((quote) => {
+        expect(targetQuotePool).not.toContain(quote)
+      })
+    })
+  })
+
+  it('halves ick damage when quote minigame is answered correctly within 30 seconds', () => {
+    const targetId = 'kim_kardashian'
+    const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0)
+    const baseline = resolveBattleEncounter({
+      connectionScore: 0,
+      roundNumber: 4,
+      targetId,
+      tier: 1,
+      previousBattle: createInitialBattleState(),
+    })
+
+    const winningAttempts = baseline.battleState.lastQuoteChallenges.map((challenge) => ({
+      selectedOptionIndex: challenge.correctOptionIndex,
+      responseTimeSeconds: 10,
+    }))
+
+    const withWins = resolveBattleEncounter({
+      connectionScore: 0,
+      roundNumber: 4,
+      targetId,
+      tier: 1,
+      previousBattle: createInitialBattleState(),
+      quoteAttempts: winningAttempts,
+    })
+    randomSpy.mockRestore()
+
+    withWins.battleState.lastIcksUsed.forEach((ick, index) => {
+      expect(ick.quoteMinigameWon).toBe(true)
+      expect(ick.quoteMinigameOutcome).toBe('win')
+      expect(ick.damage).toBe(Math.max(1, Math.round(baseline.battleState.lastIcksUsed[index].damage / 2)))
+    })
+  })
+
+  it('treats answers after 30 seconds as timeout and does not halve damage', () => {
+    const targetId = 'kim_kardashian'
+    const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0)
+    const baseline = resolveBattleEncounter({
+      connectionScore: 0,
+      roundNumber: 5,
+      targetId,
+      tier: 1,
+      previousBattle: createInitialBattleState(),
+    })
+
+    const lateAttempts = baseline.battleState.lastQuoteChallenges.map((challenge) => ({
+      selectedOptionIndex: challenge.correctOptionIndex,
+      responseTimeSeconds: QUOTE_MINIGAME_TIMER_SECONDS + 1,
+    }))
+
+    const timedOut = resolveBattleEncounter({
+      connectionScore: 0,
+      roundNumber: 5,
+      targetId,
+      tier: 1,
+      previousBattle: createInitialBattleState(),
+      quoteAttempts: lateAttempts,
+    })
+    randomSpy.mockRestore()
+
+    timedOut.battleState.lastQuoteChallenges.forEach((challenge) => {
+      expect(challenge.outcome).toBe('timeout')
+      expect(challenge.won).toBe(false)
+    })
+
+    timedOut.battleState.lastIcksUsed.forEach((ick, index) => {
+      expect(ick.quoteMinigameOutcome).toBe('timeout')
+      expect(ick.quoteMinigameWon).toBe(false)
+      expect(ick.damage).toBe(baseline.battleState.lastIcksUsed[index].damage)
+    })
   })
 })

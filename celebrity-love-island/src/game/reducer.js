@@ -27,6 +27,7 @@ export function createGameReducer(engine) {
           state,
           action.payload.targetId,
           action.payload.tier,
+          action.payload.quoteAttempts,
         )
       case ACTIONS.END_ROUND:
         return engine.endRound(state)
