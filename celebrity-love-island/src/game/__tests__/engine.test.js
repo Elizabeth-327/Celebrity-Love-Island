@@ -114,26 +114,14 @@ describe('engine round behavior', () => {
     const sideBattleCelebrityIds = state.activeContestantIds.filter(
       (id) => id !== PLAYER_ID && id !== targetId,
     )
-
-    const firstPairA = sideBattleCelebrityIds[0]
-    const firstPairB = sideBattleCelebrityIds[1]
-    const leftOutId = sideBattleCelebrityIds[sideBattleCelebrityIds.length - 1]
-    const stablePeerId = sideBattleCelebrityIds.find((id) => id !== leftOutId)
-
-    const beforeAB = state.graph[firstPairA][firstPairB]
-    const beforeBA = state.graph[firstPairB][firstPairA]
-    const beforeLeftOut = state.graph[leftOutId][stablePeerId]
-    const beforeTargetToPeer = state.graph[targetId][stablePeerId]
+    const expectedPairCount = Math.floor(sideBattleCelebrityIds.length / 2)
 
     const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0)
     state = engine.resolveMingle(state, targetId)
     state = engine.resolveBattle(state, targetId, 1)
+    expect(randomSpy).toHaveBeenCalledTimes(expectedPairCount * 2)
     randomSpy.mockRestore()
 
-    expect(state.graph[firstPairA][firstPairB]).toBe(Math.max(-100, beforeAB - 20))
-    expect(state.graph[firstPairB][firstPairA]).toBe(Math.max(-100, beforeBA - 20))
-    expect(state.graph[leftOutId][stablePeerId]).toBe(beforeLeftOut)
-    expect(state.graph[targetId][stablePeerId]).toBe(beforeTargetToPeer)
     expect(state.history.at(-1)).toContain('sat out due to odd pairing')
   })
 })

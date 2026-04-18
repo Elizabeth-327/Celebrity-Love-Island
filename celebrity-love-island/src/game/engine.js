@@ -35,12 +35,72 @@ function deepCloneGraph(graph) {
   )
 }
 
-function applyEdgeDelta(graph, fromId, toId, delta) {
+function createEdgeDeltaMap() {
+  return {}
+}
+
+function addEdgeDelta(deltaMap, fromId, toId, delta) {
+  if (!delta) {
+    return
+  }
+
+  deltaMap[fromId] = deltaMap[fromId] ?? {}
+  deltaMap[fromId][toId] = (deltaMap[fromId][toId] ?? 0) + delta
+}
+
+function forEachEdgeDelta(deltaMap, callback) {
+  Object.entries(deltaMap).forEach(([fromId, outgoing]) => {
+    Object.entries(outgoing).forEach(([toId, delta]) => {
+      if (delta !== 0) {
+        callback(fromId, toId, delta)
+      }
+    })
+  })
+}
+
+function mergeEdgeDeltaMaps(...maps) {
+  const merged = createEdgeDeltaMap()
+  maps.forEach((deltaMap) => {
+    if (!deltaMap) {
+      return
+    }
+
+    forEachEdgeDelta(deltaMap, (fromId, toId, delta) => {
+      addEdgeDelta(merged, fromId, toId, delta)
+    })
+  })
+  return merged
+}
+
+function applyEdgeDeltaMap(graph, deltaMap) {
   const nextGraph = deepCloneGraph(graph)
-  const current = nextGraph[fromId]?.[toId] ?? 0
-  nextGraph[fromId] = nextGraph[fromId] ?? {}
-  nextGraph[fromId][toId] = clampEdge(current + delta)
+  forEachEdgeDelta(deltaMap, (fromId, toId, delta) => {
+    nextGraph[fromId] = nextGraph[fromId] ?? {}
+    const current = nextGraph[fromId][toId] ?? 0
+    nextGraph[fromId][toId] = clampEdge(current + delta)
+  })
   return nextGraph
+}
+
+function getRippleStrengthScale(connectionScore) {
+  const absoluteScore = Math.abs(connectionScore)
+  if (absoluteScore <= 0) {
+    return 0
+  }
+
+  if (absoluteScore <= 25) {
+    return 0.25
+  }
+
+  if (absoluteScore <= 50) {
+    return 0.5
+  }
+
+  if (absoluteScore <= 75) {
+    return 0.75
+  }
+
+  return 1
 }
 
 function createInitialGraph(contestantIds) {
@@ -80,32 +140,6 @@ function extendGraphWithContestant(graph, existingIds, newcomerId) {
   return nextGraph
 }
 
-function applyRelationshipRipple(gameState, targetId, directDelta) {
-  const target = gameState.contestants[targetId]
-  if (!target) {
-    return gameState.graph
-  }
-
-  let nextGraph = gameState.graph
-  const sign = Math.sign(directDelta)
-
-  gameState.activeContestantIds.forEach((otherId) => {
-    if (otherId === PLAYER_ID || otherId === targetId) {
-      return
-    }
-
-    const allyBoost = target.allies.includes(otherId) ? 2 * sign : 0
-    const rivalDrop = target.rivals.includes(otherId) ? -2 * sign : 0
-    const ripple = allyBoost + rivalDrop
-    if (ripple !== 0) {
-      nextGraph = applyEdgeDelta(nextGraph, otherId, PLAYER_ID, ripple)
-      nextGraph = applyEdgeDelta(nextGraph, PLAYER_ID, otherId, Math.sign(ripple))
-    }
-  })
-
-  return nextGraph
-}
-
 function appendHistory(gameState, message) {
   return [...gameState.history, `R${gameState.round}: ${message}`]
 }
@@ -114,11 +148,18 @@ function randomConnectionDelta() {
   return Math.floor(Math.random() * 41) - 20
 }
 
-function applyCelebritySideBattleUpdates(gameState, excludedCelebrityId = null) {
+function buildPlayerBattlePrimaryDeltas(targetId, delta) {
+  const primaryDeltas = createEdgeDeltaMap()
+  addEdgeDelta(primaryDeltas, PLAYER_ID, targetId, delta)
+  addEdgeDelta(primaryDeltas, targetId, PLAYER_ID, Math.round(delta / 2))
+  return primaryDeltas
+}
+
+function buildCelebritySideBattlePrimaryDeltas(gameState, excludedCelebrityId = null) {
   const celebrityIds = gameState.activeContestantIds.filter(
     (id) => id !== PLAYER_ID && id !== excludedCelebrityId,
   )
-  let nextGraph = gameState.graph
+  const primaryDeltas = createEdgeDeltaMap()
 
   for (let index = 0; index + 1 < celebrityIds.length; index += 2) {
     const celebA = celebrityIds[index]
@@ -127,14 +168,54 @@ function applyCelebritySideBattleUpdates(gameState, excludedCelebrityId = null) 
     const deltaAB = randomConnectionDelta()
     const deltaBA = randomConnectionDelta()
 
-    nextGraph = applyEdgeDelta(nextGraph, celebA, celebB, deltaAB)
-    nextGraph = applyEdgeDelta(nextGraph, celebB, celebA, deltaBA)
+    addEdgeDelta(primaryDeltas, celebA, celebB, deltaAB)
+    addEdgeDelta(primaryDeltas, celebB, celebA, deltaBA)
   }
 
   const leftOutId =
     celebrityIds.length % 2 === 1 ? celebrityIds[celebrityIds.length - 1] : null
 
-  return { graph: nextGraph, leftOutId }
+  return { primaryDeltas, leftOutId }
+}
+
+function buildRippleDeltas(gameState, primaryDeltas) {
+  const rippleDeltas = createEdgeDeltaMap()
+
+  forEachEdgeDelta(primaryDeltas, (sourceId, rootId, primaryDelta) => {
+    const baseMagnitude = Math.abs(primaryDelta) * 0.2
+    if (baseMagnitude <= 0) {
+      return
+    }
+
+    const direction = primaryDelta > 0 ? -1 : 1
+
+    gameState.activeContestantIds.forEach((influencerId) => {
+      if (influencerId === sourceId || influencerId === rootId) {
+        return
+      }
+
+      const influencerToSource = gameState.graph[influencerId]?.[sourceId] ?? 0
+      const influencerToRoot = gameState.graph[influencerId]?.[rootId] ?? 0
+
+      if (influencerToSource > 0) {
+        const sourceScale = getRippleStrengthScale(influencerToSource)
+        const sourceImpact = Math.round(baseMagnitude * sourceScale)
+        if (sourceImpact > 0) {
+          addEdgeDelta(rippleDeltas, sourceId, influencerId, sourceImpact * direction)
+        }
+      }
+
+      if (influencerToRoot > 0) {
+        const rootScale = getRippleStrengthScale(influencerToRoot)
+        const rootImpact = Math.round(baseMagnitude * rootScale)
+        if (rootImpact > 0) {
+          addEdgeDelta(rippleDeltas, influencerId, rootId, rootImpact * direction)
+        }
+      }
+    })
+  })
+
+  return rippleDeltas
 }
 
 export function selectEliminatedContestant(
@@ -291,20 +372,11 @@ export function createGameEngine(options = {}) {
   }
 
   function applyDirectRelationshipChange(currentState, targetId, delta) {
-    let nextGraph = applyEdgeDelta(currentState.graph, PLAYER_ID, targetId, delta)
-    nextGraph = applyEdgeDelta(nextGraph, targetId, PLAYER_ID, Math.round(delta / 2))
-    const rippleGraph = applyRelationshipRipple(
-      {
-        ...currentState,
-        graph: nextGraph,
-      },
-      targetId,
-      delta,
-    )
-
+    const primaryDeltas = buildPlayerBattlePrimaryDeltas(targetId, delta)
+    const nextGraph = applyEdgeDeltaMap(currentState.graph, primaryDeltas)
     return {
       ...currentState,
-      graph: rippleGraph,
+      graph: nextGraph,
     }
   }
 
@@ -357,15 +429,21 @@ export function createGameEngine(options = {}) {
       tier: battleTier,
       previousBattle: currentState.battle,
     })
-    const nextState = applyDirectRelationshipChange(
-      currentState,
+    const playerBattlePrimaryDeltas = buildPlayerBattlePrimaryDeltas(
       targetId,
       encounter.connectionDelta,
     )
-    const sideBattleResult = applyCelebritySideBattleUpdates(nextState, targetId)
+    const sideBattleResult = buildCelebritySideBattlePrimaryDeltas(currentState, targetId)
+    const primaryDeltas = mergeEdgeDeltaMaps(
+      playerBattlePrimaryDeltas,
+      sideBattleResult.primaryDeltas,
+    )
+    const rippleDeltas = buildRippleDeltas(currentState, primaryDeltas)
+    const netDeltas = mergeEdgeDeltaMaps(primaryDeltas, rippleDeltas)
+    const nextGraph = applyEdgeDeltaMap(currentState.graph, netDeltas)
     const sideBattleState = {
-      ...nextState,
-      graph: sideBattleResult.graph,
+      ...currentState,
+      graph: nextGraph,
     }
     const leftOutMessage = sideBattleResult.leftOutId
       ? ` ${sideBattleState.contestants[sideBattleResult.leftOutId].name} sat out due to odd pairing.`
