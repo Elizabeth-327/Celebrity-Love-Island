@@ -20,7 +20,7 @@ function App() {
       {introDone && <Sparkles />}
       <div className="intro-screen">
         <p className="intro-welcome">
-          <TypingText text="Welcome to" speed={80} onDone={() => setLine1Done(true)} />
+          <TypingText text="Welcome to" speed={70} onDone={() => setLine1Done(true)} />
         </p>
         {line1Done && (
           <h1 className="intro-title">
