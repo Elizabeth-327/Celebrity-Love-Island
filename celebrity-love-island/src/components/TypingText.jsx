@@ -4,7 +4,6 @@ export default function TypingText({ text, speed = 60, className = '', onDone })
   const [displayed, setDisplayed] = useState('')
 
   useEffect(() => {
-    setDisplayed('')
     let i = 0
     const interval = setInterval(() => {
       i++
@@ -15,7 +14,7 @@ export default function TypingText({ text, speed = 60, className = '', onDone })
       }
     }, speed)
     return () => clearInterval(interval)
-  }, [text, speed])
+  }, [text, speed, onDone])
 
   return <span className={className}>{displayed}</span>
 }
