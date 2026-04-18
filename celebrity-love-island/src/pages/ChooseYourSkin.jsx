@@ -46,7 +46,7 @@ export default function ChooseYourSkin({ onNext }) {
         <button
           className={`start-game-btn select-btn ${selected ? 'select-btn--active' : ''}`}
           disabled={!selected}
-          onClick={onNext}
+          onClick={() => onNext(SKINS[index].id)}
         >
           Select
         </button>

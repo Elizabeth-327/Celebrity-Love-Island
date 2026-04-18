@@ -4,10 +4,12 @@ import Intro from './pages/Intro'
 import IntroduceCelebs from './pages/IntroduceCelebs'
 import ChooseYourSkin from './pages/ChooseYourSkin'
 import ChooseYourClothes from './pages/ChooseYourClothes'
+import Island from './pages/Island'
 import BattleDemo from './pages/BattleDemo'
 
 function App() {
   const [page, setPage] = useState('intro')
+  const [selectedSkin, setSelectedSkin] = useState(null)
 
   if (page === 'battle_demo') {
     return <BattleDemo onBackToIntro={() => setPage('intro')} />
@@ -18,11 +20,15 @@ function App() {
   }
 
   if (page === 'choose_your_skin') {
-    return <ChooseYourSkin onNext={() => setPage('choose_your_clothes')} />
+    return <ChooseYourSkin onNext={(skin) => { setSelectedSkin(skin); setPage('choose_your_clothes') }} />
   }
 
   if (page === 'choose_your_clothes') {
-    return <ChooseYourClothes />
+    return <ChooseYourClothes selectedSkin={selectedSkin} onNext={() => setPage('island')} />
+  }
+
+  if (page === 'island') {
+    return <Island />
   }
 
   return (
