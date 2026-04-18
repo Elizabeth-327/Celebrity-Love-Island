@@ -193,6 +193,19 @@
   pointer-events: auto;
 }
 
+.island-character {
+  position: absolute;
+  object-fit: contain;
+  transform-origin: bottom center;
+  animation: bop 1.2s ease-in-out infinite;
+}
+
+@keyframes bop {
+  0%, 100% { transform: scaleY(1)    scaleX(1);    }
+  35%       { transform: scaleY(1.08) scaleX(0.94) translateY(-4px); }
+  65%       { transform: scaleY(0.94) scaleX(1.05) translateY(2px);  }
+}
+
 .dots-screen {
   display: flex;
   align-items: center;

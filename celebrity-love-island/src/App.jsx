@@ -28,7 +28,7 @@ function App() {
   }
 
   if (page === 'island') {
-    return <Island />
+    return <Island selectedSkin={selectedSkin} />
   }
 
   return (
