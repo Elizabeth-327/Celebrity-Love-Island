@@ -709,11 +709,11 @@
 
 .move-list-panel,
 .move-details-panel {
-  min-height: 210px;
+  min-height: 180px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   background: rgba(25, 21, 30, 0.82);
-  padding: 12px;
+  padding: 10px;
 }
 
 .move-list-panel h3,
@@ -727,14 +727,14 @@
 .move-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-height: 180px;
+  gap: 6px;
+  max-height: 240px;
   overflow-y: auto;
 }
 
 .move-item {
   text-align: left;
-  padding: 8px 10px;
+  padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06);
@@ -742,11 +742,75 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
+  font-size: 0.88rem;
 }
 
-.move-item small {
+.move-item-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.move-item-name {
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.move-item-state-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px;
+}
+
+.move-item-state-chip img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.move-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.move-item-meta small {
+  font-size: 0.72rem;
   opacity: 0.86;
+}
+
+.move-item-state-changes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.move-state-change-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 5px 1px 3px;
+}
+
+.move-state-change-chip img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}
+
+.move-state-change-chip small {
+  font-size: 0.67rem;
+  opacity: 0.88;
 }
 
 .move-item.selected {
@@ -764,12 +828,56 @@
 }
 
 .move-details-panel p {
-  margin: 6px 0;
+  margin: 4px 0;
+  font-size: 0.84rem;
+}
+
+.selected-move-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 0.84rem;
+}
+
+.selected-state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px 2px 4px;
+}
+
+.selected-state-chip img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .state-change-list ul {
-  margin: 6px 0 0;
-  padding-left: 16px;
+  margin: 4px 0 0;
+  padding-left: 0;
+  list-style: none;
+  font-size: 0.82rem;
+}
+
+.state-change-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.state-change-item img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.state-change-label {
+  font-size: 0.82rem;
 }
 
 .battle-footer {
@@ -777,6 +885,79 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.quote-minigame-panel {
+  border: 1px solid rgba(255, 193, 231, 0.45);
+  border-radius: 12px;
+  background: rgba(44, 18, 35, 0.9);
+  padding: 12px;
+}
+
+.quote-minigame-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.quote-minigame-header h3 {
+  margin: 0;
+  color: #ffd3ea;
+  font-size: 1rem;
+}
+
+.quote-timer {
+  border: 1px solid rgba(255, 179, 219, 0.55);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.85rem;
+  color: #ffd3ea;
+  background: rgba(255, 107, 185, 0.2);
+}
+
+.quote-prompt {
+  margin: 10px 0 8px;
+  font-size: 0.95rem;
+}
+
+.quote-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.quote-option-btn {
+  text-align: left;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  padding: 9px 10px;
+  cursor: pointer;
+  font-size: 0.84rem;
+}
+
+.quote-option-btn:hover {
+  border-color: rgba(255, 153, 211, 0.8);
+  background: rgba(255, 112, 187, 0.15);
+}
+
+.quote-minigame-helper {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.quote-replacement-panels .quote-list-panel,
+.quote-replacement-panels .quote-details-panel {
+  min-height: 200px;
+}
+
+.quote-replacement-panels .quote-details-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .attack-btn {
