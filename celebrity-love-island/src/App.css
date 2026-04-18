@@ -114,6 +114,105 @@
   text-shadow: 0 0 20px rgba(255,220,100,0.8), 0 2px 8px rgba(0,0,0,0.6);
 }
 
+.choose-skin-screen {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 8vh;
+  height: 100vh;
+  gap: 2.5rem;
+}
+
+.skin-selector {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.skin-arrow {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 220, 180, 0.6);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.8rem;
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.skin-arrow:hover {
+  background: rgba(255, 220, 150, 0.2);
+  box-shadow: 0 0 20px rgba(255, 200, 100, 0.4);
+}
+
+.skin-frame {
+  border: 3px solid rgba(255, 220, 180, 0.5);
+  border-radius: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.skin-frame:hover {
+  border-color: rgba(255, 220, 100, 0.9);
+  box-shadow: 0 0 30px rgba(255, 200, 100, 0.5), 0 0 60px rgba(255, 150, 200, 0.3);
+}
+
+.skin-frame--selected {
+  border-color: rgba(255, 220, 100, 1);
+  box-shadow: 0 0 40px rgba(255, 200, 100, 0.7), 0 0 80px rgba(255, 150, 200, 0.4);
+}
+
+.skin-img {
+  height: 55vh;
+  object-fit: contain;
+  display: block;
+}
+
+.select-btn {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 2.5rem;
+  opacity: 0.3;
+  pointer-events: none;
+  transition: background 0.3s, box-shadow 0.3s, transform 0.15s, opacity 0.3s;
+}
+
+.select-btn--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.skip-intro-btn {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  z-index: 10;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  font-family: serif;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.skip-intro-btn:hover {
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
 .start-game-btn {
   position: fixed;
   bottom: 2.5rem;

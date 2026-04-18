@@ -3,7 +3,7 @@ import TypingText from '../components/TypingText'
 import Sparkles from '../components/Sparkles'
 import IslandBg from '../assets/backgrounds/love_island_bg.jpg'
 
-export default function Intro({ onStart }) {
+export default function Intro({ onStart, onSkip }) {
   const [line1Done, setLine1Done] = useState(false)
   const [introDone, setIntroDone] = useState(false)
 
@@ -36,6 +36,9 @@ export default function Intro({ onStart }) {
           Start Game
         </button>
       )}
+      <button className="skip-intro-btn" onClick={onSkip}>
+        Skip Intro
+      </button>
     </div>
   )
 }
