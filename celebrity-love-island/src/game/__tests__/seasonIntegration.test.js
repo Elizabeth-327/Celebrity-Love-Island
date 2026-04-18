@@ -3,7 +3,7 @@ import { PLAYER_ID } from '../data/contestants'
 import { createGameEngine } from '../engine'
 
 describe('season integration', () => {
-  it('runs a full 10-round season with deterministic scoring', () => {
+  it('runs a full 8-round season with deterministic scoring', () => {
     const scoreFn = (contestantId) => {
       if (contestantId === PLAYER_ID) {
         return 1_000
@@ -35,10 +35,10 @@ describe('season integration', () => {
 
     expect(roundSizes[1]).toBe(10)
     expect(roundSizes[2]).toBe(11)
-    expect(roundSizes[10]).toBe(11)
-    expect(eliminatedCount).toBe(4)
+    expect(roundSizes[8]).toBe(11)
+    expect(eliminatedCount).toBe(3)
     expect(state.gameStatus).toBe('won')
-    expect(state.round).toBe(10)
+    expect(state.round).toBe(8)
   })
 })
 

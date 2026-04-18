@@ -1,6 +1,6 @@
 import { PLAYER_ID } from './data/contestants'
 
-export function computeAttractionScore(fromId, toId, gameState) {
+export function computeConnectionScore(fromId, toId, gameState) {
   return gameState.graph[fromId]?.[toId] ?? 0
 }
 
@@ -10,7 +10,7 @@ export function computeTotalConnectionScore(contestantId, gameState) {
       return sum
     }
 
-    return sum + computeAttractionScore(contestantId, otherId, gameState)
+    return sum + computeConnectionScore(contestantId, otherId, gameState)
   }, 0)
 }
 

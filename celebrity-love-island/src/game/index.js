@@ -16,7 +16,7 @@ export {
   createDefaultRoundPolicy,
 } from './roundPolicy'
 export {
-  computeAttractionScore,
+  computeConnectionScore,
   computeTotalConnectionScore,
   buildScoreboard,
 } from './scoringHooks'

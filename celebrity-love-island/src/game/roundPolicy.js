@@ -1,14 +1,11 @@
-export const SEASON_LENGTH = 10
-
-const BOMB_SHELL_ROUND_SET = new Set([2, 4, 6, 8, 10])
-const ELIMINATION_ROUND_SET = new Set([3, 5, 7, 9])
+export const SEASON_LENGTH = 8
 
 export function isBombshellRound(roundNumber) {
-  return BOMB_SHELL_ROUND_SET.has(roundNumber)
+  return roundNumber > 1 && roundNumber <= SEASON_LENGTH && roundNumber % 2 === 0
 }
 
 export function isEliminationRound(roundNumber) {
-  return ELIMINATION_ROUND_SET.has(roundNumber)
+  return roundNumber > 2 && roundNumber <= SEASON_LENGTH && roundNumber % 2 === 1
 }
 
 export function createDefaultRoundPolicy() {

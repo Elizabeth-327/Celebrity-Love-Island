@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { PLAYER_ID } from '../data/contestants'
 import { createGameEngine } from '../engine'
 
@@ -68,6 +68,73 @@ describe('engine round behavior', () => {
 
     expect(state.phase).toBe('seasonResult')
     expect(state.gameStatus).toBe('lost')
+  })
+
+  it('uses the chosen battle tier regardless of current round', () => {
+    const engine = createGameEngine()
+    let state = createStartedState(engine)
+
+    state = engine.startRound(state)
+    const targetId = state.activeContestantIds.find((id) => id !== PLAYER_ID)
+    state = engine.resolveMingle(state, targetId)
+
+    const tier3State = engine.resolveBattle(state, targetId, 3)
+    expect(tier3State.battle.tier).toBe(3)
+    expect(tier3State.history.some((line) => line.includes('Tier 3 battle'))).toBe(true)
+
+    const tierDefaultState = engine.resolveBattle(
+      {
+        ...state,
+        interactionState: {
+          ...state.interactionState,
+          battled: false,
+        },
+      },
+      targetId,
+      99,
+    )
+    expect(tierDefaultState.battle.tier).toBe(1)
+    expect(tierDefaultState.history.some((line) => line.includes('Tier 1 battle'))).toBe(true)
+  })
+
+  it('excludes the battle opponent from side-battles and leaves one out when odd', () => {
+    const engine = createGameEngine()
+    let state = createStartedState(engine)
+
+    // Finish round 1 so round 2 adds a bombshell and creates an odd side-battle pool
+    // after excluding the chosen battle target.
+    state = engine.startRound(state)
+    let targetId = state.activeContestantIds.find((id) => id !== PLAYER_ID)
+    state = engine.resolveMingle(state, targetId)
+    state = engine.resolveBattle(state, targetId, 1)
+    state = engine.endRound(state)
+
+    state = engine.startRound(state)
+    targetId = state.activeContestantIds.find((id) => id !== PLAYER_ID)
+    const sideBattleCelebrityIds = state.activeContestantIds.filter(
+      (id) => id !== PLAYER_ID && id !== targetId,
+    )
+
+    const firstPairA = sideBattleCelebrityIds[0]
+    const firstPairB = sideBattleCelebrityIds[1]
+    const leftOutId = sideBattleCelebrityIds[sideBattleCelebrityIds.length - 1]
+    const stablePeerId = sideBattleCelebrityIds.find((id) => id !== leftOutId)
+
+    const beforeAB = state.graph[firstPairA][firstPairB]
+    const beforeBA = state.graph[firstPairB][firstPairA]
+    const beforeLeftOut = state.graph[leftOutId][stablePeerId]
+    const beforeTargetToPeer = state.graph[targetId][stablePeerId]
+
+    const randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0)
+    state = engine.resolveMingle(state, targetId)
+    state = engine.resolveBattle(state, targetId, 1)
+    randomSpy.mockRestore()
+
+    expect(state.graph[firstPairA][firstPairB]).toBe(Math.max(-100, beforeAB - 20))
+    expect(state.graph[firstPairB][firstPairA]).toBe(Math.max(-100, beforeBA - 20))
+    expect(state.graph[leftOutId][stablePeerId]).toBe(beforeLeftOut)
+    expect(state.graph[targetId][stablePeerId]).toBe(beforeTargetToPeer)
+    expect(state.history.at(-1)).toContain('sat out due to odd pairing')
   })
 })
 

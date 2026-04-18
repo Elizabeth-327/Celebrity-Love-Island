@@ -23,7 +23,11 @@ export function createGameReducer(engine) {
       case ACTIONS.RUN_MINGLE:
         return engine.resolveMingle(state, action.payload.targetId)
       case ACTIONS.RUN_BATTLE:
-        return engine.resolveBattle(state, action.payload.targetId)
+        return engine.resolveBattle(
+          state,
+          action.payload.targetId,
+          action.payload.tier,
+        )
       case ACTIONS.END_ROUND:
         return engine.endRound(state)
       case ACTIONS.RESET:

@@ -4,10 +4,11 @@ import {
   PLAYER_ID,
   createBombshellQueue,
   createInitialContestants,
+  getRelationshipEdgeValue,
 } from './data/contestants'
 import {
   buildScoreboard,
-  computeAttractionScore,
+  computeConnectionScore,
   computeTotalConnectionScore,
 } from './scoringHooks'
 import { SEASON_LENGTH, createDefaultRoundPolicy } from './roundPolicy'
@@ -15,6 +16,14 @@ import { SEASON_LENGTH, createDefaultRoundPolicy } from './roundPolicy'
 const EDGE_MIN = -100
 const EDGE_MAX = 100
 const DEFAULT_PHASE = 'intro'
+
+function normalizeBattleTier(tier) {
+  if (tier === 2 || tier === 3) {
+    return tier
+  }
+
+  return 1
+}
 
 function clampEdge(value) {
   return Math.max(EDGE_MIN, Math.min(EDGE_MAX, Math.round(value)))
@@ -34,11 +43,6 @@ function applyEdgeDelta(graph, fromId, toId, delta) {
   return nextGraph
 }
 
-function initialEdgeValue(fromId, toId) {
-  const seed = fromId.length * 13 + toId.length * 17
-  return (seed % 35) - 10
-}
-
 function createInitialGraph(contestantIds) {
   const graph = {}
   contestantIds.forEach((fromId) => {
@@ -49,7 +53,9 @@ function createInitialGraph(contestantIds) {
       }
 
       graph[fromId][toId] =
-        fromId === PLAYER_ID || toId === PLAYER_ID ? 0 : initialEdgeValue(fromId, toId)
+        fromId === PLAYER_ID || toId === PLAYER_ID
+          ? 0
+          : getRelationshipEdgeValue(fromId, toId)
     })
   })
   return graph
@@ -66,9 +72,9 @@ function extendGraphWithContestant(graph, existingIds, newcomerId) {
 
     nextGraph[contestantId] = nextGraph[contestantId] ?? {}
     nextGraph[newcomerId][contestantId] =
-      contestantId === PLAYER_ID ? 0 : initialEdgeValue(newcomerId, contestantId)
+      contestantId === PLAYER_ID ? 0 : getRelationshipEdgeValue(newcomerId, contestantId)
     nextGraph[contestantId][newcomerId] =
-      contestantId === PLAYER_ID ? 0 : initialEdgeValue(contestantId, newcomerId)
+      contestantId === PLAYER_ID ? 0 : getRelationshipEdgeValue(contestantId, newcomerId)
   })
 
   return nextGraph
@@ -104,6 +110,33 @@ function appendHistory(gameState, message) {
   return [...gameState.history, `R${gameState.round}: ${message}`]
 }
 
+function randomConnectionDelta() {
+  return Math.floor(Math.random() * 41) - 20
+}
+
+function applyCelebritySideBattleUpdates(gameState, excludedCelebrityId = null) {
+  const celebrityIds = gameState.activeContestantIds.filter(
+    (id) => id !== PLAYER_ID && id !== excludedCelebrityId,
+  )
+  let nextGraph = gameState.graph
+
+  for (let index = 0; index + 1 < celebrityIds.length; index += 2) {
+    const celebA = celebrityIds[index]
+    const celebB = celebrityIds[index + 1]
+
+    const deltaAB = randomConnectionDelta()
+    const deltaBA = randomConnectionDelta()
+
+    nextGraph = applyEdgeDelta(nextGraph, celebA, celebB, deltaAB)
+    nextGraph = applyEdgeDelta(nextGraph, celebB, celebA, deltaBA)
+  }
+
+  const leftOutId =
+    celebrityIds.length % 2 === 1 ? celebrityIds[celebrityIds.length - 1] : null
+
+  return { graph: nextGraph, leftOutId }
+}
+
 export function selectEliminatedContestant(
   activeContestants,
   gameState,
@@ -125,8 +158,8 @@ export function selectEliminatedContestant(
 
 export function createGameEngine(options = {}) {
   const scoringHooks = {
-    computeAttractionScore:
-      options.computeAttractionScore ?? computeAttractionScore,
+    computeConnectionScore:
+      options.computeConnectionScore ?? computeConnectionScore,
     computeTotalConnectionScore:
       options.computeTotalConnectionScore ?? computeTotalConnectionScore,
   }
@@ -284,8 +317,12 @@ export function createGameEngine(options = {}) {
       return currentState
     }
 
-    const attraction = scoringHooks.computeAttractionScore(PLAYER_ID, targetId, currentState)
-    const delta = attraction >= 0 ? 6 : 9
+    const connectionScore = scoringHooks.computeConnectionScore(
+      PLAYER_ID,
+      targetId,
+      currentState,
+    )
+    const delta = connectionScore >= 0 ? 6 : 9
     const nextState = applyDirectRelationshipChange(currentState, targetId, delta)
 
     return {
@@ -298,7 +335,7 @@ export function createGameEngine(options = {}) {
     }
   }
 
-  function resolveBattle(currentState, targetId) {
+  function resolveBattle(currentState, targetId, requestedTier = 1) {
     if (!currentState.interactionState.startedRound || currentState.interactionState.battled) {
       return currentState
     }
@@ -307,27 +344,50 @@ export function createGameEngine(options = {}) {
       return currentState
     }
 
-    const attraction = scoringHooks.computeAttractionScore(PLAYER_ID, targetId, currentState)
+    const connectionScore = scoringHooks.computeConnectionScore(
+      PLAYER_ID,
+      targetId,
+      currentState,
+    )
+    const battleTier = normalizeBattleTier(requestedTier)
     const encounter = resolveBattleEncounter({
-      attractionScore: attraction,
+      connectionScore,
       roundNumber: currentState.round,
       targetId,
+      tier: battleTier,
       previousBattle: currentState.battle,
     })
-    const nextState = applyDirectRelationshipChange(currentState, targetId, encounter.delta)
+    const nextState = applyDirectRelationshipChange(
+      currentState,
+      targetId,
+      encounter.connectionDelta,
+    )
+    const sideBattleResult = applyCelebritySideBattleUpdates(nextState, targetId)
+    const sideBattleState = {
+      ...nextState,
+      graph: sideBattleResult.graph,
+    }
+    const leftOutMessage = sideBattleResult.leftOutId
+      ? ` ${sideBattleState.contestants[sideBattleResult.leftOutId].name} sat out due to odd pairing.`
+      : ''
+    const historyAfterBattle = appendHistory(
+      sideBattleState,
+      `Tier ${battleTier} battle against ${sideBattleState.contestants[targetId].name}: ${encounter.won ? 'win' : 'loss'}.`,
+    )
+    const historyAfterSideBattles = [
+      ...historyAfterBattle,
+      `R${sideBattleState.round}: Celebrity side battles shifted connection scores.${leftOutMessage}`,
+    ]
 
     return {
-      ...nextState,
+      ...sideBattleState,
       coupleTargetId: targetId,
       battle: encounter.battleState,
       interactionState: {
-        ...nextState.interactionState,
+        ...sideBattleState.interactionState,
         battled: true,
       },
-      history: appendHistory(
-        nextState,
-        `Battle against ${nextState.contestants[targetId].name}: ${encounter.won ? 'win' : 'loss'}.`,
-      ),
+      history: historyAfterSideBattles,
     }
   }
 
