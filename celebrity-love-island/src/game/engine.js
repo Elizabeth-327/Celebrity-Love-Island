@@ -6,6 +6,16 @@ import {
   createInitialContestants,
   getRelationshipEdgeValue,
 } from './data/contestants'
+import { getStartingMoveIdsForCareer } from './data/moves'
+import {
+  BASE_SLOT_MACHINE_SPEED,
+  SLOT_MACHINE_LOSS_SPEED_MULTIPLIER,
+  createActiveSlotMachineState,
+  createInitialSlotMachineState,
+  resolveSlotMachineReward,
+  spinSlotMachine,
+  stopLeftmostSpinningColumn,
+} from './slotMachine'
 import {
   buildScoreboard,
   computeConnectionScore,
@@ -16,6 +26,10 @@ import { SEASON_LENGTH, createDefaultRoundPolicy } from './roundPolicy'
 const EDGE_MIN = -100
 const EDGE_MAX = 100
 const DEFAULT_PHASE = 'intro'
+
+function normalizeSlotMachineSpeed(speed) {
+  return Number(speed.toFixed(4))
+}
 
 function normalizeBattleTier(tier) {
   if (tier === 2 || tier === 3) {
@@ -270,8 +284,13 @@ export function createGameEngine(options = {}) {
         startedRound: false,
         mingled: false,
         battled: false,
+        resolvedSlotMachine: false,
       },
       battle: createInitialBattleState(),
+      slotMachine: createInitialSlotMachineState(BASE_SLOT_MACHINE_SPEED),
+      slotMachineSpeed: BASE_SLOT_MACHINE_SPEED,
+      slotMachineLossesSinceLastWin: 0,
+      playerMoveIds: getStartingMoveIdsForCareer(CAREER_OPTIONS[0]),
       history: ['Welcome to Celebrity Love Island.'],
       winnerId: null,
     }
@@ -293,6 +312,7 @@ export function createGameEngine(options = {}) {
         ...currentState.player,
         career: nextCareer,
       },
+      playerMoveIds: getStartingMoveIdsForCareer(nextCareer),
       contestants: {
         ...currentState.contestants,
         [PLAYER_ID]: {
@@ -312,7 +332,9 @@ export function createGameEngine(options = {}) {
         startedRound: false,
         mingled: false,
         battled: false,
+        resolvedSlotMachine: false,
       },
+      slotMachine: createInitialSlotMachineState(currentState.slotMachineSpeed),
       history: appendHistory(currentState, 'Season starts.'),
     }
   }
@@ -367,6 +389,7 @@ export function createGameEngine(options = {}) {
         ...withBombshell.interactionState,
         startedRound: true,
       },
+      slotMachine: createInitialSlotMachineState(withBombshell.slotMachineSpeed),
       history: appendHistory(withBombshell, 'Round started.'),
     }
   }
@@ -462,11 +485,86 @@ export function createGameEngine(options = {}) {
       ...sideBattleState,
       coupleTargetId: targetId,
       battle: encounter.battleState,
+      slotMachine: createActiveSlotMachineState(sideBattleState.slotMachineSpeed),
       interactionState: {
         ...sideBattleState.interactionState,
         battled: true,
+        resolvedSlotMachine: false,
       },
-      history: historyAfterSideBattles,
+      history: [
+        ...historyAfterSideBattles,
+        `R${sideBattleState.round}: Slot machine started at speed x${sideBattleState.slotMachineSpeed}. Press space to stop each column from left to right.`,
+      ],
+    }
+  }
+
+  function tickSlotMachine(currentState) {
+    if (currentState.slotMachine.status !== 'spinning') {
+      return currentState
+    }
+
+    return {
+      ...currentState,
+      slotMachine: spinSlotMachine(currentState.slotMachine),
+    }
+  }
+
+  function stopSlotMachineColumn(currentState) {
+    if (!currentState.interactionState.battled) {
+      return currentState
+    }
+
+    if (currentState.slotMachine.status !== 'spinning') {
+      return currentState
+    }
+
+    const { slotMachine: afterStop, allStopped } = stopLeftmostSpinningColumn(
+      currentState.slotMachine,
+    )
+
+    if (!allStopped) {
+      return {
+        ...currentState,
+        slotMachine: afterStop,
+      }
+    }
+
+    const rewardResult = resolveSlotMachineReward(afterStop, currentState.playerMoveIds)
+    const nextMoveIds = rewardResult.awardedMoveId
+      ? [...currentState.playerMoveIds, rewardResult.awardedMoveId]
+      : currentState.playerMoveIds
+    const wonSlotMachine = Boolean(rewardResult.slotMachine.centerMatchState)
+    const nextSpeed = wonSlotMachine
+      ? BASE_SLOT_MACHINE_SPEED
+      : normalizeSlotMachineSpeed(
+          currentState.slotMachineSpeed * SLOT_MACHINE_LOSS_SPEED_MULTIPLIER,
+        )
+    const nextLossCount = wonSlotMachine
+      ? 0
+      : currentState.slotMachineLossesSinceLastWin + 1
+    const message = rewardResult.awardedMoveId
+      ? `Slot machine match on ${rewardResult.slotMachine.rewardMoveState}. You learned ${rewardResult.awardedMoveId}.`
+      : rewardResult.slotMachine.centerMatchState
+        ? `Slot machine matched ${rewardResult.slotMachine.centerMatchState}, but no new generic move was available.`
+        : 'Slot machine center row did not match. No bonus move awarded.'
+    const speedMessage = wonSlotMachine
+      ? ` Slot speed reset to x${nextSpeed}.`
+      : ` Loss streak: ${nextLossCount}. Next slot speed is x${nextSpeed}.`
+
+    return {
+      ...currentState,
+      slotMachine: {
+        ...rewardResult.slotMachine,
+        spinSpeed: currentState.slotMachine.spinSpeed,
+      },
+      slotMachineSpeed: nextSpeed,
+      slotMachineLossesSinceLastWin: nextLossCount,
+      playerMoveIds: nextMoveIds,
+      interactionState: {
+        ...currentState.interactionState,
+        resolvedSlotMachine: true,
+      },
+      history: appendHistory(currentState, `${message}${speedMessage}`),
     }
   }
 
@@ -492,7 +590,8 @@ export function createGameEngine(options = {}) {
     if (
       !currentState.interactionState.startedRound ||
       !currentState.interactionState.mingled ||
-      !currentState.interactionState.battled
+      !currentState.interactionState.battled ||
+      !currentState.interactionState.resolvedSlotMachine
     ) {
       return currentState
     }
@@ -544,8 +643,10 @@ export function createGameEngine(options = {}) {
         startedRound: false,
         mingled: false,
         battled: false,
+        resolvedSlotMachine: false,
       },
       battle: createInitialBattleState(),
+      slotMachine: createInitialSlotMachineState(nextState.slotMachineSpeed),
       history: appendHistory(nextState, 'Round complete.'),
     }
   }
@@ -564,6 +665,8 @@ export function createGameEngine(options = {}) {
     startRound,
     resolveMingle,
     resolveBattle,
+    tickSlotMachine,
+    stopSlotMachineColumn,
     endRound,
     getScoreboard,
   }

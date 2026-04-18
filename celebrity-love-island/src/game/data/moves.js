@@ -589,6 +589,21 @@ export const STARTING_MOVE_IDS_BY_CAREER = {
   ],
 }
 
+function normalizeCareer(career) {
+  return String(career)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+}
+
+const ALL_STARTING_MOVE_IDS = new Set(
+  Object.values(STARTING_MOVE_IDS_BY_CAREER).flat(),
+)
+
+export const GENERIC_MOVE_POOL = PLAYER_MOVE_POOL.filter(
+  (move) => !ALL_STARTING_MOVE_IDS.has(move.id),
+)
+
 export const MOVE_POOL_BY_ID = Object.fromEntries(
   PLAYER_MOVE_POOL.map((move) => [move.id, move]),
 )
@@ -598,10 +613,16 @@ export function getMoveById(moveId) {
 }
 
 export function getMovesForCareer(career) {
-  const normalizedCareer = String(career)
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '_')
+  const normalizedCareer = normalizeCareer(career)
   const moveIds = STARTING_MOVE_IDS_BY_CAREER[normalizedCareer] ?? []
   return moveIds.map((moveId) => MOVE_POOL_BY_ID[moveId]).filter(Boolean)
+}
+
+export function getStartingMoveIdsForCareer(career) {
+  const normalizedCareer = normalizeCareer(career)
+  return [...(STARTING_MOVE_IDS_BY_CAREER[normalizedCareer] ?? [])]
+}
+
+export function getGenericMovesByState(state) {
+  return GENERIC_MOVE_POOL.filter((move) => move.state === state)
 }

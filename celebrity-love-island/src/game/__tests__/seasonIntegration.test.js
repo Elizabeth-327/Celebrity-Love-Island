@@ -26,6 +26,9 @@ describe('season integration', () => {
       const targetId = state.activeContestantIds.find((id) => id !== PLAYER_ID)
       state = engine.resolveMingle(state, targetId)
       state = engine.resolveBattle(state, targetId)
+      state = engine.stopSlotMachineColumn(state)
+      state = engine.stopSlotMachineColumn(state)
+      state = engine.stopSlotMachineColumn(state)
       state = engine.endRound(state)
     }
 

@@ -5,6 +5,8 @@ export const ACTIONS = {
   START_ROUND: 'START_ROUND',
   RUN_MINGLE: 'RUN_MINGLE',
   RUN_BATTLE: 'RUN_BATTLE',
+  TICK_SLOT_MACHINE: 'TICK_SLOT_MACHINE',
+  STOP_SLOT_MACHINE_COLUMN: 'STOP_SLOT_MACHINE_COLUMN',
   END_ROUND: 'END_ROUND',
   RESET: 'RESET',
 }
@@ -29,6 +31,10 @@ export function createGameReducer(engine) {
           action.payload.tier,
           action.payload.quoteAttempts,
         )
+      case ACTIONS.TICK_SLOT_MACHINE:
+        return engine.tickSlotMachine(state)
+      case ACTIONS.STOP_SLOT_MACHINE_COLUMN:
+        return engine.stopSlotMachineColumn(state)
       case ACTIONS.END_ROUND:
         return engine.endRound(state)
       case ACTIONS.RESET:
