@@ -7,6 +7,7 @@ import ChooseCareer from './pages/ChooseCareer'
 import ChooseYourClothes from './pages/ChooseYourClothes'
 import Island from './pages/Island'
 import BattleDemo from './pages/BattleDemo'
+import ChatScreen from './pages/ChatScreen'
 import SeasonResult from './pages/SeasonResult'
 import { PLAYER_ID, getRelationshipEdgeValue } from './game/data/contestants'
 import { getStartingMoveIdsForCareer } from './game/data/moves'
@@ -44,6 +45,7 @@ const CELEBRITY_NAMES_BY_ID = {
   beyonce: 'Beyonce',
   jay_z: 'Jay-Z',
 }
+const MAX_CHATS_PER_ROUND = 2
 
 function getBombshellForRound(roundNumber) {
   return BOMB_SHELL_BY_ROUND[roundNumber] ?? null
@@ -58,6 +60,10 @@ function formatContestantName(contestantId) {
 
 function roundTo2(value) {
   return Math.round(value * 100) / 100
+}
+
+function clampConnection(value) {
+  return Math.max(-100, Math.min(100, Math.round(value)))
 }
 
 function computeIncomingConnectionStats(contestantId, graph, activeCelebrityIds) {
@@ -188,6 +194,12 @@ function buildInitialSeasonState() {
     roundArrivalSummary: null,
     bombshellEventText: null,
     roundPhaseFlashMessages: [],
+    chatState: {
+      chatsUsedThisRound: 0,
+      maxChatsPerRound: MAX_CHATS_PER_ROUND,
+      chattedCelebrityIdsThisRound: [],
+    },
+    roundChatLog: [],
   }
 }
 
@@ -205,6 +217,7 @@ function App() {
   const [selectedCareer, setSelectedCareer] = useState(null)
   const [selectedBattleCelebrityId, setSelectedBattleCelebrityId] = useState('kim_kardashian')
   const [selectedBattleTier, setSelectedBattleTier] = useState(1)
+  const [selectedChatCelebrityId, setSelectedChatCelebrityId] = useState(null)
   const [battleExitSummary, setBattleExitSummary] = useState(null)
   const [seasonResult, setSeasonResult] = useState(null)
   const [roundNumber, setRoundNumber] = useState(() => buildInitialSeasonState().roundNumber)
@@ -226,6 +239,8 @@ function App() {
   const [roundPhaseFlashMessages, setRoundPhaseFlashMessages] = useState(
     () => buildInitialSeasonState().roundPhaseFlashMessages,
   )
+  const [chatState, setChatState] = useState(() => buildInitialSeasonState().chatState)
+  const [roundChatLog, setRoundChatLog] = useState(() => buildInitialSeasonState().roundChatLog)
 
   const resetSeasonState = (career = 'actor') => {
     const initialState = buildInitialSeasonState()
@@ -236,8 +251,11 @@ function App() {
     setRoundArrivalSummary(initialState.roundArrivalSummary)
     setBombshellEventText(initialState.bombshellEventText)
     setRoundPhaseFlashMessages(initialState.roundPhaseFlashMessages)
+    setChatState(initialState.chatState)
+    setRoundChatLog(initialState.roundChatLog)
     setSelectedBattleCelebrityId('kim_kardashian')
     setSelectedBattleTier(1)
+    setSelectedChatCelebrityId(null)
     setSeasonResult(null)
   }
 
@@ -356,6 +374,12 @@ function App() {
     }
     setBombshellEventText(nextBombshellText)
     setRoundPhaseFlashMessages(nextRoundFlashMessages)
+    setChatState({
+      chatsUsedThisRound: 0,
+      maxChatsPerRound: MAX_CHATS_PER_ROUND,
+      chattedCelebrityIdsThisRound: [],
+    })
+    setRoundChatLog([])
     setRoundArrivalSummary({
       round: nextRound,
       title: `Round ${nextRound} Begins`,
@@ -377,6 +401,66 @@ function App() {
         onBackToIntro={(summary) => {
           setBattleExitSummary(summary ?? null)
           setPage('intro')
+        }}
+      />
+    )
+  }
+
+  if (page === 'chat_screen') {
+    return (
+      <ChatScreen
+        celebrityId={selectedChatCelebrityId}
+        onCancel={() => {
+          setSelectedChatCelebrityId(null)
+          setPage('island')
+        }}
+        onComplete={({ celebrityId, totalDelta, transcriptSummary }) => {
+          if (!celebrityId) {
+            setSelectedChatCelebrityId(null)
+            setPage('island')
+            return
+          }
+
+          const alreadyChatted = chatState.chattedCelebrityIdsThisRound.includes(celebrityId)
+          const maxChatsReached = chatState.chatsUsedThisRound >= chatState.maxChatsPerRound
+
+          if (alreadyChatted || maxChatsReached) {
+            setSelectedChatCelebrityId(null)
+            setPage('island')
+            return
+          }
+
+          setConnectionGraph((current) => {
+            const nextGraph = {
+              ...current,
+              [celebrityId]: {
+                ...current[celebrityId],
+              },
+            }
+            const currentScore = current[celebrityId]?.[PLAYER_ID] ?? 0
+            nextGraph[celebrityId][PLAYER_ID] = clampConnection(currentScore + totalDelta)
+            return nextGraph
+          })
+
+          const celebName = formatContestantName(celebrityId)
+          const signedDelta = totalDelta > 0 ? `+${totalDelta}` : String(totalDelta)
+          const summarySuffix = transcriptSummary ? ` | ${transcriptSummary}` : ''
+          setRoundChatLog((current) => [
+            `${celebName}: ${signedDelta} connection${summarySuffix}`,
+            ...current,
+          ].slice(0, 8))
+
+          setChatState((current) => ({
+            ...current,
+            chatsUsedThisRound: current.chatsUsedThisRound + 1,
+            chattedCelebrityIdsThisRound: [
+              ...current.chattedCelebrityIdsThisRound,
+              celebrityId,
+            ],
+          }))
+
+          setSelectedChatCelebrityId(null)
+          setPage('island')
         }}
       />
     )
@@ -429,14 +513,27 @@ function App() {
         seasonLength={SEASON_LENGTH}
         activeCelebrityIds={activeCelebrityIds}
         connectionGraph={connectionGraph}
-        onConnectionGraphChange={setConnectionGraph}
         roundArrivalSummary={roundArrivalSummary}
         bombshellEventText={bombshellEventText}
         roundPhaseFlashMessages={roundPhaseFlashMessages}
+        chatState={chatState}
+        roundChatLog={roundChatLog}
         onDismissRoundArrivalSummary={() => setRoundArrivalSummary(null)}
         onDismissBombshellEventText={() => setBombshellEventText(null)}
         onDismissRoundPhaseFlashMessage={() => {
           setRoundPhaseFlashMessages((current) => current.slice(1))
+        }}
+        onStartChat={(celebrityId) => {
+          if (!celebrityId || !activeCelebrityIds.includes(celebrityId)) {
+            return
+          }
+          const alreadyChatted = chatState.chattedCelebrityIdsThisRound.includes(celebrityId)
+          const maxChatsReached = chatState.chatsUsedThisRound >= chatState.maxChatsPerRound
+          if (alreadyChatted || maxChatsReached) {
+            return
+          }
+          setSelectedChatCelebrityId(celebrityId)
+          setPage('chat_screen')
         }}
         onStartBattle={(celebrityId, tier) => {
           if (celebrityId) {

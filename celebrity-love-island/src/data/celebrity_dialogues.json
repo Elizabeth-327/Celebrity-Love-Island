@@ -1,60 +1,77 @@
 {
   "kim_kardashian": {
     "intro": "Hiiiiiiii, so nice to meet you!",
-
     "first_choices": {
       "hit_on": {
         "player_line": "What's up babygirl? I never seen someone finer than you.",
         "celebrity_response": {
-            "celebrity_line": "Ohhh haha thank you...",
-            "score_delta": 2,
-            "follow_up": {
-              "double_down":        { "player_line": "You wanna head over to my place so you can teach me some law & order? ;)", 
-                                      "celebrity_final": "Haha.", 
-                                      "score_delta": -3 },
-              "joke":               { "player_line": "What's up chicken BUTT", 
-                                      "celebrity_final": "...", 
-                                      "score_delta": -5 },
-              "introduce_yourself": { "player_line": "I love women in business. Actually I don't but I love you.", 
-                                      "celebrity_final": "Babessss stahhpppp....", 
-                                      "score_delta": 5 }
+          "celebrity_line": "Ohhh haha thank you...",
+          "score_delta": 2,
+          "follow_up": {
+            "double_down": {
+              "player_line": "You wanna head over to my place so you can teach me some law & order? ;)",
+              "celebrity_final": "Haha.",
+              "score_delta": -3
+            },
+            "joke": {
+              "player_line": "What's up chicken BUTT",
+              "celebrity_final": "...",
+              "score_delta": -5
+            },
+            "introduce_yourself": {
+              "player_line": "I love women in business. Actually I don't but I love you.",
+              "celebrity_final": "Babessss stahhpppp....",
+              "score_delta": 5
+            }
           }
         }
       },
       "joke": {
         "player_line": "What's up chicken BUTT",
         "celebrity_response": {
-            "celebrity_line": "...",
-            "score_delta": -5,
-            "follow_up": {
-              "damage_control":     { "player_line": "I'm autistic.", 
-                                      "celebrity_final": "Oh I'm so sorry I hope you find a cure :(", 
-                                      "score_delta": 2 },
-              "hit_on":             { "player_line": "What's up babygirl? I never seen someone finer than you.", 
-                                      "celebrity_final": "Someone yank this dog away from me.", 
-                                      "score_delta": -4 },
-              "introduce_yourself": { "player_line": "I love women in business. Actually I don't but I love you.", 
-                                      "celebrity_final": "I'm so sick and tired of everyone being up my ass all the time. Can someone please focus on my legs today instead? Get out of my face.", 
-                                      "score_delta": -5 }
+          "celebrity_line": "...",
+          "score_delta": -5,
+          "follow_up": {
+            "damage_control": {
+              "player_line": "I'm autistic.",
+              "celebrity_final": "Oh I'm so sorry I hope you find a cure :(",
+              "score_delta": 2
+            },
+            "hit_on": {
+              "player_line": "What's up babygirl? I never seen someone finer than you.",
+              "celebrity_final": "Someone yank this dog away from me.",
+              "score_delta": -4
+            },
+            "introduce_yourself": {
+              "player_line": "I love women in business. Actually I don't but I love you.",
+              "celebrity_final": "I'm so sick and tired of everyone being up my ass all the time. Can someone please focus on my legs today instead? Get out of my face.",
+              "score_delta": -5
+            }
           }
         }
       },
       "introduce_yourself": {
         "player_line": "I love women in business. Actually I don't but I love you.",
         "celebrity_response": {
-            "celebrity_line": "Aww that's so sweet. Who's your manager?",
-            "score_delta": 5,
-            "follow_up": {
-              "double_down":  { "player_line": "If you adopt me I'll let you do whatever you want with me.", 
-                                "celebrity_final": "Actually I don't think you fit our look.", 
-                                "score_delta": -1 },
-              "hit_on":       { "player_line": "What's up babygirl? I never seen someone finer than you.", 
-                                "celebrity_final": "Check your DMs", 
-                                "score_delta": 5 },
-              "joke":         { "player_line": "What's up chicken BUTT", 
-                                "celebrity_final": "...", 
-                                "score_delta": -3 }
+          "celebrity_line": "Aww that's so sweet. Who's your manager?",
+          "score_delta": 5,
+          "follow_up": {
+            "double_down": {
+              "player_line": "If you adopt me I'll let you do whatever you want with me.",
+              "celebrity_final": "Actually I don't think you fit our look.",
+              "score_delta": -1
+            },
+            "hit_on": {
+              "player_line": "What's up babygirl? I never seen someone finer than you.",
+              "celebrity_final": "Check your DMs",
+              "score_delta": 5
+            },
+            "joke": {
+              "player_line": "What's up chicken BUTT",
+              "celebrity_final": "...",
+              "score_delta": -3
             }
+          }
         }
       }
     }
@@ -65,53 +82,73 @@
       "hit_on": {
         "player_line": "You got a nice range. And I'm not just talking about your voice.",
         "celebrity_response": {
-            "celebrity_line": "Watchu tryna do miss girl",
-            "score_delta": 4,
-            "follow_up": {
-              "double_down":        { "player_line": "I dunno, why don't you come over tonight and you'll find out ;)", 
-                                      "celebrity_final": "I don't date singles I'm sowwyyy~~", 
-                                      "score_delta": -1 },
-              "joke":               { "player_line": "You said you're from Nickelodoean? More like PickMelodean.", 
-                                      "celebrity_final": "Can you just stop.", 
-                                      "score_delta": -3 },
-              "introduce_yourself": { "player_line": "I'm interested in you.", 
-                                      "celebrity_final": "Aww that's so sweet~", 
-                                      "score_delta": 3 }
+          "celebrity_line": "Watchu tryna do miss girl",
+          "score_delta": 4,
+          "follow_up": {
+            "double_down": {
+              "player_line": "I dunno, why don't you come over tonight and you'll find out ;)",
+              "celebrity_final": "I don't date singles I'm sowwyyy~~",
+              "score_delta": -1
+            },
+            "joke": {
+              "player_line": "You said you're from Nickelodoean? More like PickMelodean.",
+              "celebrity_final": "Can you just stop.",
+              "score_delta": -3
+            },
+            "introduce_yourself": {
+              "player_line": "I'm interested in you.",
+              "celebrity_final": "Aww that's so sweet~",
+              "score_delta": 3
             }
+          }
         }
       },
       "joke": {
         "player_line": "You said you're from Nickelodoean? More like PickMelodean.",
         "celebrity_response": {
-            "celebrity_line": "Can you not.",
-            "score_delta": -5,
-            "follow_up": {
-              "damage_control":     { "player_line": "I was talking about Victoria Justice, not you.", 
-                                      "celebrity_final": "Aww get yo ahh in here!", 
-                                      "score_delta": 6 },
-              "hit_on":             { "player_line": "You got a nice range. And I'm not just talking about your voice.", 
-                                      "celebrity_final": "Yes, and??", 
-                                      "score_delta": -3 },
-              "introduce_yourself": { "player_line": "I'm interested in you.", 
-                                      "celebrity_final": "Are you single? If you aren't, don't even bother.", 
-                                      "score_delta": -1 }
+          "celebrity_line": "Can you not.",
+          "score_delta": -5,
+          "follow_up": {
+            "damage_control": {
+              "player_line": "I was talking about Victoria Justice, not you.",
+              "celebrity_final": "Aww get yo ahh in here!",
+              "score_delta": 6
+            },
+            "hit_on": {
+              "player_line": "You got a nice range. And I'm not just talking about your voice.",
+              "celebrity_final": "Yes, and??",
+              "score_delta": -3
+            },
+            "introduce_yourself": {
+              "player_line": "I'm interested in you.",
+              "celebrity_final": "Are you single? If you aren't, don't even bother.",
+              "score_delta": -1
             }
           }
-      },
-      "introduce_yourself": {
-        "player_line": "I'm interested in you.",
-        "celebrity_response": {
-            "celebrity_line": "Break up with your girlfriend, I'm bored.",
-            "score_delta": 3,
-            "follow_up": {
-              "double_down":  { "player_line": "I'm really really interested you.", 
-                                "celebrity_final": "Ok actually good thing you didn't break up with her then. That makes you my type heehee ;)", 
-                                "score_delta": 6 },
-              "hit_on":       { "player_line": "You got a nice range. And I'm not just talking about your voice.", 
-                                "celebrity_final": "Are you Kiyomi? Get yo ahh over here NOW! <3", "score_delta": 5 },
-              "joke":         { "player_line": "You said you're from Nickelodoean? More like PickMelodean.", 
-                                "celebrity_final": "I hate Americans and I hate America.", "score_delta": -5 }
-            }
+        }
+      }
+    },
+    "introduce_yourself": {
+      "player_line": "I'm interested in you.",
+      "celebrity_response": {
+        "celebrity_line": "Break up with your girlfriend, I'm bored.",
+        "score_delta": 3,
+        "follow_up": {
+          "double_down": {
+            "player_line": "I'm really really interested you.",
+            "celebrity_final": "Ok actually good thing you didn't break up with her then. That makes you my type heehee ;)",
+            "score_delta": 6
+          },
+          "hit_on": {
+            "player_line": "You got a nice range. And I'm not just talking about your voice.",
+            "celebrity_final": "Are you Kiyomi? Get yo ahh over here NOW! <3",
+            "score_delta": 5
+          },
+          "joke": {
+            "player_line": "You said you're from Nickelodoean? More like PickMelodean.",
+            "celebrity_final": "I hate Americans and I hate America.",
+            "score_delta": -5
+          }
         }
       }
     }
@@ -122,58 +159,76 @@
       "hit_on": {
         "player_line": "Ooohhh babyyyy YOU fineee~~~",
         "celebrity_response": {
-            "celebrity_line": "How old are you?",
-            "score_delta": 3,
-            "follow_up": {
-              "double_down":        { "player_line": "However old you want me to be ;)", 
-                                      "celebrity_final": "You look GROWNNNNNNN slurrpp.", 
-                                      "score_delta": 7 },
-              "joke":               { "player_line": "You the type of guy to stub your toe and stamp your foot huh?", 
-                                      "celebrity_final": "Yeah cuz I'm disappointed you won't be able to rub it for me :( Or will you? ;)", 
-                                      "score_delta": 7 },
-              "introduce_yourself": { "player_line": "I'm 17.", 
-                                      "celebrity_final": "You look GROWNNNNNNN. slurp slurp :)", 
-                                      "score_delta": 7 }
+          "celebrity_line": "How old are you?",
+          "score_delta": 3,
+          "follow_up": {
+            "double_down": {
+              "player_line": "However old you want me to be ;)",
+              "celebrity_final": "You look GROWNNNNNNN slurrpp.",
+              "score_delta": 7
+            },
+            "joke": {
+              "player_line": "You the type of guy to stub your toe and stamp your foot huh?",
+              "celebrity_final": "Yeah cuz I'm disappointed you won't be able to rub it for me :( Or will you? ;)",
+              "score_delta": 7
+            },
+            "introduce_yourself": {
+              "player_line": "I'm 17.",
+              "celebrity_final": "You look GROWNNNNNNN. slurp slurp :)",
+              "score_delta": 7
             }
+          }
         }
       },
       "joke": {
         "player_line": "You the type of guy to stub your toe and stamp your foot huh?",
         "celebrity_response": {
-            "celebrity_line": "Yeah cuz I'm disappointed you won't be able to rub it for me :( Or will you? ;)",
-            "score_delta": 5,
-            "follow_up": {
-              "double_down":        { "player_line": "I'm confused.", 
-                                      "celebrity_final": "It's ok :) I like the innocent type anyway.", 
-                                      "score_delta": 5 },
-              "hit_on":             { "player_line": "Ooohhh babyyyy YOU fineee~~~", 
-                                      "celebrity_final": "Check your DMs baby.", 
-                                      "score_delta": 5 },
-              "introduce_yourself": { "player_line": "I'm 17.", 
-                                      "celebrity_final": "Really??? You look GROWNNNNNN.", 
-                                      "score_delta": 5 }
+          "celebrity_line": "Yeah cuz I'm disappointed you won't be able to rub it for me :( Or will you? ;)",
+          "score_delta": 5,
+          "follow_up": {
+            "double_down": {
+              "player_line": "I'm confused.",
+              "celebrity_final": "It's ok :) I like the innocent type anyway.",
+              "score_delta": 5
+            },
+            "hit_on": {
+              "player_line": "Ooohhh babyyyy YOU fineee~~~",
+              "celebrity_final": "Check your DMs baby.",
+              "score_delta": 5
+            },
+            "introduce_yourself": {
+              "player_line": "I'm 17.",
+              "celebrity_final": "Really??? You look GROWNNNNNN.",
+              "score_delta": 5
             }
           }
         }
-      },
-      "introduce_yourself": {
-        "player_line": "I'm 17.",
-        "celebrity_response": {
-            "celebrity_line": "Really??? You look GROWNNNNNN.",
-            "score_delta": 5,
-            "follow_up": {
-              "double_down":  { "player_line": "I lied. I'm 15 actually.", 
-                                "celebrity_final": "Then let's be friends ;)", 
-                                "score_delta": 5 },
-              "hit_on":       { "player_line": "Ooohhh babyyyy YOU fineee~~~", 
-                                "celebrity_final": "You grownnnnn if you saying this. Check your DMs.", 
-                                "score_delta": 5 },
-              "joke":         { "player_line": "You the type of guy to stub your toe and stamp your foot huh?", 
-                                "celebrity_final": "Because I started from the BOTTOM.", 
-                                "score_delta": -5 }
-            }
+      }
+    },
+    "introduce_yourself": {
+      "player_line": "I'm 17.",
+      "celebrity_response": {
+        "celebrity_line": "Really??? You look GROWNNNNNN.",
+        "score_delta": 5,
+        "follow_up": {
+          "double_down": {
+            "player_line": "I lied. I'm 15 actually.",
+            "celebrity_final": "Then let's be friends ;)",
+            "score_delta": 5
+          },
+          "hit_on": {
+            "player_line": "Ooohhh babyyyy YOU fineee~~~",
+            "celebrity_final": "You grownnnnn if you saying this. Check your DMs.",
+            "score_delta": 5
+          },
+          "joke": {
+            "player_line": "You the type of guy to stub your toe and stamp your foot huh?",
+            "celebrity_final": "Because I started from the BOTTOM.",
+            "score_delta": -5
+          }
         }
       }
+    }
   },
   "selena_gomez": {
     "intro": "Hi, how are you?",
@@ -181,53 +236,73 @@
       "hit_on": {
         "player_line": "I love your eyebrows.",
         "celebrity_response": {
-            "celebrity_line": "I just feel really attacked right now.",
-            "score_delta": -3,
-            "follow_up": {
-              "damage_control":     { "player_line": "You're prettier than Bella Hadid!", 
-                                      "celebrity_final": "Really?? Thank you so much :)", "score_delta": 5 },
-              "joke":               { "player_line": "Can you rub my feet the way you rub Benny Blanco's?", 
-                                      "celebrity_final": "I'm taking a social media break.", 
-                                      "score_delta": -6 },
-              "introduce_yourself": { "player_line": "I can be your social media manager.", 
-                                      "celebrity_final": "You're hired.", 
-                                      "score_delta": 6 }
+          "celebrity_line": "I just feel really attacked right now.",
+          "score_delta": -3,
+          "follow_up": {
+            "damage_control": {
+              "player_line": "You're prettier than Bella Hadid!",
+              "celebrity_final": "Really?? Thank you so much :)",
+              "score_delta": 5
+            },
+            "joke": {
+              "player_line": "Can you rub my feet the way you rub Benny Blanco's?",
+              "celebrity_final": "I'm taking a social media break.",
+              "score_delta": -6
+            },
+            "introduce_yourself": {
+              "player_line": "I can be your social media manager.",
+              "celebrity_final": "You're hired.",
+              "score_delta": 6
+            }
           }
         }
       },
       "joke": {
         "player_line": "Can you rub my feet the way you rub Benny Blanco's?",
         "celebrity_response": {
-            "celebrity_line": "I'm taking a social media break.",
-            "score_delta": -6,
-            "follow_up": {
-              "damage_control":     { "player_line": "I'm so sorry, that was so insensitive of me. Mine would never compare to Benny's.", 
-                                      "celebrity_final": "Thank you. I appreciate it.", 
-                                      "score_delta": 3 },
-              "hit_on":             { "player_line": "I love your eyebrows.", 
-                                      "celebrity_final": "You're such a mean girl.", 
-                                      "score_delta": -4 },
-              "introduce_yourself": { "player_line": "I can be your social media manager.", 
-                                      "celebrity_final": "Is this a joke to you?", 
-                                      "score_delta": -3 }
+          "celebrity_line": "I'm taking a social media break.",
+          "score_delta": -6,
+          "follow_up": {
+            "damage_control": {
+              "player_line": "I'm so sorry, that was so insensitive of me. Mine would never compare to Benny's.",
+              "celebrity_final": "Thank you. I appreciate it.",
+              "score_delta": 3
+            },
+            "hit_on": {
+              "player_line": "I love your eyebrows.",
+              "celebrity_final": "You're such a mean girl.",
+              "score_delta": -4
+            },
+            "introduce_yourself": {
+              "player_line": "I can be your social media manager.",
+              "celebrity_final": "Is this a joke to you?",
+              "score_delta": -3
             }
+          }
         }
       },
       "introduce_yourself": {
         "player_line": "I can be your social media manager.",
         "celebrity_response": {
-            "celebrity_line": "Why?",
-            "score_delta": 1,
-            "follow_up": {
-              "double_down":  { "player_line": "That way you can leave social media for real.", 
-                                "celebrity_final": "I don't know whether to feel grateful or offended.", 
-                                "score_delta": 0 },
-              "hit_on":       { "player_line": "I love your eyebrows.", 
-                                "celebrity_final": "Are you sure.", 
-                                "score_delta": 0 },
-              "joke":         { "player_line": "Can you rub my feet the way you rub Benny Blanco's?", 
-                                "celebrity_final": "I'm taking a social media break.", "score_delta": -3 }
+          "celebrity_line": "Why?",
+          "score_delta": 1,
+          "follow_up": {
+            "double_down": {
+              "player_line": "That way you can leave social media for real.",
+              "celebrity_final": "I don't know whether to feel grateful or offended.",
+              "score_delta": 0
+            },
+            "hit_on": {
+              "player_line": "I love your eyebrows.",
+              "celebrity_final": "Are you sure.",
+              "score_delta": 0
+            },
+            "joke": {
+              "player_line": "Can you rub my feet the way you rub Benny Blanco's?",
+              "celebrity_final": "I'm taking a social media break.",
+              "score_delta": -3
             }
+          }
         }
       }
     }
@@ -238,55 +313,76 @@
       "hit_on": {
         "player_line": "Are you Kim Kardashian?",
         "celebrity_response": {
-            "celebrity_line": "Awww babyyyy you think I look like her?",
-            "score_delta": 4,
-            "follow_up": {
-              "double_down":        { "player_line": "Didn't SHE have plastic surgery to look like YOU?", 
-                                      "celebrity_final": "Awww babyyyy you think so???", "score_delta": 3 },
-              "joke":               { "player_line": "Is that a piggy?", 
-                                      "celebrity_final": "Wait you watched my show??", "score_delta": 3 },
-              "introduce_yourself": { "player_line": "I'd like to audition to become your best friend.", 
-                                      "celebrity_final": "Erm. Try Kourtney.", "score_delta": -1 }
+          "celebrity_line": "Awww babyyyy you think I look like her?",
+          "score_delta": 4,
+          "follow_up": {
+            "double_down": {
+              "player_line": "Didn't SHE have plastic surgery to look like YOU?",
+              "celebrity_final": "Awww babyyyy you think so???",
+              "score_delta": 3
+            },
+            "joke": {
+              "player_line": "Is that a piggy?",
+              "celebrity_final": "Wait you watched my show??",
+              "score_delta": 3
+            },
+            "introduce_yourself": {
+              "player_line": "I'd like to audition to become your best friend.",
+              "celebrity_final": "Erm. Try Kourtney.",
+              "score_delta": -1
             }
           }
         }
-      },
-      "joke": {
-        "player_line": "Is that a piggy?",
-        "celebrity_response": {
-            "celebrity_line": "You calling me a pig?",
-            "score_delta": -4,
-            "follow_up": {
-              "damage_control":     { "player_line": "Well you're the cutest pig I've seen.", 
-                                      "celebrity_final": "Aha?", 
-                                      "score_delta": 1 },
-              "hit_on":             { "player_line": "Are you Kim Kardashian?", 
-                                      "celebrity_final": "You're calling my sister a pig??", 
-                                      "score_delta": -4 },
-              "introduce_yourself": { "player_line": "I'd like to audition to become your best friend.", 
-                                      "celebrity_final": "You already failed bro.", 
-                                      "score_delta": -2 }
-            }
-        }
-      },
-      "introduce_yourself": {
-        "player_line": "I'd like to audition to become your best friend.",
-        "celebrity_response": {
-            "celebrity_line": "How do I know you won't steal my sister's man?",
-            "score_delta": 0,
-            "follow_up": {
-              "double_down":  { "player_line": "Flat.", 
-                                "celebrity_final": "I'll ask my mom to book you an appointment.", 
-                                "score_delta": 1 },
-              "hit_on":       { "player_line": "Are you Kim Kardashian?", 
-                                "celebrity_final": "Girl bye.", 
-                                "score_delta": -2 },
-              "joke":         { "player_line": "Is that a piggy?", 
-                                "celebrity_final": "Aww you're cute.", 
-                                "score_delta": 2 }
-            }
+      }
+    },
+    "joke": {
+      "player_line": "Is that a piggy?",
+      "celebrity_response": {
+        "celebrity_line": "You calling me a pig?",
+        "score_delta": -4,
+        "follow_up": {
+          "damage_control": {
+            "player_line": "Well you're the cutest pig I've seen.",
+            "celebrity_final": "Aha?",
+            "score_delta": 1
+          },
+          "hit_on": {
+            "player_line": "Are you Kim Kardashian?",
+            "celebrity_final": "You're calling my sister a pig??",
+            "score_delta": -4
+          },
+          "introduce_yourself": {
+            "player_line": "I'd like to audition to become your best friend.",
+            "celebrity_final": "You already failed bro.",
+            "score_delta": -2
+          }
         }
       }
+    },
+    "introduce_yourself": {
+      "player_line": "I'd like to audition to become your best friend.",
+      "celebrity_response": {
+        "celebrity_line": "How do I know you won't steal my sister's man?",
+        "score_delta": 0,
+        "follow_up": {
+          "double_down": {
+            "player_line": "Flat.",
+            "celebrity_final": "I'll ask my mom to book you an appointment.",
+            "score_delta": 1
+          },
+          "hit_on": {
+            "player_line": "Are you Kim Kardashian?",
+            "celebrity_final": "Girl bye.",
+            "score_delta": -2
+          },
+          "joke": {
+            "player_line": "Is that a piggy?",
+            "celebrity_final": "Aww you're cute.",
+            "score_delta": 2
+          }
+        }
+      }
+    }
   },
   "erika_kirk": {
     "intro": "I am Christian.",
@@ -294,51 +390,76 @@
       "hit_on": {
         "player_line": "We must take care of all the lonely white men in this country.",
         "celebrity_response": {
-            "celebrity_line": "Girl that's not what I actually believe in. I'm just a grifter. I really don't care, do you?",
-            "score_delta": -1,
-            "follow_up": {
-              "damage_control":     { "player_line": "Yeah I don't care either.", 
-                                      "celebrity_final": "I forgive you.", 
-                                      "score_delta": 3 },
-              "joke":               { "player_line": "Get on your FEET!", 
-                                      "celebrity_final": "I serve a righteous God.", 
-                                      "score_delta": -5 },
-              "introduce_yourself": { "player_line": "Hi?", 
-                                      "celebrity_final": "🧿👄🧿", 
-                                      "score_delta": 1 }
+          "celebrity_line": "Girl that's not what I actually believe in. I'm just a grifter. I really don't care, do you?",
+          "score_delta": -1,
+          "follow_up": {
+            "damage_control": {
+              "player_line": "Yeah I don't care either.",
+              "celebrity_final": "I forgive you.",
+              "score_delta": 3
+            },
+            "joke": {
+              "player_line": "Get on your FEET!",
+              "celebrity_final": "I serve a righteous God.",
+              "score_delta": -5
+            },
+            "introduce_yourself": {
+              "player_line": "Hi?",
+              "celebrity_final": "🧿👄🧿",
+              "score_delta": 1
             }
+          }
         }
       },
       "joke": {
         "player_line": "Get on your FEET!",
         "celebrity_response": {
-            "celebrity_line": "This is defamation.",
-            "score_delta": -5,
-            "follow_up": {
-              "damage_control":     { "player_line": "I serve a righteous God.", "celebrity_final": "🧿👄🧿", "score_delta": 2 },
-              "hit_on":             { "player_line": "We must take care of all the lonely white men in this country.", 
-                                      "celebrity_final": "I forgive you.", "score_delta": 3 },
-              "introduce_yourself": { "player_line": "Hi?", "celebrity_final": "🧿👄🧿", "score_delta": 1 }
+          "celebrity_line": "This is defamation.",
+          "score_delta": -5,
+          "follow_up": {
+            "damage_control": {
+              "player_line": "I serve a righteous God.",
+              "celebrity_final": "🧿👄🧿",
+              "score_delta": 2
+            },
+            "hit_on": {
+              "player_line": "We must take care of all the lonely white men in this country.",
+              "celebrity_final": "I forgive you.",
+              "score_delta": 3
+            },
+            "introduce_yourself": {
+              "player_line": "Hi?",
+              "celebrity_final": "🧿👄🧿",
+              "score_delta": 1
             }
           }
         }
-      },
-      "introduce_yourself": {
-        "player_line": "Hi?",
-        "celebrity_response": {
-            "celebrity_line": "🧿👄🧿",
-            "score_delta": 1,
-            "follow_up": {
-              "double_down":  { "player_line": "🧿👄🧿", "celebrity_final": "🧿👄🧿", "score_delta": 2 },
-              "hit_on":       { "player_line": "We must take care of all the lonely white men in this country.", 
-                                "celebrity_final": "Well I don't really care, do you?", 
-                                "score_delta": -2 },
-              "joke":         { "player_line": "Get on your FEET!", 
-                                "celebrity_final": "I'm praying for you.", 
-                                "score_delta": -2 }
-            }
+      }
+    },
+    "introduce_yourself": {
+      "player_line": "Hi?",
+      "celebrity_response": {
+        "celebrity_line": "🧿👄🧿",
+        "score_delta": 1,
+        "follow_up": {
+          "double_down": {
+            "player_line": "🧿👄🧿",
+            "celebrity_final": "🧿👄🧿",
+            "score_delta": 2
+          },
+          "hit_on": {
+            "player_line": "We must take care of all the lonely white men in this country.",
+            "celebrity_final": "Well I don't really care, do you?",
+            "score_delta": -2
+          },
+          "joke": {
+            "player_line": "Get on your FEET!",
+            "celebrity_final": "I'm praying for you.",
+            "score_delta": -2
+          }
         }
       }
+    }
   },
   "jay_z": {
     "intro": "...",
@@ -346,50 +467,79 @@
       "hit_on": {
         "player_line": "I got 99 problems too. We could 9-9 together.",
         "celebrity_response": {
-            "celebrity_line": "You broke b.",
-            "score_delta": -2,
-            "follow_up": {
-              "damage_control":     { "player_line": "I got 99 problems but money ain't one of them.", 
-                                      "celebrity_final": "This ho is pissing me off.", 
-                                      "score_delta": -3 },
-              "joke":               { "player_line": "Why did Jay-Z bring a ladder to the concert?", 
-                                      "celebrity_final": "To bring my performance to another level >:)", 
-                                      "score_delta": 5 },
-              "introduce_yourself": { "player_line": "I'm a fan.", 
-                                      "celebrity_final": "No.", 
-                                      "score_delta": -2 }
+          "celebrity_line": "You broke b.",
+          "score_delta": -2,
+          "follow_up": {
+            "damage_control": {
+              "player_line": "I got 99 problems but money ain't one of them.",
+              "celebrity_final": "This ho is pissing me off.",
+              "score_delta": -3
+            },
+            "joke": {
+              "player_line": "Why did Jay-Z bring a ladder to the concert?",
+              "celebrity_final": "To bring my performance to another level >:)",
+              "score_delta": 5
+            },
+            "introduce_yourself": {
+              "player_line": "I'm a fan.",
+              "celebrity_final": "No.",
+              "score_delta": -2
             }
           }
         }
-      },
-      "joke": {
-        "player_line": "Why did Jay-Z bring a ladder to the concert?",
-        "celebrity_response": {
-            "celebrity_line": "To bring my performance to another level >:)",
-            "score_delta": 6,
-            "follow_up": {
-              "double_down":        { "player_line": "Why did Jay-Z start a gardening service?", "celebrity_final": "You're annoying.", "score_delta": -2 },
-              "hit_on":             { "player_line": "I got 99 problems too. We could 9-9 together.", "celebrity_final": "You broke b.", "score_delta": -2 },
-              "introduce_yourself": { "player_line": "I'm a fan.", "celebrity_final": "I know.", "score_delta": 0 }
-            }
-        }
-      },
-      "introduce_yourself": {
-        "player_line": "I'm a fan.",
-        "celebrity_response": {
-            "celebrity_line": "Want an autograph?",
-            "score_delta": 1,
-            "follow_up": {
-              "double_down":  { "player_line": "I want your love.", "celebrity_final": "...", "score_delta": -1 },
-              "hit_on":       { "player_line": "I got 99 problems too. We could 9-9 together.", "celebrity_final": "Dam shut ur b ahh up.", "score_delta": -2 },
-              "joke":         { "player_line": "Why did Jay-Z bring a ladder to the concert?", "celebrity_final": "You're a funny kid.", "score_delta": 3 }
-            }
+      }
+    },
+    "joke": {
+      "player_line": "Why did Jay-Z bring a ladder to the concert?",
+      "celebrity_response": {
+        "celebrity_line": "To bring my performance to another level >:)",
+        "score_delta": 6,
+        "follow_up": {
+          "double_down": {
+            "player_line": "Why did Jay-Z start a gardening service?",
+            "celebrity_final": "You're annoying.",
+            "score_delta": -2
+          },
+          "hit_on": {
+            "player_line": "I got 99 problems too. We could 9-9 together.",
+            "celebrity_final": "You broke b.",
+            "score_delta": -2
+          },
+          "introduce_yourself": {
+            "player_line": "I'm a fan.",
+            "celebrity_final": "I know.",
+            "score_delta": 0
+          }
         }
       }
+    },
+    "introduce_yourself": {
+      "player_line": "I'm a fan.",
+      "celebrity_response": {
+        "celebrity_line": "Want an autograph?",
+        "score_delta": 1,
+        "follow_up": {
+          "double_down": {
+            "player_line": "I want your love.",
+            "celebrity_final": "...",
+            "score_delta": -1
+          },
+          "hit_on": {
+            "player_line": "I got 99 problems too. We could 9-9 together.",
+            "celebrity_final": "Dam shut ur b ahh up.",
+            "score_delta": -2
+          },
+          "joke": {
+            "player_line": "Why did Jay-Z bring a ladder to the concert?",
+            "celebrity_final": "You're a funny kid.",
+            "score_delta": 3
+          }
+        }
+      }
+    }
   },
   "kanye_west": {
     "intro": "Yo imma let you start, but I love myself more than I'll love anyone else.",
-
     "first_choices": {
       "hit_on": {
         "player_line": "You're Jesus.",
@@ -415,7 +565,6 @@
           }
         }
       },
-
       "joke": {
         "player_line": "So like… do you ever disagree with yourself?",
         "celebrity_response": {
@@ -440,7 +589,6 @@
           }
         }
       },
-
       "introduce_yourself": {
         "player_line": "I'm trying to create something meaningful.",
         "celebrity_response": {
@@ -466,271 +614,5 @@
         }
       }
     }
-  },
-  "nicki_minaj": {
-    "intro": "Barbz assemble. What you on?",
-    "first_choices": {
-      "hit_on": {
-        "player_line": "You run the game, I just wanna learn the rules.",
-        "celebrity_response": {
-          "positive": {
-            "celebrity_line": "Okayyy, you respectful. I see it.",
-            "score_delta": 3,
-            "follow_up": {
-              "double_down": {
-                "player_line": "I don’t compete with queens, I follow leadership.",
-                "celebrity_final": "That’s what I’m talking about!!",
-                "score_delta": 5
-              },
-              "joke": {
-                "player_line": "Do I need glitter to qualify?",
-                "celebrity_final": "Don’t play with me like that.",
-                "score_delta": -2
-              },
-              "introduce_yourself": {
-                "player_line": "I respect your impact.",
-                "celebrity_final": "As you should.",
-                "score_delta": 2
-              }
-            }
-          },
-          "negative": {
-            "celebrity_line": "You not giving main character energy.",
-            "score_delta": -2,
-            "follow_up": {
-              "mediate": {
-                "player_line": "I’m learning how to show up better.",
-                "celebrity_final": "Okay… growth.",
-                "score_delta": 2
-              },
-              "joke": {
-                "player_line": "I’m background dancer energy.",
-                "celebrity_final": "At least you self-aware.",
-                "score_delta": 1
-              },
-              "introduce_yourself": {
-                "player_line": "I’m just being honest.",
-                "celebrity_final": "Try harder.",
-                "score_delta": -1
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-
-  "kendrick_lamar": {
-    "intro": "What’s your truth?",
-    "first_choices": {
-      "introduce_yourself": {
-        "player_line": "I’m still figuring out who I am.",
-        "celebrity_response": {
-          "positive": {
-            "celebrity_line": "That’s the only real answer.",
-            "score_delta": 3,
-            "follow_up": {
-              "double_down": {
-                "player_line": "I want to be better than I was yesterday.",
-                "celebrity_final": "Then you already ahead.",
-                "score_delta": 4
-              },
-              "hit_on": {
-                "player_line": "And I want you to see that growth.",
-                "celebrity_final": "Don’t make it about me.",
-                "score_delta": -1
-              },
-              "joke": {
-                "player_line": "I identify as confused.",
-                "celebrity_final": "Most people do.",
-                "score_delta": -2
-              }
-            }
-          },
-          "negative": {
-            "celebrity_line": "That sounds like avoidance.",
-            "score_delta": -2,
-            "follow_up": {
-              "mediate": {
-                "player_line": "Yeah… I think you’re right.",
-                "celebrity_final": "Self-awareness matters.",
-                "score_delta": 3
-              },
-              "hit_on": {
-                "player_line": "I’m complex though.",
-                "celebrity_final": "So is everybody.",
-                "score_delta": -1
-              },
-              "joke": {
-                "player_line": "I’m a mystery wrapped in confusion.",
-                "celebrity_final": "That’s just noise.",
-                "score_delta": -2
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-
-  "justin_bieber": {
-    "intro": "Hey… don’t be weird pls.",
-    "first_choices": {
-      "hit_on": {
-        "player_line": "You seem like you’ve been through a lot.",
-        "celebrity_response": {
-          "positive": {
-            "celebrity_line": "Yeah… I have.",
-            "score_delta": 3,
-            "follow_up": {
-              "double_down": {
-                "player_line": "And you’re still here. That matters.",
-                "celebrity_final": "That actually means a lot.",
-                "score_delta": 4
-              },
-              "joke": {
-                "player_line": "So no more hair experiments?",
-                "celebrity_final": "Bro 😭",
-                "score_delta": 1
-              },
-              "introduce_yourself": {
-                "player_line": "I’m not here to judge you.",
-                "celebrity_final": "I appreciate that.",
-                "score_delta": 2
-              }
-            }
-          },
-          "negative": {
-            "celebrity_line": "You don’t know me.",
-            "score_delta": -2,
-            "follow_up": {
-              "mediate": {
-                "player_line": "You’re right, I don’t.",
-                "celebrity_final": "At least you’re honest.",
-                "score_delta": 2
-              },
-              "hit_on": {
-                "player_line": "I’d like to though.",
-                "celebrity_final": "Slow down.",
-                "score_delta": -1
-              },
-              "joke": {
-                "player_line": "I know Baby though.",
-                "celebrity_final": "Please stop singing.",
-                "score_delta": -2
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-
-  "rihanna": {
-    "intro": "You better say something interesting.",
-    "first_choices": {
-      "hit_on": {
-        "player_line": "You look like trouble in the best way.",
-        "celebrity_response": {
-          "positive": {
-            "celebrity_line": "I am.",
-            "score_delta": 4,
-            "follow_up": {
-              "double_down": {
-                "player_line": "Good. I like danger.",
-                "celebrity_final": "You might survive me.",
-                "score_delta": 5
-              },
-              "joke": {
-                "player_line": "Do I need insurance first?",
-                "celebrity_final": "Definitely.",
-                "score_delta": 1
-              },
-              "introduce_yourself": {
-                "player_line": "I can handle chaos.",
-                "celebrity_final": "We’ll see.",
-                "score_delta": 3
-              }
-            }
-          },
-          "negative": {
-            "celebrity_line": "You look unsure.",
-            "score_delta": -2,
-            "follow_up": {
-              "mediate": {
-                "player_line": "I’m just cautious.",
-                "celebrity_final": "Smart.",
-                "score_delta": 2
-              },
-              "hit_on": {
-                "player_line": "I’m still interested though.",
-                "celebrity_final": "That’s cute.",
-                "score_delta": 1
-              },
-              "joke": {
-                "player_line": "I’m only half scared.",
-                "celebrity_final": "That’s not enough.",
-                "score_delta": -1
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-
-  "beyonce": {
-    "intro": "Proceed.",
-    "first_choices": {
-      "introduce_yourself": {
-        "player_line": "I respect excellence and discipline.",
-        "celebrity_response": {
-          "positive": {
-            "celebrity_line": "Then you understand the standard.",
-            "score_delta": 4,
-            "follow_up": {
-              "double_down": {
-                "player_line": "I aim to meet it.",
-                "celebrity_final": "Good. Now prove it.",
-                "score_delta": 5
-              },
-              "hit_on": {
-                "player_line": "And I respect you as a person too.",
-                "celebrity_final": "Stay focused.",
-                "score_delta": -1
-              },
-              "joke": {
-                "player_line": "Do I need choreography for this conversation?",
-                "celebrity_final": "Always.",
-                "score_delta": 2
-              }
-            }
-          },
-          "negative": {
-            "celebrity_line": "That sounds generic.",
-            "score_delta": -2,
-            "follow_up": {
-              "mediate": {
-                "player_line": "Let me be more specific then.",
-                "celebrity_final": "Better.",
-                "score_delta": 3
-              },
-              "hit_on": {
-                "player_line": "I just think you’re amazing.",
-                "celebrity_final": "That’s not enough.",
-                "score_delta": -1
-              },
-              "joke": {
-                "player_line": "I specialize in mediocrity.",
-                "celebrity_final": "No.",
-                "score_delta": -2
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
-
-  
