@@ -395,6 +395,7 @@ function App() {
       <BattleDemo
         selectedBattleCelebrityId={selectedBattleCelebrityId}
         selectedBattleTier={selectedBattleTier}
+        selectedSkin={selectedSkin}
         selectedCareer={selectedCareer}
         initialOwnedMoveIds={playerMoveIds}
         initialConnectionGraph={connectionGraph}
@@ -411,6 +412,7 @@ function App() {
     return (
       <ChatScreen
         celebrityId={selectedChatCelebrityId}
+        selectedSkin={selectedSkin}
         onCancel={() => {
           setSelectedChatCelebrityId(null)
           setPage('island')

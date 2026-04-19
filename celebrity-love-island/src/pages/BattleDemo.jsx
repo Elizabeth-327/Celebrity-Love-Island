@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import TypingText from '../components/TypingText'
 import loveIslandBg from '../assets/backgrounds/love_island_bg.jpg'
-import playerSprite from '../assets/characters/players/adjussi_clothed.png'
+import AdjussiNakedImg from '../assets/characters/players/adjussi_naked.png'
+import AhjummaNakedImg from '../assets/characters/players/ahjumma_naked.png'
 import {
   KimImg,
   KanyeImg,
@@ -16,7 +17,7 @@ import {
   RihannaImg,
   BeyonceImg,
   JayZImg,
-} from '../assets/characters/celebs'
+} from '../assets/characters/chibi_celebs'
 import angrySymbol from '../assets/states/angry symbol.png'
 import embarrassedSymbol from '../assets/states/embaressed symbol.png'
 import excitedSymbol from '../assets/states/excited symbol.png'
@@ -70,6 +71,10 @@ const BATTLE_DIFFICULTY_LABELS = {
   1: 'Easy',
   2: 'Medium',
   3: 'Hard',
+}
+const PLAYER_SPRITES = {
+  adjussi: AdjussiNakedImg,
+  ahjumma: AhjummaNakedImg,
 }
 
 const STATE_ICONS = {
@@ -671,9 +676,11 @@ export default function BattleDemo({
   initialConnectionGraph,
   selectedBattleCelebrityId = DEFAULT_BATTLE_CELEBRITY_ID,
   selectedBattleTier = 1,
+  selectedSkin = 'adjussi',
   selectedCareer = 'actor',
   initialOwnedMoveIds = null,
 }) {
+  const playerSprite = PLAYER_SPRITES[selectedSkin] ?? PLAYER_SPRITES.adjussi
   const battleCelebrityConfig =
     BATTLE_CELEBRITY_CONFIG[selectedBattleCelebrityId] ??
     BATTLE_CELEBRITY_CONFIG[DEFAULT_BATTLE_CELEBRITY_ID]

@@ -2,11 +2,11 @@
   "kim_kardashian": [
     {
       "name": "Puts her shoes on her bed",
-      "power": 22
+      "power": 12
     },
     {
       "name": "Pimps out her daughter",
-      "power": 34
+      "power": 14
     },
     {
       "name": "Married Kanye West",
@@ -14,7 +14,7 @@
     },
     {
       "name": "Stole $120,000",
-      "power": 38
+      "power": 18
     },
     {
       "name": "Wears Balenciaga poots",
@@ -22,11 +22,371 @@
     },
     {
       "name": "Hangs out with her sister's cheating baby daddy",
-      "power": 30
+      "power": 20
     },
     {
       "name": "Owns a cyber truck",
       "power": 16
+    }
+  ],
+  "kanye_west": [
+    {
+      "name": "Chews with mouth open",
+      "power": 11
+    },
+    {
+      "name": "Talks during movies",
+      "power": 13
+    },
+    {
+      "name": "Bad breath",
+      "power": 15
+    },
+    {
+      "name": "Doesn't tip at restaurants",
+      "power": 17
+    },
+    {
+      "name": "Interrupts conversations",
+      "power": 19
+    },
+    {
+      "name": "Uses too many emojis in texts",
+      "power": 12
+    },
+    {
+      "name": "Leaves dirty dishes in sink",
+      "power": 14
+    }
+  ],
+  "ariana_grande": [
+    {
+      "name": "Snores loudly",
+      "power": 16
+    },
+    {
+      "name": "Picks nose in public",
+      "power": 18
+    },
+    {
+      "name": "Complains about everything",
+      "power": 10
+    },
+    {
+      "name": "Doesn't listen",
+      "power": 12
+    },
+    {
+      "name": "Bad fashion sense",
+      "power": 14
+    },
+    {
+      "name": "Eats food off your plate",
+      "power": 16
+    },
+    {
+      "name": "Forgets important dates",
+      "power": 18
+    }
+  ],
+  "drake": [
+    {
+      "name": "Gossips about friends",
+      "power": 11
+    },
+    {
+      "name": "Lies about small things",
+      "power": 13
+    },
+    {
+      "name": "Ignores texts",
+      "power": 15
+    },
+    {
+      "name": "Eats with hands",
+      "power": 17
+    },
+    {
+      "name": "Talks about exes",
+      "power": 19
+    },
+    {
+      "name": "Forgets names",
+      "power": 12
+    },
+    {
+      "name": "Bad at directions",
+      "power": 14
+    }
+  ],
+  "justin_bieber": [
+    {
+      "name": "Sings off-key",
+      "power": 16
+    },
+    {
+      "name": "Dances awkwardly",
+      "power": 18
+    },
+    {
+      "name": "Makes bad jokes",
+      "power": 10
+    },
+    {
+      "name": "Forgets birthdays",
+      "power": 12
+    },
+    {
+      "name": "Eats too fast",
+      "power": 14
+    },
+    {
+      "name": "Talks too loud",
+      "power": 16
+    },
+    {
+      "name": "Ignores personal space",
+      "power": 18
+    }
+  ],
+  "kendrick_lamar": [
+    {
+      "name": "Swears too much",
+      "power": 11
+    },
+    {
+      "name": "Listens to bad music",
+      "power": 13
+    },
+    {
+      "name": "Bad driver",
+      "power": 15
+    },
+    {
+      "name": "Forgets to call back",
+      "power": 17
+    },
+    {
+      "name": "Eats junk food",
+      "power": 19
+    },
+    {
+      "name": "Talks politics",
+      "power": 12
+    },
+    {
+      "name": "Bad at cooking",
+      "power": 14
+    }
+  ],
+  "kylie_jenner": [
+    {
+      "name": "Takes too many selfies",
+      "power": 16
+    },
+    {
+      "name": "Spends too much on clothes",
+      "power": 18
+    },
+    {
+      "name": "Gossips on social media",
+      "power": 10
+    },
+    {
+      "name": "Forgets plans",
+      "power": 12
+    },
+    {
+      "name": "Eats slowly",
+      "power": 14
+    },
+    {
+      "name": "Talks about makeup",
+      "power": 16
+    },
+    {
+      "name": "Ignores calls",
+      "power": 18
+    }
+  ],
+  "nicki_minaj": [
+    {
+      "name": "Argues about everything",
+      "power": 11
+    },
+    {
+      "name": "Listens to loud music",
+      "power": 13
+    },
+    {
+      "name": "Bad at math",
+      "power": 15
+    },
+    {
+      "name": "Forgets passwords",
+      "power": 17
+    },
+    {
+      "name": "Eats spicy food",
+      "power": 19
+    },
+    {
+      "name": "Talks about work",
+      "power": 12
+    },
+    {
+      "name": "Bad at sports",
+      "power": 14
+    }
+  ],
+  "selena_gomez": [
+    {
+      "name": "Sings karaoke badly",
+      "power": 16
+    },
+    {
+      "name": "Dances off-beat",
+      "power": 18
+    },
+    {
+      "name": "Makes puns",
+      "power": 10
+    },
+    {
+      "name": "Forgets lyrics",
+      "power": 12
+    },
+    {
+      "name": "Eats too much candy",
+      "power": 14
+    },
+    {
+      "name": "Talks about movies",
+      "power": 16
+    },
+    {
+      "name": "Ignores time",
+      "power": 18
+    }
+  ],
+  "erika_kirk": [
+    {
+      "name": "Chews gum loudly",
+      "power": 11
+    },
+    {
+      "name": "Talks to pets",
+      "power": 13
+    },
+    {
+      "name": "Bad at video games",
+      "power": 15
+    },
+    {
+      "name": "Forgets keys",
+      "power": 17
+    },
+    {
+      "name": "Eats breakfast food",
+      "power": 19
+    },
+    {
+      "name": "Talks about weather",
+      "power": 12
+    },
+    {
+      "name": "Bad at drawing",
+      "power": 14
+    }
+  ],
+  "rihanna": [
+    {
+      "name": "Swears in public",
+      "power": 16
+    },
+    {
+      "name": "Listens to old music",
+      "power": 18
+    },
+    {
+      "name": "Bad at dancing",
+      "power": 10
+    },
+    {
+      "name": "Forgets anniversaries",
+      "power": 12
+    },
+    {
+      "name": "Eats too much",
+      "power": 14
+    },
+    {
+      "name": "Talks about fashion",
+      "power": 16
+    },
+    {
+      "name": "Ignores advice",
+      "power": 18
+    }
+  ],
+  "beyonce": [
+    {
+      "name": "Argues with fans",
+      "power": 11
+    },
+    {
+      "name": "Listens to pop music",
+      "power": 13
+    },
+    {
+      "name": "Bad at singing",
+      "power": 15
+    },
+    {
+      "name": "Forgets songs",
+      "power": 17
+    },
+    {
+      "name": "Eats healthy food",
+      "power": 19
+    },
+    {
+      "name": "Talks about awards",
+      "power": 12
+    },
+    {
+      "name": "Bad at acting",
+      "power": 14
+    }
+  ],
+  "jay_z": [
+    {
+      "name": "Raps off-beat",
+      "power": 16
+    },
+    {
+      "name": "Dances poorly",
+      "power": 18
+    },
+    {
+      "name": "Makes bad beats",
+      "power": 10
+    },
+    {
+      "name": "Forgets rhymes",
+      "power": 12
+    },
+    {
+      "name": "Eats street food",
+      "power": 14
+    },
+    {
+      "name": "Talks about business",
+      "power": 16
+    },
+    {
+      "name": "Ignores trends",
+      "power": 18
     }
   ]
 }

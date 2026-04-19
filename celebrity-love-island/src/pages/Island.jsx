@@ -792,7 +792,20 @@ export default function Island({
             />
           )
         })}
-        {/* island-connection-sum-tag hidden */}
+        {selectedNodeId &&
+          selectedNodeCenter &&
+          selectedConnectionSum !== null && (
+            <div
+              className="island-connection-sum-tag"
+              style={{
+                left: `${selectedNodeCenter.x}px`,
+                top: `${selectedNodeCenter.y}px`,
+                transform: getSumTagTransform(selectedNodeCenter, stageRef.current),
+              }}
+            >
+              {(nodesById[selectedNodeId]?.name ?? selectedNodeId)} sum: {formatSignedScore(selectedConnectionSum)}
+            </div>
+        )}
 
         {!isIslandUiCollapsed && (
           <>
@@ -810,15 +823,9 @@ export default function Island({
         )}
 
         {!isIslandUiCollapsed && (
-          <div className="dummy-chat-panel">
+          <div className="dummy-chat-panel" onClick={(event) => event.stopPropagation()}>
             {dummyChatPhase === 'chatting' ? (
               <>
-                <h3>Dummy Chat Phase</h3>
-                <p>
-                  Double click any celebrity sprite to chat.
-                </p>
-                <p>Each chat uses branching paths from dialogue data and adjusts celebrity {'->'} player connection.</p>
-                <p>You can only dummy chat each celebrity once per round.</p>
                 <p>Chats remaining: {chatsRemaining}</p>
                 {chattedCelebrityIds.length > 0 && (
                   <p>

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import TypingText from '../components/TypingText'
 import chatVillaBg from '../assets/backgrounds/love-island-usa-season-7-villa.png'
-import playerSprite from '../assets/characters/players/adjussi_clothed.png'
+import AdjussiNakedImg from '../assets/characters/players/adjussi_naked.png'
+import AhjummaNakedImg from '../assets/characters/players/ahjumma_naked.png'
 import speechBubbleImg from '../assets/speech_bubble.png'
 import nametagImg from '../assets/nametag.png'
 import {
@@ -18,11 +19,15 @@ import {
   RihannaImg,
   BeyonceImg,
   JayZImg,
-} from '../assets/characters/celebs'
+} from '../assets/characters/chibi_celebs'
 import celebrityDialogues from '../data/celebrity_dialogues.json'
 
 const DEFAULT_CHAT_CELEBRITY_ID = 'kim_kardashian'
 const CELEBRITY_RESPONSE_DELAY_MS = 2200
+const PLAYER_SPRITES = {
+  adjussi: AdjussiNakedImg,
+  ahjumma: AhjummaNakedImg,
+}
 
 const CELEBRITY_CONFIG = {
   kim_kardashian: { name: 'Kim Kardashian', sprite: KimImg },
@@ -206,8 +211,10 @@ function normalizeDialogueTree(celebrityId, celebrityName) {
 
 export default function ChatScreen({
   celebrityId = DEFAULT_CHAT_CELEBRITY_ID,
+  selectedSkin = 'adjussi',
   onComplete,
 }) {
+  const playerSprite = PLAYER_SPRITES[selectedSkin] ?? PLAYER_SPRITES.adjussi
   const chatCelebrityId = CELEBRITY_CONFIG[celebrityId]
     ? celebrityId
     : DEFAULT_CHAT_CELEBRITY_ID
