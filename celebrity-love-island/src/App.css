@@ -236,6 +236,19 @@
   display: block;
 }
 
+.skin-title {
+  font-family: serif;
+  font-size: 1.8rem;
+  color: rgba(215, 215, 157, 0.946);
+  
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 0 0 20px rgba(255,180,220,0.8), 0 2px 8px rgba(0,0,0,0.6);
+  opacity: 0.8;
+  margin: 0.5rem 0 0;
+  -webkit-text-stroke: 2px black;
+}
+
 .select-btn {
   position: fixed;
   bottom: 2.5rem;
