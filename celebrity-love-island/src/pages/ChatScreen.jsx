@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import TypingText from '../components/TypingText'
 import chatVillaBg from '../assets/backgrounds/love-island-usa-season-7-villa.png'
 import playerSprite from '../assets/characters/players/adjussi_clothed.png'
+import speechBubbleImg from '../assets/speech_bubble.png'
+import nametagImg from '../assets/nametag.png'
 import {
   KimImg,
   KanyeImg,
@@ -204,7 +206,6 @@ function normalizeDialogueTree(celebrityId, celebrityName) {
 
 export default function ChatScreen({
   celebrityId = DEFAULT_CHAT_CELEBRITY_ID,
-  onCancel,
   onComplete,
 }) {
   const chatCelebrityId = CELEBRITY_CONFIG[celebrityId]
@@ -314,16 +315,24 @@ export default function ChatScreen({
   }
 
   return (
-    <div className="chat-screen" style={{ backgroundImage: `url(${chatVillaBg})` }}>
+    <div className="chat-screen">
+      <div className="chat-screen-bg" style={{ backgroundImage: `url(${chatVillaBg})` }} />
       <div className="chat-overlay" />
 
-      <button className="chat-back-btn" onClick={() => onCancel?.()}>
-        Back
-      </button>
+      {phase === 'done' && (
+        <button className="chat-back-btn" onClick={handleFinishChat}>
+          ←
+        </button>
+      )}
 
       <div className="chat-celebrity-header">
-        <h2>{chatCelebrity.name}</h2>
-        <p>Round Chat</p>
+        <img src={nametagImg} className="chat-nametag-bg" alt="" aria-hidden="true" />
+        <div className="chat-nametag-content">
+          <h2><span className="chat-celebrity-header-label">Chat with </span>{chatCelebrity.name}</h2>
+          {phase === 'done' && (
+            <p className="chat-celebrity-header-delta">Net Connection Change: {signedDelta}</p>
+          )}
+        </div>
       </div>
 
       <img
@@ -332,26 +341,32 @@ export default function ChatScreen({
         alt={`${chatCelebrity.name} sprite`}
       />
       <div className="chat-bubble chat-bubble--celebrity">
-        <TypingText
-          key={celebrityBubbleKey}
-          className="chat-bubble-text"
-          text={celebrityBubbleText}
-          speed={16}
-        />
+        <img src={speechBubbleImg} className="chat-bubble-bg" alt="" aria-hidden="true" />
+        <div className="chat-bubble-content">
+          <TypingText
+            key={celebrityBubbleKey}
+            className="chat-bubble-text"
+            text={celebrityBubbleText}
+            speed={16}
+          />
+        </div>
       </div>
       <img className="chat-player-sprite" src={playerSprite} alt="Player sprite" />
       <div className="chat-bubble chat-bubble--player">
-        <TypingText
-          key={playerBubbleKey}
-          className="chat-bubble-text"
-          text={playerBubbleText}
-          speed={20}
-          onDone={
-            (phase === 'waiting_first' || phase === 'waiting_follow') && playerBubbleText
-              ? () => setPlayerLineTyped(true)
-              : undefined
-          }
-        />
+        <img src={speechBubbleImg} className="chat-bubble-bg chat-bubble-bg--flip" alt="" aria-hidden="true" />
+        <div className="chat-bubble-content">
+          <TypingText
+            key={playerBubbleKey}
+            className="chat-bubble-text"
+            text={playerBubbleText}
+            speed={20}
+            onDone={
+              (phase === 'waiting_first' || phase === 'waiting_follow') && playerBubbleText
+                ? () => setPlayerLineTyped(true)
+                : undefined
+            }
+          />
+        </div>
       </div>
 
       {(phase === 'pick_first' || phase === 'pick_follow') && (
@@ -390,14 +405,6 @@ export default function ChatScreen({
         </div>
       )}
 
-      {phase === 'done' && (
-        <div className="chat-finish-strip">
-          <p>Chat Complete | Net Connection Change: {signedDelta}</p>
-          <button className="attack-btn" onClick={handleFinishChat}>
-            Return To Island
-          </button>
-        </div>
-      )}
     </div>
   )
 }

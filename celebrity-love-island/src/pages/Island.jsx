@@ -53,20 +53,35 @@ const DEFAULT_ACTIVE_CELEBRITY_IDS = CELEBRITY_NODES
   .map((node) => node.id)
   .filter((id) => !BOMB_SHELL_IDS.includes(id))
 
-// [left, bottom, height] values that place each person on the island.
-const POSITIONS = [
-  { left: '8%', bottom: '14%', size: '17vh' },
-  { left: '24%', bottom: '17%', size: '17vh' },
-  { left: '43%', bottom: '19%', size: '17vh' },
-  { left: '61%', bottom: '17%', size: '17vh' },
-  { left: '77%', bottom: '14%', size: '17vh' },
-  { left: '20%', bottom: '38%', size: '14vh' },
-  { left: '44%', bottom: '41%', size: '14vh' },
-  { left: '67%', bottom: '38%', size: '14vh' },
-  { left: '34%', bottom: '57%', size: '12vh' },
-  { left: '55%', bottom: '59%', size: '12vh' },
-  { left: '76%', bottom: '57%', size: '12vh' },
-]
+// cx/cy/rx/ry must stay in sync with computePositions below
+const ELLIPSE = { cx: 44, cy: 60, rx: 36, ry: 23 }
+
+function getSumTagTransform(nodeCenter, stageEl) {
+  if (!stageEl) return 'translate(-50%, -50%)'
+  const { cx, cy, rx, ry } = ELLIPSE
+  const normDx = (nodeCenter.x - cx / 100 * stageEl.offsetWidth) / (rx / 100 * stageEl.offsetWidth)
+  const normDy = (nodeCenter.y - cy / 100 * stageEl.offsetHeight) / (ry / 100 * stageEl.offsetHeight)
+  const sideGap = '12px'
+  const vertGap = '70px'
+  if (Math.abs(normDy) >= Math.abs(normDx)) {
+    return normDy > 0
+      ? `translate(-50%, ${vertGap})`                        // bottom → tag below
+      : `translate(-50%, calc(-100% - ${vertGap}))`          // top → tag above
+  }
+  return normDx < 0
+    ? `translate(calc(-100% - ${sideGap}), -50%)`            // left → tag to left
+    : `translate(${sideGap}, -50%)`                          // right → tag to right
+}
+
+function computePositions(n) {
+  const { cx, cy, rx, ry } = ELLIPSE
+  return Array.from({ length: n }, (_, i) => {
+    const angle = Math.PI / 2 + i * ((2 * Math.PI) / n)
+    const left = cx + rx * Math.cos(angle)
+    const top  = cy + ry * Math.sin(angle)
+    return { left: `${left.toFixed(1)}%`, bottom: `${(100 - top).toFixed(1)}%`, size: '15vh' }
+  })
+}
 
 function buildInitialIslandGraph(activeCelebrityIds = DEFAULT_ACTIVE_CELEBRITY_IDS) {
   const graph = {
@@ -432,6 +447,7 @@ export default function Island({
   const nodeRefs = useRef({})
   const connectionGraph = externalConnectionGraph ?? fallbackConnectionGraph
   const chatsRemaining = Math.max(0, maxChatsPerRound - chatsUsedThisRound)
+  const positions = useMemo(() => computePositions(nodes.length), [nodes.length])
 
   const handleDummyChat = useCallback((celebrityId) => {
     if (celebrityId === PLAYER_ID || !activeCelebrityIds.includes(celebrityId)) {
@@ -592,60 +608,64 @@ export default function Island({
   ])
 
   const renderedEdges = useMemo(() => {
-    const placedLabelRects = []
+    const processedPairs = new Set()
+    const result = []
 
-    return visibleEdges
-      .map((edge, index) => {
-        const fromCenter = nodeCenters[edge.fromId]
-        const toCenter = nodeCenters[edge.toId]
-        if (!fromCenter || !toCenter) {
-          return null
+    function inlineArrow(geometry, t, reverse) {
+      const point = getQuadraticPoint(geometry, t)
+      const tangent = normalizeVector(getQuadraticTangent(geometry, t))
+      const dx = reverse ? -tangent.x : tangent.x
+      const dy = reverse ? -tangent.y : tangent.y
+      return {
+        x1: point.x - dx * 7, y1: point.y - dy * 7,
+        x2: point.x + dx * 9, y2: point.y + dy * 9,
+      }
+    }
+
+    visibleEdges.forEach((edge) => {
+      const pairKey = toPairKey(edge.fromId, edge.toId)
+      if (processedPairs.has(pairKey)) return
+      processedPairs.add(pairKey)
+
+      const fromCenter = nodeCenters[edge.fromId]
+      const toCenter = nodeCenters[edge.toId]
+      if (!fromCenter || !toCenter) return
+
+      const geometry = buildCurveGeometry(fromCenter, toCenter, 0)
+      const normal = getPairNormal(fromCenter, toCenter)
+      const labelOffset = 16
+      const isBidirectional = bidirectionalPairs.has(pairKey)
+
+      // Forward arrow at t=0.75, label beside it
+      const fwdArrow = inlineArrow(geometry, 0.75, false)
+      const fwdPt = getQuadraticPoint(geometry, 0.75)
+      const forwardLabel = {
+        text: formatSignedScore(edge.score),
+        x: fwdPt.x + normal.x * labelOffset,
+        y: fwdPt.y + normal.y * labelOffset,
+      }
+
+      let revArrow = null
+      let reverseLabel = null
+      if (isBidirectional) {
+        const reverseEdge = visibleEdges.find(
+          (e) => e.fromId === edge.toId && e.toId === edge.fromId,
+        )
+        if (reverseEdge) {
+          revArrow = inlineArrow(geometry, 0.25, true)
+          const revPt = getQuadraticPoint(geometry, 0.25)
+          reverseLabel = {
+            text: formatSignedScore(reverseEdge.score),
+            x: revPt.x + normal.x * labelOffset,
+            y: revPt.y + normal.y * labelOffset,
+          }
         }
+      }
 
-        const pairKey = toPairKey(edge.fromId, edge.toId)
-        const isBidirectional = bidirectionalPairs.has(pairKey)
-        const geometry = isBidirectional
-          ? buildBidirectionalCurveGeometry({
-              fromId: edge.fromId,
-              toId: edge.toId,
-              fromCenter,
-              toCenter,
-              nodeCenters,
-            })
-          : buildCurveGeometry(fromCenter, toCenter, 0)
-        const scoreLabel = formatSignedScore(edge.score)
-        const labelWidth = Math.max(38, scoreLabel.length * 8 + 14)
-        const labelHeight = 18
-        const { position, rect } = chooseLabelPositionOneByOne({
-          geometry,
-          labelWidth,
-          labelHeight,
-          nodeCenters,
-          placedRects: placedLabelRects,
-        })
-        placedLabelRects.push(rect)
+      result.push({ key: pairKey, geometry, fwdArrow, revArrow, forwardLabel, reverseLabel })
+    })
 
-        const arrowPoint = getQuadraticPoint(geometry, 0.62)
-        const arrowTangent = normalizeVector(getQuadraticTangent(geometry, 0.62))
-        const arrowStartX = arrowPoint.x - arrowTangent.x * 7
-        const arrowStartY = arrowPoint.y - arrowTangent.y * 7
-        const arrowEndX = arrowPoint.x + arrowTangent.x * 9
-        const arrowEndY = arrowPoint.y + arrowTangent.y * 9
-
-        return {
-          key: `${edge.fromId}-${edge.toId}-${index}`,
-          geometry,
-          scoreLabel,
-          labelWidth,
-          labelHeight,
-          labelPosition: position,
-          arrowStartX,
-          arrowStartY,
-          arrowEndX,
-          arrowEndY,
-        }
-      })
-      .filter(Boolean)
+    return result
   }, [bidirectionalPairs, nodeCenters, visibleEdges])
 
   return (
@@ -657,7 +677,7 @@ export default function Island({
         backgroundPosition: 'center',
       }}
     >
-      <div className="island-stage" ref={stageRef}>
+      <div className="island-stage" ref={stageRef} onClick={() => setSelectedNodeId(null)}>
         <div className="island-round-tracker">
           Round {roundNumber} / {seasonLength}
         </div>
@@ -680,57 +700,29 @@ export default function Island({
             >
               <path d="M 0 0 L 10 5 L 0 10 z" fill="#8f2a66" />
             </marker>
-            <marker
-              id="island-arrow-inline"
-              viewBox="0 0 10 10"
-              refX="8"
-              refY="5"
-              markerWidth="6"
-              markerHeight="6"
-              orient="auto"
-            >
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="#a33976" />
-            </marker>
           </defs>
 
-          {renderedEdges.map((renderedEdge) => {
-            return (
-              <g key={renderedEdge.key} className="island-edge-group">
-                <path
-                  d={renderedEdge.geometry.pathD}
-                  className="island-edge-path"
-                  markerEnd="url(#island-arrow)"
-                />
-                <line
-                  x1={renderedEdge.arrowStartX}
-                  y1={renderedEdge.arrowStartY}
-                  x2={renderedEdge.arrowEndX}
-                  y2={renderedEdge.arrowEndY}
-                  className="island-edge-inline-arrow"
-                  markerEnd="url(#island-arrow-inline)"
-                />
-                <rect
-                  x={renderedEdge.labelPosition.x - renderedEdge.labelWidth / 2}
-                  y={renderedEdge.labelPosition.y - renderedEdge.labelHeight / 2}
-                  width={renderedEdge.labelWidth}
-                  height={renderedEdge.labelHeight}
-                  rx="9"
-                  className="island-edge-label-bg"
-                />
-                <text
-                  x={renderedEdge.labelPosition.x}
-                  y={renderedEdge.labelPosition.y}
-                  className="island-edge-label"
-                >
-                  {renderedEdge.scoreLabel}
+          {renderedEdges.map((renderedEdge) => (
+            <g key={renderedEdge.key} className="island-edge-group">
+              <path d={renderedEdge.geometry.pathD} className="island-edge-path" />
+              <line {...renderedEdge.fwdArrow} className="island-edge-inline-arrow" markerEnd="url(#island-arrow)" />
+              {renderedEdge.revArrow && (
+                <line {...renderedEdge.revArrow} className="island-edge-inline-arrow" markerEnd="url(#island-arrow)" />
+              )}
+              <text x={renderedEdge.forwardLabel.x} y={renderedEdge.forwardLabel.y} className="island-edge-label">
+                {renderedEdge.forwardLabel.text}
+              </text>
+              {renderedEdge.reverseLabel && (
+                <text x={renderedEdge.reverseLabel.x} y={renderedEdge.reverseLabel.y} className="island-edge-label">
+                  {renderedEdge.reverseLabel.text}
                 </text>
-              </g>
-            )
-          })}
+              )}
+            </g>
+          ))}
         </svg>
 
         {nodes.map((node, index) => {
-          const position = POSITIONS[index]
+          const position = positions[index]
           const isSelected = selectedNodeId === node.id
           const isBattleTarget =
             dummyChatPhase === 'select_battle' && selectedBattleTargetId === node.id
@@ -756,8 +748,8 @@ export default function Island({
                 animationDelay: delay,
               }}
               onLoad={recomputeNodeCenters}
-              onClick={() => handleNodeClick(node.id)}
-              onDoubleClick={() => handleDummyChat(node.id)}
+              onClick={(e) => { e.stopPropagation(); handleNodeClick(node.id) }}
+              onDoubleClick={(e) => { e.stopPropagation(); handleDummyChat(node.id) }}
             />
           )
         })}
@@ -767,6 +759,7 @@ export default function Island({
             style={{
               left: `${selectedNodeCenter.x}px`,
               top: `${selectedNodeCenter.y}px`,
+              transform: getSumTagTransform(selectedNodeCenter, stageRef.current),
             }}
           >
             Sum: {selectedConnectionSum}
@@ -776,8 +769,9 @@ export default function Island({
         {!isIslandUiCollapsed && (
           <>
             {shouldShowFirstRoundGuidance && (
-              <div className="island-graph-status island-graph-status--centered">
-                {islandStatusMessage}
+              <div className="island-guidance">
+                <p>CLICK contestants to view connections</p>
+                <p>DOUBLE-CLICK to have conversation with celeb</p>
               </div>
             )}
             {selectedNodeId && (
