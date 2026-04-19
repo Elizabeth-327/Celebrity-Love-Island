@@ -228,6 +228,15 @@ export const PLAYER_MOVE_POOL = [
     stateChange: { sad: 60, lonely: 40 },
   },
   {
+    id: 'flirt',
+    name: 'flirt',
+    description: 'flirt with them. Yeah it is pretty basic',
+    power: 15,
+    state: 'neutral',
+    cooldown: 0,
+    stateChange: { neutral: 100 },
+  },
+  {
     id: 'lock_eyes_across_the_villa',
     name: 'Lock Eyes Across the Villa',
     description: 'Lock eyes and feel the magnetism!',
@@ -589,6 +598,8 @@ export const STARTING_MOVE_IDS_BY_CAREER = {
   ],
 }
 
+export const COMMON_STARTING_MOVE_IDS = ['flirt']
+
 function normalizeCareer(career) {
   return String(career)
     .trim()
@@ -597,7 +608,7 @@ function normalizeCareer(career) {
 }
 
 const ALL_STARTING_MOVE_IDS = new Set(
-  Object.values(STARTING_MOVE_IDS_BY_CAREER).flat(),
+  [...Object.values(STARTING_MOVE_IDS_BY_CAREER).flat(), ...COMMON_STARTING_MOVE_IDS],
 )
 
 export const GENERIC_MOVE_POOL = PLAYER_MOVE_POOL.filter(
@@ -614,13 +625,21 @@ export function getMoveById(moveId) {
 
 export function getMovesForCareer(career) {
   const normalizedCareer = normalizeCareer(career)
-  const moveIds = STARTING_MOVE_IDS_BY_CAREER[normalizedCareer] ?? []
+  const moveIds = [
+    ...(STARTING_MOVE_IDS_BY_CAREER[normalizedCareer] ?? []),
+    ...COMMON_STARTING_MOVE_IDS,
+  ]
   return moveIds.map((moveId) => MOVE_POOL_BY_ID[moveId]).filter(Boolean)
 }
 
 export function getStartingMoveIdsForCareer(career) {
   const normalizedCareer = normalizeCareer(career)
-  return [...(STARTING_MOVE_IDS_BY_CAREER[normalizedCareer] ?? [])]
+  return [
+    ...new Set([
+      ...(STARTING_MOVE_IDS_BY_CAREER[normalizedCareer] ?? []),
+      ...COMMON_STARTING_MOVE_IDS,
+    ]),
+  ]
 }
 
 export function getGenericMovesByState(state) {

@@ -22,6 +22,8 @@ const RAYS = Array.from({ length: 20 }, (_, i) => ({
   delay: (Math.random() * 0.6).toFixed(2),
 }))
 
+const NAKED_REVEAL_DURATION_MS = 5000
+
 function Burst() {
   return (
     <div className="burst-wrap">
@@ -53,7 +55,7 @@ export default function ChooseYourClothes({ selectedSkin, onNext }) {
       setPhase('dots')
       setDotRound(0)
       setDotsVisible(true)
-    }, 3000)
+    }, NAKED_REVEAL_DURATION_MS)
     return () => clearTimeout(t)
   }, [phase])
 

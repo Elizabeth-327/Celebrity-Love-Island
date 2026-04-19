@@ -7,6 +7,10 @@ import KendrickImg from './kendrick_lamar.png'
 import KylieImg from './kylie_jenner.png'
 import NickiImg from './nicki_minaj.png'
 import SelenaImg from './selena_gomez.png'
+import ErikaImg from './erica_kirk.png'
+import RihannaImg from './rihanna.png'
+import BeyonceImg from './beyonce.png'
+import JayZImg from './jay-z.png'
 
 export {
   KimImg,
@@ -17,5 +21,9 @@ export {
   KendrickImg,
   KylieImg,
   NickiImg,
-  SelenaImg
+  SelenaImg,
+  ErikaImg,
+  RihannaImg,
+  BeyonceImg,
+  JayZImg,
 }

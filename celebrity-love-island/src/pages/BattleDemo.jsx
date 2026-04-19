@@ -1,8 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import TypingText from '../components/TypingText'
 import loveIslandBg from '../assets/backgrounds/love_island_bg.jpg'
-import kimSprite from '../assets/characters/celebs/kim_kardashian.png'
 import playerSprite from '../assets/characters/players/adjussi_clothed.png'
+import {
+  KimImg,
+  KanyeImg,
+  ArianaImg,
+  DrakeImg,
+  JustinImg,
+  KendrickImg,
+  KylieImg,
+  NickiImg,
+  SelenaImg,
+  ErikaImg,
+  RihannaImg,
+  BeyonceImg,
+  JayZImg,
+} from '../assets/characters/celebs'
 import angrySymbol from '../assets/states/angry symbol.png'
 import embarrassedSymbol from '../assets/states/embaressed symbol.png'
 import excitedSymbol from '../assets/states/excited symbol.png'
@@ -17,27 +31,46 @@ import {
   createInitialContestants,
   getRelationshipEdgeValue,
 } from '../game/data/contestants'
-import { getGenericMovesByState, getMovesForCareer } from '../game/data/moves'
+import { getGenericMovesByState, getMoveById, getMovesForCareer } from '../game/data/moves'
 
-const MAX_ATTRACTION = 100
-const KIM_ID = 'kim_kardashian'
-const KIM_NAME = 'Kim Kardashian'
+const PLAYER_MAX_ATTRACTION = 100
+const DEFAULT_BATTLE_CELEBRITY_ID = 'kim_kardashian'
 const SLOT_ROWS = 3
 const SLOT_COLUMNS = 3
 const SLOT_CENTER_ROW_INDEX = 1
 const SLOT_SPIN_TICK_MS = 150
 const QUOTE_TIMER_SECONDS = 30
 const DEFAULT_ICK_DAMAGE = 8
-const TIER_ICK_DAMAGE_SCALE = 1
 const CONNECTION_MIN = -100
 const CONNECTION_MAX = 100
-const PLAYER_BATTLE_CONNECTION_DELTA = 50
 const HEART_BURST_DURATION_MS = 900
 const HEART_BREAK_DURATION_MS = 850
 const HEART_BURST_TRIGGER_DELAY_MS = 220
 const HEART_BREAK_TRIGGER_DELAY_MS = 220
 const ACTION_TEXT_TYPING_SPEED_MS = 14
 const ACTION_TEXT_LINGER_MS = 2200
+const BATTLE_TIER_CONFIG = {
+  1: {
+    opponentMaxAttraction: 100,
+    ickDamageScale: 1,
+    connectionDelta: 50,
+  },
+  2: {
+    opponentMaxAttraction: 200,
+    ickDamageScale: 1.5,
+    connectionDelta: 75,
+  },
+  3: {
+    opponentMaxAttraction: 300,
+    ickDamageScale: 2,
+    connectionDelta: 100,
+  },
+}
+const BATTLE_DIFFICULTY_LABELS = {
+  1: 'Easy',
+  2: 'Medium',
+  3: 'Hard',
+}
 
 const STATE_ICONS = {
   neutral: neutralSymbol,
@@ -49,9 +82,33 @@ const STATE_ICONS = {
   nervous: nervousSymbol,
 }
 const SLOT_STATES = Object.keys(STATE_ICONS)
+const BATTLE_CELEBRITY_CONFIG = {
+  kim_kardashian: { name: 'Kim Kardashian', sprite: KimImg },
+  kanye_west: { name: 'Kanye West', sprite: KanyeImg },
+  ariana_grande: { name: 'Ariana Grande', sprite: ArianaImg },
+  drake: { name: 'Drake', sprite: DrakeImg },
+  justin_bieber: { name: 'Justin Bieber', sprite: JustinImg },
+  kendrick_lamar: { name: 'Kendrick Lamar', sprite: KendrickImg },
+  kylie_jenner: { name: 'Kylie Jenner', sprite: KylieImg },
+  nicki_minaj: { name: 'Nicki Minaj', sprite: NickiImg },
+  selena_gomez: { name: 'Selena Gomez', sprite: SelenaImg },
+  erika_kirk: { name: 'Erika Kirk', sprite: ErikaImg },
+  rihanna: { name: 'Rihanna', sprite: RihannaImg },
+  beyonce: { name: 'Beyonce', sprite: BeyonceImg },
+  jay_z: { name: 'Jay-Z', sprite: JayZImg },
+}
 
-function clampAttraction(value) {
-  return Math.max(0, Math.min(MAX_ATTRACTION, value))
+function normalizeBattleTier(value) {
+  const numericTier = Number(value)
+  return numericTier === 1 || numericTier === 2 || numericTier === 3 ? numericTier : 1
+}
+
+function getBattleDifficultyLabel(tier) {
+  return BATTLE_DIFFICULTY_LABELS[tier] ?? BATTLE_DIFFICULTY_LABELS[1]
+}
+
+function clampAttraction(value, maxAttraction = PLAYER_MAX_ATTRACTION) {
+  return Math.max(0, Math.min(maxAttraction, value))
 }
 
 function pickWeightedState(stateChange, fallbackState) {
@@ -73,8 +130,8 @@ function pickWeightedState(stateChange, fallbackState) {
   return entries[entries.length - 1][0]
 }
 
-function pickNextIck(currentUsedIcks) {
-  const ickPool = celebrityIcks[KIM_ID] ?? []
+function pickNextIck(currentUsedIcks, celebrityId) {
+  const ickPool = celebrityIcks[celebrityId] ?? []
   if (ickPool.length === 0) {
     return { ick: null, nextUsedIcks: [], didCycleReset: false }
   }
@@ -522,10 +579,12 @@ function applyDemoPostBattleGraphUpdates({
   activeContestantIds,
   battleTargetId,
   battleWon,
+  battleTier,
 }) {
+  const tierConfig = BATTLE_TIER_CONFIG[battleTier] ?? BATTLE_TIER_CONFIG[1]
   const playerDelta = battleWon
-    ? PLAYER_BATTLE_CONNECTION_DELTA
-    : -PLAYER_BATTLE_CONNECTION_DELTA
+    ? tierConfig.connectionDelta
+    : -tierConfig.connectionDelta
   const playerPrimaryDeltas = buildPlayerBattlePrimaryDeltas(battleTargetId, playerDelta)
   const sideBattleResult = buildCelebritySideBattlePrimaryDeltas(
     activeContestantIds,
@@ -579,6 +638,7 @@ function applyDemoPostBattleGraphUpdates({
   return {
     nextGraph,
     summary: {
+      battleTier,
       battleWon,
       targetName,
       playerDelta,
@@ -605,12 +665,60 @@ function applyDemoPostBattleGraphUpdates({
   }
 }
 
-export default function BattleDemo({ onBackToIntro }) {
-  // Demo is currently fixed to Actor defaults; real battle flow will use chosen career later.
-  const moves = useMemo(() => getMovesForCareer('actor'), [])
+export default function BattleDemo({
+  onBackToIntro,
+  onBattleComplete,
+  initialConnectionGraph,
+  selectedBattleCelebrityId = DEFAULT_BATTLE_CELEBRITY_ID,
+  selectedBattleTier = 1,
+  selectedCareer = 'actor',
+  initialOwnedMoveIds = null,
+}) {
+  const battleCelebrityConfig =
+    BATTLE_CELEBRITY_CONFIG[selectedBattleCelebrityId] ??
+    BATTLE_CELEBRITY_CONFIG[DEFAULT_BATTLE_CELEBRITY_ID]
+  const battleCelebrityId =
+    BATTLE_CELEBRITY_CONFIG[selectedBattleCelebrityId]
+      ? selectedBattleCelebrityId
+      : DEFAULT_BATTLE_CELEBRITY_ID
+  const battleTier = normalizeBattleTier(selectedBattleTier)
+  const tierConfig = BATTLE_TIER_CONFIG[battleTier] ?? BATTLE_TIER_CONFIG[1]
+  const opponentMaxAttraction = tierConfig.opponentMaxAttraction
+  const battleCelebrityName = battleCelebrityConfig.name
+  const battleCelebritySprite = battleCelebrityConfig.sprite
+
+  const defaultCareerMoves = useMemo(() => {
+    const careerMoves = getMovesForCareer(selectedCareer)
+    return careerMoves.length > 0 ? careerMoves : getMovesForCareer('actor')
+  }, [selectedCareer])
+  const defaultCareerMoveIds = useMemo(
+    () => defaultCareerMoves.map((move) => move.id),
+    [defaultCareerMoves],
+  )
+  const startingOwnedMoveIds = useMemo(() => {
+    const candidateIds =
+      Array.isArray(initialOwnedMoveIds) && initialOwnedMoveIds.length > 0
+        ? initialOwnedMoveIds
+        : defaultCareerMoveIds
+    const uniqueIds = [...new Set(candidateIds)]
+    const validIds = uniqueIds.filter((moveId) => Boolean(getMoveById(moveId)))
+    return validIds.length > 0 ? validIds : defaultCareerMoveIds
+  }, [defaultCareerMoveIds, initialOwnedMoveIds])
+
   const demoInitialGraphState = useMemo(() => createInitialDemoGraphState(), [])
-  const [selectedMoveId, setSelectedMoveId] = useState(moves[0]?.id ?? '')
-  const [playerAttraction, setPlayerAttraction] = useState(MAX_ATTRACTION)
+  const startingGraph = useMemo(
+    () => deepCloneGraph(initialConnectionGraph ?? demoInitialGraphState.graph),
+    [demoInitialGraphState.graph, initialConnectionGraph],
+  )
+  const [ownedMoveIds, setOwnedMoveIds] = useState(() => startingOwnedMoveIds)
+  const moves = useMemo(
+    () => ownedMoveIds.map((moveId) => getMoveById(moveId)).filter(Boolean),
+    [ownedMoveIds],
+  )
+  const [selectedMoveId, setSelectedMoveId] = useState(
+    startingOwnedMoveIds[0] ?? defaultCareerMoveIds[0] ?? '',
+  )
+  const [playerAttraction, setPlayerAttraction] = useState(PLAYER_MAX_ATTRACTION)
   const [celebAttraction, setCelebAttraction] = useState(0)
   const [celebrityState, setCelebrityState] = useState('neutral')
   const [usedIcks, setUsedIcks] = useState([])
@@ -618,7 +726,6 @@ export default function BattleDemo({ onBackToIntro }) {
   const [turnCount, setTurnCount] = useState(1)
   const [battleStatus, setBattleStatus] = useState('active')
   const [phase, setPhase] = useState('battle')
-  const [ownedMoveIds, setOwnedMoveIds] = useState(() => moves.map((move) => move.id))
   const [moveCooldowns, setMoveCooldowns] = useState(() => createInitialMoveCooldowns(moves))
   const [activeQuoteChallenge, setActiveQuoteChallenge] = useState(null)
   const [quoteTimeLeft, setQuoteTimeLeft] = useState(QUOTE_TIMER_SECONDS)
@@ -628,22 +735,24 @@ export default function BattleDemo({ onBackToIntro }) {
   const [slotSpinningColumns, setSlotSpinningColumns] = useState([false, false, false])
   const [slotStatus, setSlotStatus] = useState('idle')
   const [slotOutcome, setSlotOutcome] = useState(null)
-  const [demoGraph, setDemoGraph] = useState(() => demoInitialGraphState.graph)
+  const [isProceedingToIsland, setIsProceedingToIsland] = useState(false)
+  const [demoGraph, setDemoGraph] = useState(() => startingGraph)
   const [graphUpdateSummary, setGraphUpdateSummary] = useState(null)
   const [rewardPopupMove, setRewardPopupMove] = useState(null)
   const [heartBurstFxId, setHeartBurstFxId] = useState(null)
   const [heartBreakFxId, setHeartBreakFxId] = useState(null)
   const [battleLog, setBattleLog] = useState([
-    `${KIM_NAME} entered the battle. Pick your move and press attack.`,
+    `${battleCelebrityName} entered the battle. Pick your move and press attack.`,
   ])
   const [actionMessageQueue, setActionMessageQueue] = useState([])
   const [activeActionMessage, setActiveActionMessage] = useState(
-    `${KIM_NAME} entered the battle. Pick your move and press attack.`,
+    `${battleCelebrityName} entered the battle. Pick your move and press attack.`,
   )
   const [actionTextRenderKey, setActionTextRenderKey] = useState(0)
   const playerAttractionRef = useRef(playerAttraction)
   const usedIcksRef = useRef(usedIcks)
   const demoGraphRef = useRef(demoGraph)
+  const ownedMoveIdsRef = useRef(ownedMoveIds)
   const fxTimeoutsRef = useRef([])
   const actionMessageTimeoutRef = useRef(null)
   const previousBattleLogLengthRef = useRef(1)
@@ -653,6 +762,21 @@ export default function BattleDemo({ onBackToIntro }) {
   )
 
   const selectedMove = moves.find((move) => move.id === selectedMoveId) ?? null
+  const activeContestantIds = useMemo(() => Object.keys(demoGraph), [demoGraph])
+  const contestantsById = useMemo(() => {
+    const contestants = {
+      [PLAYER_ID]: { name: 'You' },
+    }
+    activeContestantIds.forEach((id) => {
+      if (id === PLAYER_ID) {
+        return
+      }
+      contestants[id] = {
+        name: BATTLE_CELEBRITY_CONFIG[id]?.name ?? id,
+      }
+    })
+    return contestants
+  }, [activeContestantIds])
   const celebrityStateIcon = STATE_ICONS[celebrityState] ?? neutralSymbol
   const selectedMoveCooldown = selectedMove ? moveCooldowns[selectedMove.id] ?? 0 : 0
   const canAttack =
@@ -673,6 +797,10 @@ export default function BattleDemo({ onBackToIntro }) {
   useEffect(() => {
     demoGraphRef.current = demoGraph
   }, [demoGraph])
+
+  useEffect(() => {
+    ownedMoveIdsRef.current = ownedMoveIds
+  }, [ownedMoveIds])
 
   useEffect(() => {
     return () => {
@@ -771,10 +899,11 @@ export default function BattleDemo({ onBackToIntro }) {
     (battleWon) => {
       const { nextGraph, summary } = applyDemoPostBattleGraphUpdates({
         graphSnapshot: demoGraphRef.current,
-        contestantsById: demoInitialGraphState.contestants,
-        activeContestantIds: demoInitialGraphState.activeContestantIds,
-        battleTargetId: KIM_ID,
+        contestantsById,
+        activeContestantIds,
+        battleTargetId: battleCelebrityId,
         battleWon,
+        battleTier,
       })
 
       setDemoGraph(nextGraph)
@@ -788,9 +917,11 @@ export default function BattleDemo({ onBackToIntro }) {
       beginSlotMachine()
     },
     [
+      activeContestantIds,
+      battleCelebrityId,
+      battleTier,
       beginSlotMachine,
-      demoInitialGraphState.activeContestantIds,
-      demoInitialGraphState.contestants,
+      contestantsById,
     ],
   )
 
@@ -800,13 +931,13 @@ export default function BattleDemo({ onBackToIntro }) {
         return
       }
 
-      const { ick, nextUsedIcks, didCycleReset } = pickNextIck(usedIcksRef.current)
+      const { ick, nextUsedIcks, didCycleReset } = pickNextIck(usedIcksRef.current, battleCelebrityId)
       const ickPower = ick?.power ?? DEFAULT_ICK_DAMAGE
       const isRepeatedIck = didCycleReset || ickCycleCount > 0
       const repeatedIckMultiplier = isRepeatedIck ? 2 : 1
       const preQuoteDamage = Math.max(
         1,
-        Math.round(ickPower * repeatedIckMultiplier * TIER_ICK_DAMAGE_SCALE),
+        Math.round(ickPower * repeatedIckMultiplier * tierConfig.ickDamageScale),
       )
       const ickDamage =
         quoteResult === 'win' ? Math.max(1, Math.round(preQuoteDamage / 2)) : preQuoteDamage
@@ -820,8 +951,8 @@ export default function BattleDemo({ onBackToIntro }) {
             ? 'Quote minigame timeout: full ick -attraction applied.'
             : 'Quote minigame incorrect: full ick -attraction applied.'
       const ickMessage = ick
-        ? `${KIM_NAME} gives you the ick they ${ick.name}.`
-        : `${KIM_NAME} gives you the ick.`
+        ? `${battleCelebrityName} gives you the ick they ${ick.name}. You lose ${ickDamage} attraction.`
+        : `${battleCelebrityName} gives you the ick. You lose ${ickDamage} attraction.`
       const defeatMessage = didPlayerLose
         ? 'Your attraction hit zero. Battle lost.'
         : null
@@ -848,7 +979,15 @@ export default function BattleDemo({ onBackToIntro }) {
         finalizeBattleGraphAndAdvance(false)
       }
     },
-    [finalizeBattleGraphAndAdvance, ickCycleCount, pendingEnemyTurn, triggerHeartBreakFx],
+    [
+      battleCelebrityId,
+      battleCelebrityName,
+      finalizeBattleGraphAndAdvance,
+      ickCycleCount,
+      pendingEnemyTurn,
+      tierConfig.ickDamageScale,
+      triggerHeartBreakFx,
+    ],
   )
 
   const handleQuoteChoice = useCallback(
@@ -884,6 +1023,31 @@ export default function BattleDemo({ onBackToIntro }) {
     pendingEnemyTurn,
     quoteTimeLeft,
     resolveEnemyAttackAfterQuote,
+  ])
+
+  const handleProceedToIsland = useCallback(() => {
+    if (
+      phase !== 'slot' ||
+      slotStatus !== 'resolved' ||
+      !graphUpdateSummary ||
+      typeof onBattleComplete !== 'function' ||
+      isProceedingToIsland
+    ) {
+      return
+    }
+
+    setIsProceedingToIsland(true)
+    onBattleComplete({
+      nextGraph: demoGraphRef.current,
+      graphUpdateSummary,
+      nextPlayerMoveIds: ownedMoveIdsRef.current,
+    })
+  }, [
+    graphUpdateSummary,
+    isProceedingToIsland,
+    onBattleComplete,
+    phase,
+    slotStatus,
   ])
 
   useEffect(() => {
@@ -982,7 +1146,10 @@ export default function BattleDemo({ onBackToIntro }) {
     const isStateMatch = selectedMove.state === celebrityState
     const hasDoubleStateBonus = isStateMatch && selectedMove.state !== 'neutral'
     const attractionGain = selectedMove.power * (hasDoubleStateBonus ? 2 : 1)
-    const nextCelebAttraction = clampAttraction(celebAttraction + attractionGain)
+    const nextCelebAttraction = clampAttraction(
+      celebAttraction + attractionGain,
+      opponentMaxAttraction,
+    )
     const nextState = pickWeightedState(selectedMove.stateChange, celebrityState)
     triggerHeartBurstFx()
 
@@ -990,7 +1157,7 @@ export default function BattleDemo({ onBackToIntro }) {
       `Turn ${turnCount}: You used ${selectedMove.name} (+${attractionGain} attraction${hasDoubleStateBonus ? ', state match x2' : ''}).`,
     ]
 
-    if (nextCelebAttraction >= MAX_ATTRACTION) {
+      if (nextCelebAttraction >= opponentMaxAttraction) {
       setCelebAttraction(nextCelebAttraction)
       setCelebrityState(nextState)
       setBattleStatus('won')
@@ -1003,13 +1170,13 @@ export default function BattleDemo({ onBackToIntro }) {
       setBattleLog((current) => [
         ...current,
         ...logEntries,
-        `${KIM_NAME} is fully attracted. Battle won.`,
+        `${battleCelebrityName} reached ${opponentMaxAttraction} attraction. Battle won.`,
       ])
       finalizeBattleGraphAndAdvance(true)
       return
     }
 
-    const quoteChallenge = createQuoteChallengeForCelebrity(KIM_ID, KIM_NAME)
+    const quoteChallenge = createQuoteChallengeForCelebrity(battleCelebrityId, battleCelebrityName)
     if (!quoteChallenge) {
       setBattleLog((current) => [
         ...current,
@@ -1035,7 +1202,7 @@ export default function BattleDemo({ onBackToIntro }) {
     setBattleLog((current) => [
       ...current,
       ...logEntries,
-      `Quote minigame started. Choose ${KIM_NAME}'s quote within ${QUOTE_TIMER_SECONDS} seconds.`,
+      `Quote minigame started. Choose ${battleCelebrityName}'s quote within ${QUOTE_TIMER_SECONDS} seconds.`,
     ])
   }
 
@@ -1053,20 +1220,21 @@ export default function BattleDemo({ onBackToIntro }) {
 
       <div className="celebrity-hud">
         <div className="celebrity-name-row">
-          <h2>{KIM_NAME}</h2>
+          <h2>{battleCelebrityName}</h2>
           <img src={celebrityStateIcon} alt={`${celebrityState} state`} />
           <span>{formatStateLabel(celebrityState)}</span>
         </div>
         <div className="meter-track">
           <div
             className="meter-fill"
-            style={{ width: `${(celebAttraction / MAX_ATTRACTION) * 100}%` }}
+            style={{ width: `${(celebAttraction / opponentMaxAttraction) * 100}%` }}
           />
         </div>
-        <p className="meter-value">{celebAttraction} / 100</p>
+        <p className="meter-value">{celebAttraction} / {opponentMaxAttraction}</p>
+        <p className="meter-value">Difficulty: {getBattleDifficultyLabel(battleTier)}</p>
       </div>
 
-      <img className="celebrity-sprite" src={kimSprite} alt="Kim Kardashian sprite" />
+      <img className="celebrity-sprite" src={battleCelebritySprite} alt={`${battleCelebrityName} sprite`} />
       {heartBurstFxId && (
         <div key={heartBurstFxId} className="heart-burst-fx" aria-hidden="true">
           <span className="heart-burst-particle heart-burst-particle-1">&#9829;</span>
@@ -1102,12 +1270,12 @@ export default function BattleDemo({ onBackToIntro }) {
         <div className="player-meter-row">
           <div className="player-meter-info">
             <span>Player Attraction</span>
-            <span>{playerAttraction} / 100</span>
+            <span>{playerAttraction} / {PLAYER_MAX_ATTRACTION}</span>
           </div>
           <div className="meter-track">
             <div
               className="meter-fill"
-              style={{ width: `${(playerAttraction / MAX_ATTRACTION) * 100}%` }}
+              style={{ width: `${(playerAttraction / PLAYER_MAX_ATTRACTION) * 100}%` }}
             />
           </div>
         </div>
@@ -1301,6 +1469,18 @@ export default function BattleDemo({ onBackToIntro }) {
                 {slotStatus === 'resolved' && slotOutcome?.matchedState && slotOutcome.rewardMove && `Reward unlocked: ${slotOutcome.rewardMove.name}`}
                 {slotStatus === 'resolved' && !slotOutcome?.matchedState && 'No center match this spin'}
               </p>
+              <button
+                className="attack-btn"
+                onClick={handleProceedToIsland}
+                disabled={
+                  slotStatus !== 'resolved' ||
+                  !graphUpdateSummary ||
+                  typeof onBattleComplete !== 'function' ||
+                  isProceedingToIsland
+                }
+              >
+                {isProceedingToIsland ? 'Loading...' : 'Next'}
+              </button>
             </div>
           </div>
         )}

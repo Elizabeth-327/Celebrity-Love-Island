@@ -11,7 +11,21 @@ import KendrickImg from '../assets/characters/celebs/kendrick_lamar.png'
 import KylieImg from '../assets/characters/celebs/kylie_jenner.png'
 import NickiImg from '../assets/characters/celebs/nicki_minaj.png'
 import SelenaImg from '../assets/characters/celebs/selena_gomez.png'
+import ErikaImg from '../assets/characters/celebs/erica_kirk.png'
+import RihannaImg from '../assets/characters/celebs/rihanna.png'
+import BeyonceImg from '../assets/characters/celebs/beyonce.png'
+import JayZImg from '../assets/characters/celebs/jay-z.png'
 import { PLAYER_ID, getRelationshipEdgeValue } from '../game/data/contestants'
+
+const MAX_DUMMY_CHATS = 2
+const DUMMY_CHAT_MIN_DELTA = -6
+const DUMMY_CHAT_MAX_DELTA = 6
+const BATTLE_TIERS = [1, 2, 3]
+const BATTLE_DIFFICULTY_LABELS = {
+  1: 'Easy',
+  2: 'Medium',
+  3: 'Hard',
+}
 
 const NAKED_IMGS = {
   adjussi: AdjussiNakedImg,
@@ -28,7 +42,18 @@ const CELEBRITY_NODES = [
   { id: 'kylie_jenner', name: 'Kylie Jenner', img: KylieImg },
   { id: 'nicki_minaj', name: 'Nicki Minaj', img: NickiImg },
   { id: 'selena_gomez', name: 'Selena Gomez', img: SelenaImg },
+  { id: 'erika_kirk', name: 'Erika Kirk', img: ErikaImg },
+  { id: 'rihanna', name: 'Rihanna', img: RihannaImg },
+  { id: 'beyonce', name: 'Beyonce', img: BeyonceImg },
+  { id: 'jay_z', name: 'Jay-Z', img: JayZImg },
 ]
+const CELEBRITY_NODE_LOOKUP = Object.fromEntries(
+  CELEBRITY_NODES.map((node) => [node.id, node]),
+)
+const BOMB_SHELL_IDS = ['erika_kirk', 'rihanna', 'beyonce', 'jay_z']
+const DEFAULT_ACTIVE_CELEBRITY_IDS = CELEBRITY_NODES
+  .map((node) => node.id)
+  .filter((id) => !BOMB_SHELL_IDS.includes(id))
 
 // [left, bottom, height] values that place each person on the island.
 const POSITIONS = [
@@ -42,13 +67,14 @@ const POSITIONS = [
   { left: '67%', bottom: '38%', size: '14vh' },
   { left: '34%', bottom: '57%', size: '12vh' },
   { left: '55%', bottom: '59%', size: '12vh' },
+  { left: '76%', bottom: '57%', size: '12vh' },
 ]
 
-function buildInitialIslandGraph() {
+function buildInitialIslandGraph(activeCelebrityIds = DEFAULT_ACTIVE_CELEBRITY_IDS) {
   const graph = {
     [PLAYER_ID]: {},
   }
-  const celebrityIds = CELEBRITY_NODES.map((node) => node.id)
+  const celebrityIds = [...activeCelebrityIds]
 
   celebrityIds.forEach((fromId) => {
     graph[fromId] = {}
@@ -324,25 +350,150 @@ function formatSignedScore(value) {
   return String(value)
 }
 
-export default function Island({ selectedSkin }) {
+function clampConnection(value) {
+  return Math.max(-100, Math.min(100, value))
+}
+
+function randomDummyChatDelta() {
+  return Math.floor(Math.random() * (DUMMY_CHAT_MAX_DELTA - DUMMY_CHAT_MIN_DELTA + 1)) + DUMMY_CHAT_MIN_DELTA
+}
+
+function getBattleDifficultyLabel(tier) {
+  return BATTLE_DIFFICULTY_LABELS[tier] ?? BATTLE_DIFFICULTY_LABELS[1]
+}
+
+function roundTo2(value) {
+  return Math.round(value * 100) / 100
+}
+
+function computeConnectionSum(contestantId, graph, activeCelebrityIds) {
+  const incomingSourceIds =
+    contestantId === PLAYER_ID
+      ? [...activeCelebrityIds]
+      : [PLAYER_ID, ...activeCelebrityIds.filter((id) => id !== contestantId)]
+
+  let incomingSum = 0
+  let strongIncomingCount = 0
+
+  incomingSourceIds.forEach((fromId) => {
+    const value = graph[fromId]?.[contestantId]
+    if (typeof value !== 'number') {
+      return
+    }
+
+    incomingSum += value
+    if (value >= 50) {
+      strongIncomingCount += 1
+    }
+  })
+
+  const decayPenalty = 100 * Math.exp(-strongIncomingCount)
+  return roundTo2(incomingSum - decayPenalty)
+}
+
+export default function Island({
+  selectedSkin,
+  roundNumber = 1,
+  seasonLength = 8,
+  activeCelebrityIds = DEFAULT_ACTIVE_CELEBRITY_IDS,
+  connectionGraph: externalConnectionGraph,
+  onConnectionGraphChange,
+  roundArrivalSummary,
+  bombshellEventText,
+  roundPhaseFlashMessages = [],
+  onDismissRoundArrivalSummary,
+  onDismissBombshellEventText,
+  onDismissRoundPhaseFlashMessage,
+  onStartBattle,
+}) {
   const skin = selectedSkin ?? 'adjussi'
   const nodes = useMemo(
     () => [
       { id: PLAYER_ID, name: 'You', img: NAKED_IMGS[skin] },
-      ...CELEBRITY_NODES,
+      ...activeCelebrityIds
+        .map((id) => CELEBRITY_NODE_LOOKUP[id])
+        .filter(Boolean),
     ],
-    [skin],
+    [activeCelebrityIds, skin],
   )
   const nodeIds = useMemo(() => nodes.map((node) => node.id), [nodes])
   const nodesById = useMemo(
     () => Object.fromEntries(nodes.map((node) => [node.id, node])),
     [nodes],
   )
-  const [connectionGraph] = useState(() => buildInitialIslandGraph())
+  const [fallbackConnectionGraph, setFallbackConnectionGraph] = useState(() =>
+    buildInitialIslandGraph(activeCelebrityIds),
+  )
   const [selectedNodeId, setSelectedNodeId] = useState(null)
+  const [hasClickedCelebrity, setHasClickedCelebrity] = useState(false)
+  const [chatsUsedThisRound, setChatsUsedThisRound] = useState(0)
+  const [chattedCelebrityIds, setChattedCelebrityIds] = useState([])
+  const [dummyChatPhase, setDummyChatPhase] = useState('chatting')
+  const [selectedBattleTargetId, setSelectedBattleTargetId] = useState(
+    activeCelebrityIds[0] ?? 'kim_kardashian',
+  )
+  const [selectedBattleTier, setSelectedBattleTier] = useState(1)
+  const [showConnectionChanges, setShowConnectionChanges] = useState(false)
+  const [isIslandUiCollapsed, setIsIslandUiCollapsed] = useState(false)
+  const [dummyChatLog, setDummyChatLog] = useState([])
   const [nodeCenters, setNodeCenters] = useState({})
   const stageRef = useRef(null)
   const nodeRefs = useRef({})
+  const connectionGraph = externalConnectionGraph ?? fallbackConnectionGraph
+  const setConnectionGraph = onConnectionGraphChange ?? setFallbackConnectionGraph
+  const chatsRemaining = Math.max(0, MAX_DUMMY_CHATS - chatsUsedThisRound)
+
+  const handleDummyChat = useCallback((celebrityId) => {
+    if (celebrityId === PLAYER_ID || !activeCelebrityIds.includes(celebrityId)) {
+      return
+    }
+
+    if (dummyChatPhase !== 'chatting') {
+      return
+    }
+    if (chatsUsedThisRound >= MAX_DUMMY_CHATS) {
+      return
+    }
+    if (chattedCelebrityIds.includes(celebrityId)) {
+      return
+    }
+
+    const celebrityName = nodesById[celebrityId]?.name ?? celebrityId
+    const delta = randomDummyChatDelta()
+
+    setConnectionGraph((current) => {
+      const nextGraph = {
+        ...current,
+        [celebrityId]: {
+          ...current[celebrityId],
+        },
+      }
+      const currentScore = current[celebrityId]?.[PLAYER_ID] ?? 0
+      nextGraph[celebrityId][PLAYER_ID] = clampConnection(currentScore + delta)
+      return nextGraph
+    })
+
+    setChatsUsedThisRound((count) => count + 1)
+    setChattedCelebrityIds((current) => [...current, celebrityId])
+    setDummyChatLog((current) => [
+      `${celebrityName}: ${formatSignedScore(delta)} connection (dummy chat)`,
+      ...current,
+    ].slice(0, 6))
+    setSelectedNodeId(celebrityId)
+  }, [activeCelebrityIds, chatsUsedThisRound, chattedCelebrityIds, dummyChatPhase, nodesById])
+
+  const handleNodeClick = useCallback((nodeId) => {
+    setSelectedNodeId(nodeId)
+    if (nodeId !== PLAYER_ID) {
+      setHasClickedCelebrity(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (chatsUsedThisRound >= MAX_DUMMY_CHATS) {
+      setDummyChatPhase('select_battle')
+    }
+  }, [chatsUsedThisRound])
 
   const recomputeNodeCenters = useCallback(() => {
     if (!stageRef.current) {
@@ -364,6 +515,17 @@ export default function Island({ selectedSkin }) {
     })
     setNodeCenters(centers)
   }, [nodes])
+
+  useEffect(() => {
+    setDummyChatPhase('chatting')
+    setChatsUsedThisRound(0)
+    setChattedCelebrityIds([])
+    setDummyChatLog([])
+    setSelectedBattleTargetId(activeCelebrityIds[0] ?? 'kim_kardashian')
+    setSelectedBattleTier(1)
+    setShowConnectionChanges(false)
+    setHasClickedCelebrity(false)
+  }, [roundNumber, activeCelebrityIds])
 
   useEffect(() => {
     recomputeNodeCenters()
@@ -400,6 +562,30 @@ export default function Island({ selectedSkin }) {
       })
       .sort((a, b) => a.localeCompare(b))
   }, [nodesById, visibleEdges])
+
+  const selectedConnectionSum = useMemo(() => {
+    if (!selectedNodeId) {
+      return null
+    }
+
+    return computeConnectionSum(selectedNodeId, connectionGraph, activeCelebrityIds)
+  }, [activeCelebrityIds, connectionGraph, selectedNodeId])
+
+  const selectedNodeCenter = selectedNodeId ? nodeCenters[selectedNodeId] : null
+  const islandStatusMessage = useMemo(() => {
+    if (dummyChatPhase === 'chatting') {
+      if (!hasClickedCelebrity) {
+        return 'Click a celebrity to view their connections.'
+      }
+      return `Double click a celebrity to chat to them. Chats remaining: ${chatsRemaining}.`
+    }
+
+    if (selectedNodeId) {
+      return `Showing connections for ${nodesById[selectedNodeId]?.name ?? selectedNodeId}`
+    }
+
+    return 'Click a person to display connection lines and scores.'
+  }, [chatsRemaining, dummyChatPhase, hasClickedCelebrity, nodesById, selectedNodeId])
 
   const renderedEdges = useMemo(() => {
     const placedLabelRects = []
@@ -468,6 +654,15 @@ export default function Island({ selectedSkin }) {
       }}
     >
       <div className="island-stage" ref={stageRef}>
+        <div className="island-round-tracker">
+          Round {roundNumber} / {seasonLength}
+        </div>
+        <button
+          className="island-ui-toggle"
+          onClick={() => setIsIslandUiCollapsed((current) => !current)}
+        >
+          {isIslandUiCollapsed ? 'Show UI' : 'Hide UI'}
+        </button>
         <svg className="island-graph-overlay">
           <defs>
             <marker
@@ -555,24 +750,173 @@ export default function Island({ selectedSkin }) {
                 animationDelay: delay,
               }}
               onLoad={recomputeNodeCenters}
-              onClick={() => setSelectedNodeId(node.id)}
+              onClick={() => handleNodeClick(node.id)}
+              onDoubleClick={() => handleDummyChat(node.id)}
             />
           )
         })}
+        {selectedNodeCenter && selectedConnectionSum !== null && (
+          <div
+            className="island-connection-sum-tag"
+            style={{
+              left: `${selectedNodeCenter.x}px`,
+              top: `${selectedNodeCenter.y}px`,
+            }}
+          >
+            Sum: {selectedConnectionSum}
+          </div>
+        )}
 
-        <div className="island-graph-status">
-          {selectedNodeId
-            ? `Showing connections for ${nodesById[selectedNodeId]?.name ?? selectedNodeId}`
-            : 'Click a person to display connection lines and scores.'}
-        </div>
-        {selectedNodeId && (
-          <div className="island-graph-values">
-            <h3>Visible Connection Values</h3>
-            <ul>
-              {edgeSummaryRows.map((row) => (
-                <li key={row}>{row}</li>
-              ))}
-            </ul>
+        {!isIslandUiCollapsed && (
+          <>
+            {dummyChatPhase === 'chatting' && (
+              <div className="island-graph-status island-graph-status--centered">
+                {islandStatusMessage}
+              </div>
+            )}
+            {selectedNodeId && (
+              <div className="island-graph-values">
+                <div className="island-graph-values-head">
+                  <h3>Visible Connection Values</h3>
+                  <button
+                    className="island-graph-values-close"
+                    onClick={() => setSelectedNodeId(null)}
+                    aria-label="Close connection details"
+                  >
+                    x
+                  </button>
+                </div>
+                <ul>
+                  {edgeSummaryRows.map((row) => (
+                    <li key={row}>{row}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>
+        )}
+
+        {!isIslandUiCollapsed && (
+          <div className="dummy-chat-panel">
+            {dummyChatPhase === 'chatting' ? (
+              <>
+                <h3>Dummy Chat Phase</h3>
+                <p>
+                  Double click any celebrity sprite to chat.
+                </p>
+                <p>Each dummy chat applies a small connection change to celebrity {'->'} player.</p>
+                <p>You can only dummy chat each celebrity once per round.</p>
+                <p>Chats remaining: {chatsRemaining}</p>
+                {chattedCelebrityIds.length > 0 && (
+                  <p>
+                    Chatted this round: {chattedCelebrityIds
+                      .map((id) => nodesById[id]?.name ?? id)
+                      .join(', ')}
+                  </p>
+                )}
+                <button
+                  className="dummy-chat-battle-btn"
+                  onClick={() => setDummyChatPhase('select_battle')}
+                >
+                  Finish Chatting & Choose Battle Opponent
+                </button>
+              </>
+            ) : (
+              <>
+                <h3>Select Celebrity To Battle</h3>
+                <p>Pick your opponent and battle difficulty, then launch battle.</p>
+                <div className="dummy-chat-buttons">
+                  {activeCelebrityIds
+                    .map((id) => CELEBRITY_NODE_LOOKUP[id])
+                    .filter(Boolean)
+                    .map((celebrity) => {
+                    const isSelected = selectedBattleTargetId === celebrity.id
+                    return (
+                      <button
+                        key={celebrity.id}
+                        className={`dummy-chat-btn ${isSelected ? 'dummy-chat-btn--selected' : ''}`}
+                        onClick={() => setSelectedBattleTargetId(celebrity.id)}
+                      >
+                        {celebrity.name}
+                      </button>
+                    )
+                    })}
+                </div>
+                <div className="dummy-chat-tier-selector">
+                  {BATTLE_TIERS.map((tier) => {
+                    const isSelected = selectedBattleTier === tier
+                    return (
+                      <button
+                        key={tier}
+                        className={`dummy-chat-btn ${isSelected ? 'dummy-chat-btn--selected' : ''}`}
+                        onClick={() => setSelectedBattleTier(tier)}
+                      >
+                        {getBattleDifficultyLabel(tier)}
+                      </button>
+                    )
+                  })}
+                </div>
+                <button
+                  className="dummy-chat-battle-btn"
+                  disabled={!selectedBattleTargetId}
+                  onClick={() => onStartBattle?.(selectedBattleTargetId, selectedBattleTier)}
+                >
+                  Start Battle Demo
+                </button>
+              </>
+            )}
+            {roundArrivalSummary && (
+              <div className="round-connection-summary-toggle">
+                <button
+                  className="dummy-chat-battle-btn"
+                  onClick={() => setShowConnectionChanges((current) => !current)}
+                >
+                  {showConnectionChanges ? 'Hide Connections Changes' : 'Connections Changes'}
+                </button>
+              </div>
+            )}
+            {roundArrivalSummary && showConnectionChanges && (
+              <div className="round-arrival-summary">
+                <div className="round-arrival-summary-head">
+                  <h4>{roundArrivalSummary.title ?? `Round ${roundNumber} Summary`}</h4>
+                  <button onClick={() => setShowConnectionChanges(false)}>Close</button>
+                </div>
+                <p>Net connection changes between celebrities from the last battle:</p>
+                <ul>
+                  {(roundArrivalSummary.netConnectionChanges ?? []).map((entry, index) => (
+                    <li key={`${entry.key ?? entry.line ?? 'edge'}-${index}`}>
+                      {entry.line ?? String(entry)}
+                    </li>
+                  ))}
+                  {(roundArrivalSummary.netConnectionChanges ?? []).length === 0 && (
+                    <li>No celebrity-to-celebrity net changes were recorded.</li>
+                  )}
+                </ul>
+              </div>
+            )}
+            {bombshellEventText && (
+              <div className="round-bombshell-entry">
+                <span>{bombshellEventText}</span>
+                <button onClick={() => onDismissBombshellEventText?.()}>Dismiss</button>
+              </div>
+            )}
+            {dummyChatLog.length > 0 && (
+              <ul className="dummy-chat-log">
+                {dummyChatLog.map((line, index) => (
+                  <li key={`${line}-${index}`}>{line}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+        {roundPhaseFlashMessages.length > 0 && (
+          <div className="round-phase-flash-overlay">
+            <div className="round-phase-flash-card">
+              <p>{roundPhaseFlashMessages[0]}</p>
+              <button onClick={() => onDismissRoundPhaseFlashMessage?.()}>
+                {roundPhaseFlashMessages.length > 1 ? 'Next' : 'Continue'}
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -40,6 +40,16 @@ function normalizeBattleTier(tier) {
   return 1
 }
 
+function getBattleDifficultyLabel(tier) {
+  if (tier === 2) {
+    return 'Medium'
+  }
+  if (tier === 3) {
+    return 'Hard'
+  }
+  return 'Easy'
+}
+
 function clampEdge(value) {
   return Math.max(EDGE_MIN, Math.min(EDGE_MAX, Math.round(value)))
 }
@@ -513,9 +523,10 @@ export function createGameEngine(options = {}) {
     const leftOutMessage = sideBattleResult.leftOutId
       ? ` ${sideBattleState.contestants[sideBattleResult.leftOutId].name} sat out due to odd pairing.`
       : ''
+    const difficultyLabel = getBattleDifficultyLabel(battleTier)
     const historyAfterBattle = appendHistory(
       sideBattleState,
-      `Tier ${battleTier} battle against ${sideBattleState.contestants[targetId].name}: ${encounter.won ? 'win' : 'loss'}.`,
+      `${difficultyLabel} battle against ${sideBattleState.contestants[targetId].name}: ${encounter.won ? 'win' : 'loss'}.`,
     )
     const historyAfterSideBattles = [
       ...historyAfterBattle,

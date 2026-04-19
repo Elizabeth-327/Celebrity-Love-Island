@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import TypingText from '../components/TypingText'
 import IslandBg from '../assets/backgrounds/love_island_bg.jpg'
 import {
@@ -31,13 +31,78 @@ export default function IntroduceCelebs({ onNext }) {
   const [celebIndex, setCelebIndex] = useState(0)
   const [celebSlide, setCelebSlide] = useState('offscreen-right')
   const [typeName, setTypeName] = useState(false)
+  const timeoutIdsRef = useRef([])
+
+  const queueTimeout = useCallback((callback, delayMs) => {
+    const timeoutId = window.setTimeout(callback, delayMs)
+    timeoutIdsRef.current.push(timeoutId)
+  }, [])
+
+  const clearQueuedTimeouts = useCallback(() => {
+    timeoutIdsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId))
+    timeoutIdsRef.current = []
+  }, [])
+
+  useEffect(() => {
+    const skipCelebrityIntro = () => {
+      clearQueuedTimeouts()
+
+      if (phase === 'opportunity') {
+        setOpportunityVisible(false)
+        setPhase('heading')
+        return
+      }
+
+      if (phase === 'heading') {
+        setOpportunityVisible(false)
+        setPhase('celebs')
+        showCeleb(0)
+        return
+      }
+
+      if (phase === 'celebs') {
+        setTypeName(false)
+        const nextCelebIndex = celebIndex + 1
+        if (nextCelebIndex < CELEBS.length) {
+          showCeleb(nextCelebIndex)
+        } else {
+          setPhase('done')
+        }
+      }
+    }
+
+    const onKeyDown = (event) => {
+      if (event.code !== 'Space') {
+        return
+      }
+      event.preventDefault()
+      skipCelebrityIntro()
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [celebIndex, clearQueuedTimeouts, phase])
+
+  useEffect(() => {
+    return () => {
+      clearQueuedTimeouts()
+    }
+  }, [clearQueuedTimeouts])
 
   function handleOpportunityDone() {
-    setTimeout(() => setOpportunityVisible(false), 1000)
-    setTimeout(() => setPhase('heading'), 1800)
+    if (phase !== 'opportunity') {
+      return
+    }
+    queueTimeout(() => setOpportunityVisible(false), 1000)
+    queueTimeout(() => setPhase('heading'), 1800)
   }
 
   function handleHeadingDone() {
+    if (phase !== 'heading') {
+      return
+    }
     setPhase('celebs')
     showCeleb(0)
   }
@@ -46,13 +111,13 @@ export default function IntroduceCelebs({ onNext }) {
     setCelebIndex(index)
     setCelebSlide('offscreen-right')
     setTypeName(false)
-    setTimeout(() => setCelebSlide('center'), 50)
-    setTimeout(() => setTypeName(true), 1600)
-    setTimeout(() => setCelebSlide('offscreen-left'), 4500)
+    queueTimeout(() => setCelebSlide('center'), 50)
+    queueTimeout(() => setTypeName(true), 1600)
+    queueTimeout(() => setCelebSlide('offscreen-left'), 4500)
     if (index + 1 < CELEBS.length) {
-      setTimeout(() => showCeleb(index + 1), 7200)
+      queueTimeout(() => showCeleb(index + 1), 7200)
     } else {
-      setTimeout(() => setPhase('done'), 7200)
+      queueTimeout(() => setPhase('done'), 7200)
     }
   }
 

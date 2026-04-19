@@ -12,7 +12,6 @@ function formatIdLabel(value) {
 export default function Intro({
   onStart,
   onSkip,
-  onDemo,
   battleExitSummary,
   onDismissBattleExitSummary,
 }) {
@@ -46,11 +45,6 @@ export default function Intro({
       {introDone && (
         <button className="start-game-btn" onClick={onStart}>
           Start Game
-        </button>
-      )}
-      {introDone && (
-        <button className="demo-battle-btn" onClick={onDemo}>
-          Demo Battle
         </button>
       )}
       {introDone && battleExitSummary && (
