@@ -421,13 +421,32 @@
     0 14px 36px rgba(0, 0, 0, 0.45);
 }
 
-.island-guidance {
+.island-intro-text {
   position: absolute;
-  z-index: 4;
+  z-index: 6;
   top: 6vh;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+  pointer-events: none;
+  font-family: serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  letter-spacing: 2px;
+  color: white;
+  text-shadow: 0 0 20px rgba(255, 180, 220, 0.8), 0 2px 8px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.island-guidance {
+  position: absolute;
+  z-index: 4;
+  bottom: 6vh;
+  right: 2%;
+  top: auto;
+  left: auto;
+  transform: none;
+  text-align: right;
   pointer-events: none;
 }
 
@@ -437,9 +456,12 @@
   font-style: normal;
   font-size: clamp(1rem, 2.2vw, 1.5rem);
   letter-spacing: 2px;
-  color: black;
-  opacity: 0.8;
-  text-shadow: 0 0 20px rgba(255,180,220,0.8), 0 2px 8px rgba(0,0,0,0.6);
+  color: white;
+  opacity: 0.95;
+  text-shadow:
+    0 0 20px rgba(255, 220, 80, 0.9),
+    0 0 50px rgba(255, 180, 0, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.7);
   white-space: nowrap;
 }
 

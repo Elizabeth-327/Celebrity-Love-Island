@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import TypingText from '../components/TypingText'
 import LoveIsland from '../assets/backgrounds/island_drawn.png'
 import AdjussiNakedImg from '../assets/characters/players/adjussi_naked.png'
 import AhjummaNakedImg from '../assets/characters/players/ahjumma_naked.png'
@@ -413,6 +414,7 @@ function computeConnectionSum(contestantId, graph, activeCelebrityIds) {
 
 export default function Island({
   selectedSkin,
+  showIntro = false,
   roundNumber = 1,
   seasonLength = 8,
   activeCelebrityIds = DEFAULT_ACTIVE_CELEBRITY_IDS,
@@ -450,6 +452,7 @@ export default function Island({
   const chatsUsedThisRound = chatState?.chatsUsedThisRound ?? 0
   const maxChatsPerRound = chatState?.maxChatsPerRound ?? MAX_DUMMY_CHATS
   const chattedCelebrityIds = chatState?.chattedCelebrityIdsThisRound ?? []
+  const [introPhase, setIntroPhase] = useState(showIntro ? 'typing' : 'done') // 'typing' | 'fading' | 'done'
   const [selectedNodeId, setSelectedNodeId] = useState(null)
   const [hasClickedCelebrity, setHasClickedCelebrity] = useState(false)
   const [dummyChatPhase, setDummyChatPhase] = useState('chatting')
@@ -693,15 +696,34 @@ export default function Island({
       }}
     >
       <div className="island-stage" ref={stageRef} onClick={() => setSelectedNodeId(null)}>
-        <div className="island-round-tracker">
-          Round {roundNumber} / {seasonLength}
-        </div>
-        <button
-          className="island-ui-toggle"
-          onClick={() => setIsIslandUiCollapsed((current) => !current)}
+        {introPhase === 'typing' && (
+          <div
+            className="island-intro-text"
+            style={{ opacity: 1, transition: 'opacity 0.8s ease' }}
+          >
+            <TypingText
+              text="It's time to start the game! Mingle with other contestants."
+              speed={50}
+              onDone={() => {
+                setTimeout(() => setIntroPhase('fading'), 800)
+                setTimeout(() => setIntroPhase('done'), 1800)
+              }}
+            />
+          </div>
+        )}
+        {introPhase === 'fading' && (
+          <div
+            className="island-intro-text"
+            style={{ opacity: 0, transition: 'opacity 0.8s ease' }}
+          />
+        )}
+
+        <div
+          className="island-round-tracker"
+          style={{ opacity: introPhase === 'done' ? 1 : 0, transition: 'opacity 0.6s ease' }}
         >
-          {isIslandUiCollapsed ? 'Show UI' : 'Hide UI'}
-        </button>
+          Round {roundNumber} / {seasonLength} &nbsp;|&nbsp; Chats left: {chatsRemaining}
+        </div>
         <svg className="island-graph-overlay">
           <defs>
             <marker
@@ -775,7 +797,10 @@ export default function Island({
         {!isIslandUiCollapsed && (
           <>
             {shouldShowFirstRoundGuidance && (
-              <div className="island-guidance">
+              <div
+                className="island-guidance"
+                style={{ opacity: introPhase === 'done' ? 1 : 0, transition: 'opacity 0.6s ease' }}
+              >
                 <p>CLICK contestants to view connections</p>
                 <p>DOUBLE-CLICK to have conversation with celeb</p>
               </div>

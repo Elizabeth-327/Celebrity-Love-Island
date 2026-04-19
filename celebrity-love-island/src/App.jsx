@@ -241,6 +241,7 @@ function App() {
   )
   const [chatState, setChatState] = useState(() => buildInitialSeasonState().chatState)
   const [roundChatLog, setRoundChatLog] = useState(() => buildInitialSeasonState().roundChatLog)
+  const [showIslandIntro, setShowIslandIntro] = useState(false)
 
   const resetSeasonState = (career = 'actor') => {
     const initialState = buildInitialSeasonState()
@@ -498,6 +499,7 @@ function App() {
         selectedSkin={selectedSkin}
         onNext={() => {
           resetSeasonState(selectedCareer ?? 'actor')
+          setShowIslandIntro(true)
           setPage('island')
         }}
       />
@@ -508,6 +510,7 @@ function App() {
     return (
       <Island
         selectedSkin={selectedSkin}
+        showIntro={showIslandIntro}
         selectedCareer={selectedCareer}
         roundNumber={roundNumber}
         seasonLength={SEASON_LENGTH}
@@ -533,6 +536,7 @@ function App() {
             return
           }
           setSelectedChatCelebrityId(celebrityId)
+          setShowIslandIntro(false)
           setPage('chat_screen')
         }}
         onStartBattle={(celebrityId, tier) => {
@@ -545,6 +549,7 @@ function App() {
           setRoundArrivalSummary(null)
           setBombshellEventText(null)
           setRoundPhaseFlashMessages([])
+          setShowIslandIntro(false)
           setPage('battle_demo')
         }}
       />
