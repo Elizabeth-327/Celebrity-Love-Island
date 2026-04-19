@@ -316,6 +316,10 @@
   filter: drop-shadow(0 0 16px rgba(255, 123, 190, 0.95));
 }
 
+.island-character--battle-target {
+  filter: drop-shadow(0 0 18px rgba(255, 214, 122, 0.95)) drop-shadow(0 0 8px rgba(255, 178, 83, 0.7));
+}
+
 .island-graph-overlay {
   position: absolute;
   inset: 0;
@@ -2550,6 +2554,262 @@
   }
 
   .slot-machine-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.chat-screen {
+  position: relative;
+  height: 100vh;
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  color: #fff;
+}
+
+.chat-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 6, 12, 0.28) 0%,
+    rgba(14, 6, 12, 0.42) 42%,
+    rgba(11, 7, 13, 0.7) 100%
+  );
+}
+
+.chat-back-btn {
+  position: absolute;
+  z-index: 5;
+  top: 16px;
+  left: 16px;
+  border: 1px solid rgba(255, 198, 229, 0.7);
+  border-radius: 999px;
+  background: rgba(28, 10, 22, 0.84);
+  color: #ffe7f5;
+  font-size: 0.86rem;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.chat-celebrity-header {
+  position: absolute;
+  z-index: 4;
+  top: 24px;
+  right: 24px;
+  text-align: right;
+}
+
+.chat-celebrity-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #ffe8f6;
+}
+
+.chat-celebrity-header p {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 235, 248, 0.9);
+}
+
+.chat-celebrity-sprite {
+  position: absolute;
+  z-index: 3;
+  left: 64%;
+  bottom: 58px;
+  top: auto;
+  right: auto;
+  transform: translateX(-50%);
+  height: 50vh;
+  object-fit: contain;
+}
+
+.chat-player-sprite {
+  position: absolute;
+  z-index: 3;
+  left: 36%;
+  bottom: 58px;
+  transform: translateX(-50%);
+  height: 46vh;
+  object-fit: contain;
+}
+
+.chat-bubble {
+  position: absolute;
+  z-index: 4;
+  width: min(430px, calc(100% - 28px));
+  min-height: 72px;
+  border: 2px solid rgba(255, 230, 244, 0.8);
+  border-radius: 16px;
+  background: rgba(30, 10, 24, 0.9);
+  padding: 10px 12px;
+  box-shadow: 0 0 0 1px rgba(255, 150, 208, 0.2), 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.chat-bubble::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.chat-bubble--celebrity {
+  left: 57%;
+  bottom: 52vh;
+  top: auto;
+  right: auto;
+}
+
+.chat-bubble--celebrity::after {
+  right: -14px;
+  top: 32px;
+  border-width: 10px 0 10px 14px;
+  border-color: transparent transparent transparent rgba(255, 230, 244, 0.8);
+}
+
+.chat-bubble--player {
+  left: 12%;
+  bottom: 43vh;
+  width: min(300px, calc(100% - 28px));
+}
+
+.chat-bubble--player::after {
+  left: -14px;
+  bottom: 18px;
+  border-width: 10px 14px 10px 0;
+  border-color: transparent rgba(255, 230, 244, 0.8) transparent transparent;
+}
+
+.chat-bubble-text {
+  display: block;
+  font-size: 0.92rem;
+  line-height: 1.35;
+  color: #ffeaf6;
+  min-height: 1.3em;
+}
+
+.chat-choice-strip {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 16px;
+  bottom: auto;
+  transform: translateX(-50%);
+  width: min(920px, calc(100% - 24px));
+  border: 1px solid rgba(255, 210, 234, 0.44);
+  border-radius: 14px;
+  background: rgba(19, 8, 16, 0.84);
+  padding: 10px 12px 12px;
+}
+
+.chat-choice-title {
+  margin: 0 0 8px;
+  color: #ffe0f2;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.chat-choice-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.chat-option-btn {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff6fc;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.chat-option-btn:hover {
+  border-color: rgba(255, 153, 211, 0.8);
+  background: rgba(255, 112, 187, 0.2);
+}
+
+.chat-finish-strip {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 16px;
+  bottom: auto;
+  transform: translateX(-50%);
+  width: min(760px, calc(100% - 24px));
+  border: 1px solid rgba(255, 210, 234, 0.44);
+  border-radius: 14px;
+  background: rgba(19, 8, 16, 0.84);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chat-finish-strip p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #ffeaf6;
+}
+
+@media (max-width: 900px) {
+  .chat-celebrity-sprite {
+    height: 40vh;
+    left: 66%;
+    bottom: 78px;
+    top: auto;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  .chat-player-sprite {
+    height: 36vh;
+    left: 34%;
+    bottom: 78px;
+    transform: translateX(-50%);
+  }
+
+  .chat-bubble--celebrity {
+    left: 54%;
+    bottom: 48vh;
+    top: auto;
+    right: auto;
+    width: min(360px, calc(100% - 16px));
+  }
+
+  .chat-bubble--player {
+    left: 4%;
+    bottom: 38vh;
+    width: min(300px, calc(100% - 16px));
+  }
+
+  .chat-choice-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-choice-strip {
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    width: auto;
+    transform: none;
+  }
+
+  .chat-finish-strip {
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    width: auto;
+    transform: none;
     flex-direction: column;
     align-items: stretch;
   }

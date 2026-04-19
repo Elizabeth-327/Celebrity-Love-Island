@@ -18,8 +18,6 @@ import JayZImg from '../assets/characters/celebs/jay-z.png'
 import { PLAYER_ID, getRelationshipEdgeValue } from '../game/data/contestants'
 
 const MAX_DUMMY_CHATS = 2
-const DUMMY_CHAT_MIN_DELTA = -6
-const DUMMY_CHAT_MAX_DELTA = 6
 const BATTLE_TIERS = [1, 2, 3]
 const BATTLE_DIFFICULTY_LABELS = {
   1: 'Easy',
@@ -350,14 +348,6 @@ function formatSignedScore(value) {
   return String(value)
 }
 
-function clampConnection(value) {
-  return Math.max(-100, Math.min(100, value))
-}
-
-function randomDummyChatDelta() {
-  return Math.floor(Math.random() * (DUMMY_CHAT_MAX_DELTA - DUMMY_CHAT_MIN_DELTA + 1)) + DUMMY_CHAT_MIN_DELTA
-}
-
 function getBattleDifficultyLabel(tier) {
   return BATTLE_DIFFICULTY_LABELS[tier] ?? BATTLE_DIFFICULTY_LABELS[1]
 }
@@ -397,13 +387,15 @@ export default function Island({
   seasonLength = 8,
   activeCelebrityIds = DEFAULT_ACTIVE_CELEBRITY_IDS,
   connectionGraph: externalConnectionGraph,
-  onConnectionGraphChange,
   roundArrivalSummary,
   bombshellEventText,
   roundPhaseFlashMessages = [],
+  chatState,
+  roundChatLog = [],
   onDismissRoundArrivalSummary,
   onDismissBombshellEventText,
   onDismissRoundPhaseFlashMessage,
+  onStartChat,
   onStartBattle,
 }) {
   const skin = selectedSkin ?? 'adjussi'
@@ -421,27 +413,25 @@ export default function Island({
     () => Object.fromEntries(nodes.map((node) => [node.id, node])),
     [nodes],
   )
-  const [fallbackConnectionGraph, setFallbackConnectionGraph] = useState(() =>
-    buildInitialIslandGraph(activeCelebrityIds),
+  const fallbackConnectionGraph = useMemo(
+    () => buildInitialIslandGraph(activeCelebrityIds),
+    [activeCelebrityIds],
   )
+  const chatsUsedThisRound = chatState?.chatsUsedThisRound ?? 0
+  const maxChatsPerRound = chatState?.maxChatsPerRound ?? MAX_DUMMY_CHATS
+  const chattedCelebrityIds = chatState?.chattedCelebrityIdsThisRound ?? []
   const [selectedNodeId, setSelectedNodeId] = useState(null)
   const [hasClickedCelebrity, setHasClickedCelebrity] = useState(false)
-  const [chatsUsedThisRound, setChatsUsedThisRound] = useState(0)
-  const [chattedCelebrityIds, setChattedCelebrityIds] = useState([])
   const [dummyChatPhase, setDummyChatPhase] = useState('chatting')
-  const [selectedBattleTargetId, setSelectedBattleTargetId] = useState(
-    activeCelebrityIds[0] ?? 'kim_kardashian',
-  )
-  const [selectedBattleTier, setSelectedBattleTier] = useState(1)
+  const [selectedBattleTargetId, setSelectedBattleTargetId] = useState(null)
+  const [selectedBattleTier, setSelectedBattleTier] = useState(null)
   const [showConnectionChanges, setShowConnectionChanges] = useState(false)
   const [isIslandUiCollapsed, setIsIslandUiCollapsed] = useState(false)
-  const [dummyChatLog, setDummyChatLog] = useState([])
   const [nodeCenters, setNodeCenters] = useState({})
   const stageRef = useRef(null)
   const nodeRefs = useRef({})
   const connectionGraph = externalConnectionGraph ?? fallbackConnectionGraph
-  const setConnectionGraph = onConnectionGraphChange ?? setFallbackConnectionGraph
-  const chatsRemaining = Math.max(0, MAX_DUMMY_CHATS - chatsUsedThisRound)
+  const chatsRemaining = Math.max(0, maxChatsPerRound - chatsUsedThisRound)
 
   const handleDummyChat = useCallback((celebrityId) => {
     if (celebrityId === PLAYER_ID || !activeCelebrityIds.includes(celebrityId)) {
@@ -451,49 +441,47 @@ export default function Island({
     if (dummyChatPhase !== 'chatting') {
       return
     }
-    if (chatsUsedThisRound >= MAX_DUMMY_CHATS) {
+    if (chatsUsedThisRound >= maxChatsPerRound) {
       return
     }
     if (chattedCelebrityIds.includes(celebrityId)) {
       return
     }
 
-    const celebrityName = nodesById[celebrityId]?.name ?? celebrityId
-    const delta = randomDummyChatDelta()
-
-    setConnectionGraph((current) => {
-      const nextGraph = {
-        ...current,
-        [celebrityId]: {
-          ...current[celebrityId],
-        },
-      }
-      const currentScore = current[celebrityId]?.[PLAYER_ID] ?? 0
-      nextGraph[celebrityId][PLAYER_ID] = clampConnection(currentScore + delta)
-      return nextGraph
-    })
-
-    setChatsUsedThisRound((count) => count + 1)
-    setChattedCelebrityIds((current) => [...current, celebrityId])
-    setDummyChatLog((current) => [
-      `${celebrityName}: ${formatSignedScore(delta)} connection (dummy chat)`,
-      ...current,
-    ].slice(0, 6))
     setSelectedNodeId(celebrityId)
-  }, [activeCelebrityIds, chatsUsedThisRound, chattedCelebrityIds, dummyChatPhase, nodesById])
+    onStartChat?.(celebrityId)
+  }, [
+    activeCelebrityIds,
+    chattedCelebrityIds,
+    chatsUsedThisRound,
+    dummyChatPhase,
+    maxChatsPerRound,
+    onStartChat,
+  ])
 
   const handleNodeClick = useCallback((nodeId) => {
     setSelectedNodeId(nodeId)
     if (nodeId !== PLAYER_ID) {
       setHasClickedCelebrity(true)
     }
-  }, [])
+
+    if (
+      dummyChatPhase === 'select_battle' &&
+      nodeId !== PLAYER_ID &&
+      activeCelebrityIds.includes(nodeId)
+    ) {
+      if (selectedBattleTargetId !== nodeId) {
+        setSelectedBattleTier(null)
+      }
+      setSelectedBattleTargetId(nodeId)
+    }
+  }, [activeCelebrityIds, dummyChatPhase, selectedBattleTargetId])
 
   useEffect(() => {
-    if (chatsUsedThisRound >= MAX_DUMMY_CHATS) {
+    if (chatsUsedThisRound >= maxChatsPerRound) {
       setDummyChatPhase('select_battle')
     }
-  }, [chatsUsedThisRound])
+  }, [chatsUsedThisRound, maxChatsPerRound])
 
   const recomputeNodeCenters = useCallback(() => {
     if (!stageRef.current) {
@@ -518,11 +506,8 @@ export default function Island({
 
   useEffect(() => {
     setDummyChatPhase('chatting')
-    setChatsUsedThisRound(0)
-    setChattedCelebrityIds([])
-    setDummyChatLog([])
-    setSelectedBattleTargetId(activeCelebrityIds[0] ?? 'kim_kardashian')
-    setSelectedBattleTier(1)
+    setSelectedBattleTargetId(null)
+    setSelectedBattleTier(null)
     setShowConnectionChanges(false)
     setHasClickedCelebrity(false)
   }, [roundNumber, activeCelebrityIds])
@@ -572,6 +557,8 @@ export default function Island({
   }, [activeCelebrityIds, connectionGraph, selectedNodeId])
 
   const selectedNodeCenter = selectedNodeId ? nodeCenters[selectedNodeId] : null
+  const shouldShowFirstRoundGuidance =
+    roundNumber === 1 && (dummyChatPhase === 'chatting' || dummyChatPhase === 'select_battle')
   const islandStatusMessage = useMemo(() => {
     if (dummyChatPhase === 'chatting') {
       if (!hasClickedCelebrity) {
@@ -580,12 +567,29 @@ export default function Island({
       return `Double click a celebrity to chat to them. Chats remaining: ${chatsRemaining}.`
     }
 
+    if (dummyChatPhase === 'select_battle') {
+      if (!selectedBattleTargetId) {
+        return 'Select a celebrity you want to form a relationship with.'
+      }
+      if (!selectedBattleTier) {
+        return 'Select difficulty.'
+      }
+      return 'Click Battle.'
+    }
+
     if (selectedNodeId) {
       return `Showing connections for ${nodesById[selectedNodeId]?.name ?? selectedNodeId}`
     }
 
     return 'Click a person to display connection lines and scores.'
-  }, [chatsRemaining, dummyChatPhase, hasClickedCelebrity, nodesById, selectedNodeId])
+  }, [
+    chatsRemaining,
+    dummyChatPhase,
+    hasClickedCelebrity,
+    nodesById,
+    selectedBattleTargetId,
+    selectedNodeId,
+  ])
 
   const renderedEdges = useMemo(() => {
     const placedLabelRects = []
@@ -728,6 +732,8 @@ export default function Island({
         {nodes.map((node, index) => {
           const position = POSITIONS[index]
           const isSelected = selectedNodeId === node.id
+          const isBattleTarget =
+            dummyChatPhase === 'select_battle' && selectedBattleTargetId === node.id
           const delay = `${(index * 0.18).toFixed(2)}s`
 
           return (
@@ -742,7 +748,7 @@ export default function Island({
                   delete nodeRefs.current[node.id]
                 }
               }}
-              className={`island-character ${isSelected ? 'island-character--selected' : ''}`}
+              className={`island-character ${isSelected ? 'island-character--selected' : ''} ${isBattleTarget ? 'island-character--battle-target' : ''}`}
               style={{
                 left: position.left,
                 bottom: position.bottom,
@@ -769,7 +775,7 @@ export default function Island({
 
         {!isIslandUiCollapsed && (
           <>
-            {dummyChatPhase === 'chatting' && (
+            {shouldShowFirstRoundGuidance && (
               <div className="island-graph-status island-graph-status--centered">
                 {islandStatusMessage}
               </div>
@@ -804,7 +810,7 @@ export default function Island({
                 <p>
                   Double click any celebrity sprite to chat.
                 </p>
-                <p>Each dummy chat applies a small connection change to celebrity {'->'} player.</p>
+                <p>Each chat uses branching paths from dialogue data and adjusts celebrity {'->'} player connection.</p>
                 <p>You can only dummy chat each celebrity once per round.</p>
                 <p>Chats remaining: {chatsRemaining}</p>
                 {chattedCelebrityIds.length > 0 && (
@@ -824,44 +830,31 @@ export default function Island({
             ) : (
               <>
                 <h3>Select Celebrity To Battle</h3>
-                <p>Pick your opponent and battle difficulty, then launch battle.</p>
-                <div className="dummy-chat-buttons">
-                  {activeCelebrityIds
-                    .map((id) => CELEBRITY_NODE_LOOKUP[id])
-                    .filter(Boolean)
-                    .map((celebrity) => {
-                    const isSelected = selectedBattleTargetId === celebrity.id
-                    return (
-                      <button
-                        key={celebrity.id}
-                        className={`dummy-chat-btn ${isSelected ? 'dummy-chat-btn--selected' : ''}`}
-                        onClick={() => setSelectedBattleTargetId(celebrity.id)}
-                      >
-                        {celebrity.name}
-                      </button>
-                    )
-                    })}
-                </div>
+                <p>Click a celebrity sprite to select who you want to form a relationship with.</p>
+                <p>
+                  Selected: {selectedBattleTargetId ? (nodesById[selectedBattleTargetId]?.name ?? selectedBattleTargetId) : 'None'}
+                </p>
                 <div className="dummy-chat-tier-selector">
                   {BATTLE_TIERS.map((tier) => {
                     const isSelected = selectedBattleTier === tier
                     return (
                       <button
-                        key={tier}
-                        className={`dummy-chat-btn ${isSelected ? 'dummy-chat-btn--selected' : ''}`}
-                        onClick={() => setSelectedBattleTier(tier)}
-                      >
-                        {getBattleDifficultyLabel(tier)}
+                      key={tier}
+                      className={`dummy-chat-btn ${isSelected ? 'dummy-chat-btn--selected' : ''}`}
+                      disabled={!selectedBattleTargetId}
+                      onClick={() => setSelectedBattleTier(tier)}
+                    >
+                      {getBattleDifficultyLabel(tier)}
                       </button>
                     )
                   })}
                 </div>
                 <button
                   className="dummy-chat-battle-btn"
-                  disabled={!selectedBattleTargetId}
+                  disabled={!selectedBattleTargetId || !selectedBattleTier}
                   onClick={() => onStartBattle?.(selectedBattleTargetId, selectedBattleTier)}
                 >
-                  Start Battle Demo
+                  Battle
                 </button>
               </>
             )}
@@ -900,9 +893,9 @@ export default function Island({
                 <button onClick={() => onDismissBombshellEventText?.()}>Dismiss</button>
               </div>
             )}
-            {dummyChatLog.length > 0 && (
+            {roundChatLog.length > 0 && (
               <ul className="dummy-chat-log">
-                {dummyChatLog.map((line, index) => (
+                {roundChatLog.map((line, index) => (
                   <li key={`${line}-${index}`}>{line}</li>
                 ))}
               </ul>
