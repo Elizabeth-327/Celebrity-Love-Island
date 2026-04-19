@@ -2749,7 +2749,7 @@
 .chat-celebrity-sprite {
   position: absolute;
   z-index: 3;
-  left: 64%;
+  left: 58%;
   bottom: 130px;
   top: auto;
   right: auto;
@@ -2768,7 +2768,7 @@
 .chat-player-sprite {
   position: absolute;
   z-index: 3;
-  left: 36%;
+  left: 42%;
   bottom: 130px;
   transform: translateX(-50%);
   height: 46vh;
@@ -2814,20 +2814,22 @@
 
 /* Celebrity bubble — upper-right, natural tail points down-left toward celebrity sprite */
 .chat-bubble--celebrity {
-  top: 6vh;
-  right: 3%;
-  left: auto;
+  top: 7vh;
+  left: 67%;
+  right: auto;
   bottom: auto;
   width: min(300px, 40%);
+  transform: translateX(-50%);
 }
 
 /* Player bubble — upper-left, flipped so tail points down-right toward player sprite */
 .chat-bubble--player {
-  top: 24vh;
-  left: 3%;
+  top: 25vh;
+  left: 33%;
   right: auto;
   bottom: auto;
   width: min(260px, 36%);
+  transform: translateX(-50%);
 }
 
 .chat-bubble-text {
@@ -2914,7 +2916,7 @@
 @media (max-width: 900px) {
   .chat-celebrity-sprite {
     height: 40vh;
-    left: 66%;
+    left: 57%;
     bottom: 160px;
     top: auto;
     right: auto;
@@ -2923,21 +2925,24 @@
 
   .chat-player-sprite {
     height: 36vh;
-    left: 34%;
+    left: 43%;
     bottom: 160px;
     transform: translateX(-50%);
   }
 
   .chat-bubble--celebrity {
-    top: 4vh;
-    right: 2%;
+    top: 5.5vh;
+    left: 62%;
+    right: auto;
     width: min(240px, 46%);
+    transform: translateX(-50%);
   }
 
   .chat-bubble--player {
-    top: 20vh;
-    left: 2%;
+    top: 21vh;
+    left: 36%;
     width: min(210px, 42%);
+    transform: translateX(-50%);
   }
 
   .chat-choice-buttons {
