@@ -97,7 +97,6 @@
                                       "score_delta": -1 }
             }
           }
-        }
       },
       "introduce_yourself": {
         "player_line": "I'm interested in you.",
@@ -115,6 +114,7 @@
             }
         }
       }
+    }
   },
   "drake": {
     "intro": "Ooohhh babyyy you fineee~~",
@@ -388,82 +388,349 @@
       }
   },
   "kanye_west": {
-  "intro": "Yo imma let you start, but I love myself more than I'll love anyone else.",
+    "intro": "Yo imma let you start, but I love myself more than I'll love anyone else.",
 
-  "first_choices": {
-    "hit_on": {
-      "player_line": "You're Jesus.",
-      "celebrity_response": {
-        "celebrity_line": "I KNOW I AM?!?!",
-        "score_delta": 4,
-        "follow_up": {
-          "double_down": {
-            "player_line": "You're better than Jesus.",
-            "celebrity_final": "FINALLY SOMEONE WHO GETS IT.",
-            "score_delta": 5
-          },
-          "joke": {
-            "player_line": "I have a jacuzzi.",
-            "celebrity_final": "You're trying to DISTRACT me from my purpose.",
-            "score_delta": -4
-          },
-          "introduce_yourself": {
-            "player_line": "I'm someone who believes in your vision.",
-            "celebrity_final": "Okay… talk to me then.",
-            "score_delta": 3
+    "first_choices": {
+      "hit_on": {
+        "player_line": "You're Jesus.",
+        "celebrity_response": {
+          "celebrity_line": "I KNOW I AM?!?!",
+          "score_delta": 4,
+          "follow_up": {
+            "double_down": {
+              "player_line": "You're better than Jesus.",
+              "celebrity_final": "FINALLY SOMEONE WHO GETS IT.",
+              "score_delta": 5
+            },
+            "joke": {
+              "player_line": "I have a jacuzzi.",
+              "celebrity_final": "You're trying to DISTRACT me from my purpose.",
+              "score_delta": -4
+            },
+            "introduce_yourself": {
+              "player_line": "I'm someone who believes in your vision.",
+              "celebrity_final": "Okay… talk to me then.",
+              "score_delta": 3
+            }
+          }
+        }
+      },
+
+      "joke": {
+        "player_line": "So like… do you ever disagree with yourself?",
+        "celebrity_response": {
+          "celebrity_line": "Why would I disagree with the greatest mind alive?",
+          "score_delta": 2,
+          "follow_up": {
+            "double_down": {
+              "player_line": "You're right. You're always right.",
+              "celebrity_final": "Say it louder.",
+              "score_delta": 4
+            },
+            "hit_on": {
+              "player_line": "Even when you're wrong, you're attractive.",
+              "celebrity_final": "I am NEVER wrong.",
+              "score_delta": -3
+            },
+            "introduce_yourself": {
+              "player_line": "I just wanted to understand you.",
+              "celebrity_final": "Most people can't.",
+              "score_delta": 2
+            }
+          }
+        }
+      },
+
+      "introduce_yourself": {
+        "player_line": "I'm trying to create something meaningful.",
+        "celebrity_response": {
+          "celebrity_line": "Are you a CREATOR or are you a CONSUMER?",
+          "score_delta": 3,
+          "follow_up": {
+            "double_down": {
+              "player_line": "A creator. Just like you.",
+              "celebrity_final": "Then stop thinking small.",
+              "score_delta": 5
+            },
+            "hit_on": {
+              "player_line": "I want to create something with you.",
+              "celebrity_final": "You not ready for that level.",
+              "score_delta": -2
+            },
+            "joke": {
+              "player_line": "A consumer of vibes.",
+              "celebrity_final": "That's the problem with society.",
+              "score_delta": -1
+            }
           }
         }
       }
-    },
-
-    "joke": {
-      "player_line": "So like… do you ever disagree with yourself?",
-      "celebrity_response": {
-        "celebrity_line": "Why would I disagree with the greatest mind alive?",
-        "score_delta": 2,
-        "follow_up": {
-          "double_down": {
-            "player_line": "You're right. You're always right.",
-            "celebrity_final": "Say it louder.",
-            "score_delta": 4
+    }
+  },
+  "nicki_minaj": {
+    "intro": "Barbz assemble. What you on?",
+    "first_choices": {
+      "hit_on": {
+        "player_line": "You run the game, I just wanna learn the rules.",
+        "celebrity_response": {
+          "positive": {
+            "celebrity_line": "Okayyy, you respectful. I see it.",
+            "score_delta": 3,
+            "follow_up": {
+              "double_down": {
+                "player_line": "I don’t compete with queens, I follow leadership.",
+                "celebrity_final": "That’s what I’m talking about!!",
+                "score_delta": 5
+              },
+              "joke": {
+                "player_line": "Do I need glitter to qualify?",
+                "celebrity_final": "Don’t play with me like that.",
+                "score_delta": -2
+              },
+              "introduce_yourself": {
+                "player_line": "I respect your impact.",
+                "celebrity_final": "As you should.",
+                "score_delta": 2
+              }
+            }
           },
-          "hit_on": {
-            "player_line": "Even when you're wrong, you're attractive.",
-            "celebrity_final": "I am NEVER wrong.",
-            "score_delta": -3
-          },
-          "introduce_yourself": {
-            "player_line": "I just wanted to understand you.",
-            "celebrity_final": "Most people can't.",
-            "score_delta": 2
+          "negative": {
+            "celebrity_line": "You not giving main character energy.",
+            "score_delta": -2,
+            "follow_up": {
+              "mediate": {
+                "player_line": "I’m learning how to show up better.",
+                "celebrity_final": "Okay… growth.",
+                "score_delta": 2
+              },
+              "joke": {
+                "player_line": "I’m background dancer energy.",
+                "celebrity_final": "At least you self-aware.",
+                "score_delta": 1
+              },
+              "introduce_yourself": {
+                "player_line": "I’m just being honest.",
+                "celebrity_final": "Try harder.",
+                "score_delta": -1
+              }
+            }
           }
         }
       }
-    },
+    }
+  },
 
-    "introduce_yourself": {
-      "player_line": "I'm trying to create something meaningful.",
-      "celebrity_response": {
-        "celebrity_line": "Are you a CREATOR or are you a CONSUMER?",
-        "score_delta": 3,
-        "follow_up": {
-          "double_down": {
-            "player_line": "A creator. Just like you.",
-            "celebrity_final": "Then stop thinking small.",
-            "score_delta": 5
+  "kendrick_lamar": {
+    "intro": "What’s your truth?",
+    "first_choices": {
+      "introduce_yourself": {
+        "player_line": "I’m still figuring out who I am.",
+        "celebrity_response": {
+          "positive": {
+            "celebrity_line": "That’s the only real answer.",
+            "score_delta": 3,
+            "follow_up": {
+              "double_down": {
+                "player_line": "I want to be better than I was yesterday.",
+                "celebrity_final": "Then you already ahead.",
+                "score_delta": 4
+              },
+              "hit_on": {
+                "player_line": "And I want you to see that growth.",
+                "celebrity_final": "Don’t make it about me.",
+                "score_delta": -1
+              },
+              "joke": {
+                "player_line": "I identify as confused.",
+                "celebrity_final": "Most people do.",
+                "score_delta": -2
+              }
+            }
           },
-          "hit_on": {
-            "player_line": "I want to create something with you.",
-            "celebrity_final": "You not ready for that level.",
-            "score_delta": -2
+          "negative": {
+            "celebrity_line": "That sounds like avoidance.",
+            "score_delta": -2,
+            "follow_up": {
+              "mediate": {
+                "player_line": "Yeah… I think you’re right.",
+                "celebrity_final": "Self-awareness matters.",
+                "score_delta": 3
+              },
+              "hit_on": {
+                "player_line": "I’m complex though.",
+                "celebrity_final": "So is everybody.",
+                "score_delta": -1
+              },
+              "joke": {
+                "player_line": "I’m a mystery wrapped in confusion.",
+                "celebrity_final": "That’s just noise.",
+                "score_delta": -2
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "justin_bieber": {
+    "intro": "Hey… don’t be weird pls.",
+    "first_choices": {
+      "hit_on": {
+        "player_line": "You seem like you’ve been through a lot.",
+        "celebrity_response": {
+          "positive": {
+            "celebrity_line": "Yeah… I have.",
+            "score_delta": 3,
+            "follow_up": {
+              "double_down": {
+                "player_line": "And you’re still here. That matters.",
+                "celebrity_final": "That actually means a lot.",
+                "score_delta": 4
+              },
+              "joke": {
+                "player_line": "So no more hair experiments?",
+                "celebrity_final": "Bro 😭",
+                "score_delta": 1
+              },
+              "introduce_yourself": {
+                "player_line": "I’m not here to judge you.",
+                "celebrity_final": "I appreciate that.",
+                "score_delta": 2
+              }
+            }
           },
-          "joke": {
-            "player_line": "A consumer of vibes.",
-            "celebrity_final": "That's the problem with society.",
-            "score_delta": -1
+          "negative": {
+            "celebrity_line": "You don’t know me.",
+            "score_delta": -2,
+            "follow_up": {
+              "mediate": {
+                "player_line": "You’re right, I don’t.",
+                "celebrity_final": "At least you’re honest.",
+                "score_delta": 2
+              },
+              "hit_on": {
+                "player_line": "I’d like to though.",
+                "celebrity_final": "Slow down.",
+                "score_delta": -1
+              },
+              "joke": {
+                "player_line": "I know Baby though.",
+                "celebrity_final": "Please stop singing.",
+                "score_delta": -2
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "rihanna": {
+    "intro": "You better say something interesting.",
+    "first_choices": {
+      "hit_on": {
+        "player_line": "You look like trouble in the best way.",
+        "celebrity_response": {
+          "positive": {
+            "celebrity_line": "I am.",
+            "score_delta": 4,
+            "follow_up": {
+              "double_down": {
+                "player_line": "Good. I like danger.",
+                "celebrity_final": "You might survive me.",
+                "score_delta": 5
+              },
+              "joke": {
+                "player_line": "Do I need insurance first?",
+                "celebrity_final": "Definitely.",
+                "score_delta": 1
+              },
+              "introduce_yourself": {
+                "player_line": "I can handle chaos.",
+                "celebrity_final": "We’ll see.",
+                "score_delta": 3
+              }
+            }
+          },
+          "negative": {
+            "celebrity_line": "You look unsure.",
+            "score_delta": -2,
+            "follow_up": {
+              "mediate": {
+                "player_line": "I’m just cautious.",
+                "celebrity_final": "Smart.",
+                "score_delta": 2
+              },
+              "hit_on": {
+                "player_line": "I’m still interested though.",
+                "celebrity_final": "That’s cute.",
+                "score_delta": 1
+              },
+              "joke": {
+                "player_line": "I’m only half scared.",
+                "celebrity_final": "That’s not enough.",
+                "score_delta": -1
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "beyonce": {
+    "intro": "Proceed.",
+    "first_choices": {
+      "introduce_yourself": {
+        "player_line": "I respect excellence and discipline.",
+        "celebrity_response": {
+          "positive": {
+            "celebrity_line": "Then you understand the standard.",
+            "score_delta": 4,
+            "follow_up": {
+              "double_down": {
+                "player_line": "I aim to meet it.",
+                "celebrity_final": "Good. Now prove it.",
+                "score_delta": 5
+              },
+              "hit_on": {
+                "player_line": "And I respect you as a person too.",
+                "celebrity_final": "Stay focused.",
+                "score_delta": -1
+              },
+              "joke": {
+                "player_line": "Do I need choreography for this conversation?",
+                "celebrity_final": "Always.",
+                "score_delta": 2
+              }
+            }
+          },
+          "negative": {
+            "celebrity_line": "That sounds generic.",
+            "score_delta": -2,
+            "follow_up": {
+              "mediate": {
+                "player_line": "Let me be more specific then.",
+                "celebrity_final": "Better.",
+                "score_delta": 3
+              },
+              "hit_on": {
+                "player_line": "I just think you’re amazing.",
+                "celebrity_final": "That’s not enough.",
+                "score_delta": -1
+              },
+              "joke": {
+                "player_line": "I specialize in mediocrity.",
+                "celebrity_final": "No.",
+                "score_delta": -2
+              }
+            }
           }
         }
       }
     }
   }
 }
+
+  
