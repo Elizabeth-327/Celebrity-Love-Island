@@ -2,19 +2,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import LoveIsland from '../assets/backgrounds/island_drawn.png'
 import AdjussiNakedImg from '../assets/characters/players/adjussi_naked.png'
 import AhjummaNakedImg from '../assets/characters/players/ahjumma_naked.png'
-import KimImg from '../assets/characters/celebs/kim_kardashian.png'
-import KanyeImg from '../assets/characters/celebs/kanye_west.png'
-import ArianaImg from '../assets/characters/celebs/ariana_grande.png'
-import DrakeImg from '../assets/characters/celebs/drake.png'
-import JustinImg from '../assets/characters/celebs/justin_bieber.png'
-import KendrickImg from '../assets/characters/celebs/kendrick_lamar.png'
-import KylieImg from '../assets/characters/celebs/kylie_jenner.png'
-import NickiImg from '../assets/characters/celebs/nicki_minaj.png'
-import SelenaImg from '../assets/characters/celebs/selena_gomez.png'
-import ErikaImg from '../assets/characters/celebs/erika_kirk.png'
+import KimImg from '../assets/characters/chibi_celebs/kim_kardashian_chibi.png'
+import KanyeImg from '../assets/characters/chibi_celebs/kanye_west_chibi.png'
+import ArianaImg from '../assets/characters/chibi_celebs/ariana_grande_chibi.png'
+import DrakeImg from '../assets/characters/chibi_celebs/drake_chibi.png'
+import JustinImg from '../assets/characters/chibi_celebs/justin_bieber_chibi.png'
+import KendrickImg from '../assets/characters/chibi_celebs/kendrick_lamar_chibi.png'
+import KylieImg from '../assets/characters/chibi_celebs/kylie_jenner_chibi.png'
+import NickiImg from '../assets/characters/chibi_celebs/nicki_minaj_chibi.png'
+import SelenaImg from '../assets/characters/chibi_celebs/selena_gomez_chibi.png'
+import ErikaImg from '../assets/characters/chibi_celebs/erika_kirk_chibi.png'
 import RihannaImg from '../assets/characters/celebs/rihanna.png'
-import BeyonceImg from '../assets/characters/celebs/beyonce.png'
-import JayZImg from '../assets/characters/celebs/jay-z.png'
+import BeyonceImg from '../assets/characters/chibi_celebs/beyonce_chibi.png'
+import JayZImg from '../assets/characters/chibi_celebs/jay_z_chibi.png'
 import { PLAYER_ID, getRelationshipEdgeValue } from '../game/data/contestants'
 
 const MAX_DUMMY_CHATS = 2
@@ -54,7 +54,7 @@ const DEFAULT_ACTIVE_CELEBRITY_IDS = CELEBRITY_NODES
   .filter((id) => !BOMB_SHELL_IDS.includes(id))
 
 // cx/cy/rx/ry must stay in sync with computePositions below
-const ELLIPSE = { cx: 44, cy: 60, rx: 36, ry: 23 }
+const ELLIPSE = { cx: 44, cy: 60, rx: 42, ry: 23 }
 
 function getSumTagTransform(nodeCenter, stageEl) {
   if (!stageEl) return 'translate(-50%, -50%)'
@@ -75,11 +75,26 @@ function getSumTagTransform(nodeCenter, stageEl) {
 
 function computePositions(n) {
   const { cx, cy, rx, ry } = ELLIPSE
-  return Array.from({ length: n }, (_, i) => {
-    const angle = Math.PI / 2 + i * ((2 * Math.PI) / n)
+
+  // For 11 nodes: 3 bottom, 2 left, 3 top, 3 right — avoids stacking on the sides
+  const ANGLES_11 = [90, 110, 150, 210, 250, 270, 290, 330, 0, 30, 70].map(d => d * Math.PI / 180)
+  // For 10 nodes: player(0)/Kim(1)/Selena(9) bottom cluster; Drake(4)/Justin(5)/Kendrick(6) top cluster
+  const ANGLES_10 = [90, 105, 155, 235, 255, 270, 285, 305, 15, 75].map(d => d * Math.PI / 180)
+
+  const angles = n === 11
+    ? ANGLES_11
+    : n === 10
+    ? ANGLES_10
+    : Array.from({ length: n }, (_, i) => Math.PI / 2 + i * ((2 * Math.PI) / n))
+
+  const topClusterIndices = n === 10 ? new Set([4, 5, 6]) : new Set()
+
+  return angles.map((angle, i) => {
     const left = cx + rx * Math.cos(angle)
     const top  = cy + ry * Math.sin(angle)
-    return { left: `${left.toFixed(1)}%`, bottom: `${(100 - top).toFixed(1)}%`, size: '15vh' }
+    const baseBottom = 100 - top
+    const extraBottom = topClusterIndices.has(i) ? 8 : 0
+    return { left: `${left.toFixed(1)}%`, bottom: `calc(${(baseBottom).toFixed(1)}% + ${extraBottom}vh)`, size: '22vh' }
   })
 }
 
@@ -745,6 +760,8 @@ export default function Island({
                 left: position.left,
                 bottom: position.bottom,
                 height: position.size,
+                width: 'auto',
+                minWidth: '9vw',
                 animationDelay: delay,
               }}
               onLoad={recomputeNodeCenters}
@@ -753,18 +770,7 @@ export default function Island({
             />
           )
         })}
-        {selectedNodeCenter && selectedConnectionSum !== null && (
-          <div
-            className="island-connection-sum-tag"
-            style={{
-              left: `${selectedNodeCenter.x}px`,
-              top: `${selectedNodeCenter.y}px`,
-              transform: getSumTagTransform(selectedNodeCenter, stageRef.current),
-            }}
-          >
-            Sum: {selectedConnectionSum}
-          </div>
-        )}
+        {/* island-connection-sum-tag hidden */}
 
         {!isIslandUiCollapsed && (
           <>
@@ -774,25 +780,7 @@ export default function Island({
                 <p>DOUBLE-CLICK to have conversation with celeb</p>
               </div>
             )}
-            {selectedNodeId && (
-              <div className="island-graph-values">
-                <div className="island-graph-values-head">
-                  <h3>Visible Connection Values</h3>
-                  <button
-                    className="island-graph-values-close"
-                    onClick={() => setSelectedNodeId(null)}
-                    aria-label="Close connection details"
-                  >
-                    x
-                  </button>
-                </div>
-                <ul>
-                  {edgeSummaryRows.map((row) => (
-                    <li key={row}>{row}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {/* Visible Connection Values panel hidden */}
           </>
         )}
 
